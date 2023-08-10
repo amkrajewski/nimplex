@@ -5,38 +5,41 @@ import std/sugar
 import arraymancer
 import strutils
 
-proc simplex_grid*(m: int, 
-                   n: int): Tensor[int] =
-    let L: int = binom(n+m-1, m-1)
-    result = newTensor[int]([L, m])
-    var x = zeros[int](m)
-    x[m-1] = n
-    for j in 0..m-1:
+proc simplex_grid*(dim: int, 
+                   ndiv: int): Tensor[int] =
+
+    let L: int = binom(ndiv+dim-1, dim-1)
+    result = newTensor[int]([L, dim])
+    var x = zeros[int](dim)
+    x[dim-1] = ndiv
+    for j in 0..dim-1:
         result[0, j] = x[j]
-    var h = m
+    var h = dim
     for i in 1..L-1:
         h -= 1
         let val = x[h]
         x[h] = 0
-        x[m-1] = val - 1
+        x[dim-1] = val - 1
         x[h-1] += 1
-        for j in 0..m-1:
+        for j in 0..dim-1:
             result[i, j] = x[j]
         if val != 1:
-            h = m
+            h = dim
     return result
 
-proc simplex_grid_fractional*(m: int,
-                              n: int): Tensor[float] =
-    result = simplex_grid(m, n).asType(float)
-    result = result.map(x => x / float(n))
+
+proc simplex_grid_fractional*(dim: int,
+                              ndiv: int): Tensor[float] =
+
+    result = simplex_grid(dim, ndiv).asType(float)
+    result = result.map(x => x / float(ndiv))
     return result
 
 
 echo "Simplex dimensions:"
-let m = readLine(stdin).parseInt() 
+let dim = readLine(stdin).parseInt() 
 
 echo "N divisions:"
-let n = readLine(stdin).parseInt() 
+let ndiv = readLine(stdin).parseInt() 
 
-echo simplex_grid_fractional(m, n)
+echo simplex_grid(dim, ndiv)
