@@ -1,6 +1,7 @@
 # Copyrigth (C) 2023 Adam M. Krajewski
 
 import std/math
+import std/sugar
 import arraymancer
 import strutils
 
@@ -25,10 +26,17 @@ proc simplex_grid*(m: int,
             h = m
     return result
 
+proc simplex_grid_fractional*(m: int,
+                              n: int): Tensor[float] =
+    result = simplex_grid(m, n).asType(float)
+    result = result.map(x => x / float(n))
+    return result
+
+
 echo "Simplex dimensions:"
 let m = readLine(stdin).parseInt() 
 
 echo "N divisions:"
 let n = readLine(stdin).parseInt() 
 
-echo simplex_grid(m, n)
+echo simplex_grid_fractional(m, n)
