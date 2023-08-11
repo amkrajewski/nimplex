@@ -66,12 +66,39 @@ proc simplex_internal_grid_fractional*(dim: int,
     result = result.map(x => x / float(ndiv))
     return result
 
-echo "Simplex dimensions:"
-let dim = readLine(stdin).parseInt() 
+when isMainModule:
+    echo "Configuration (Full/Internal)(Fractional/Integer)(Full/Shape) - e.g. FFS:"
+    let config = readLine(stdin)
 
-echo "N divisions:"
-let ndiv = readLine(stdin).parseInt() 
+    echo "Simplex dimensions:"
+    let dim = readLine(stdin).parseInt() 
 
-let temp = simplex_internal_grid_fractional(dim, ndiv)
-echo "Internal grid:", temp
-echo "Internal grid size:", temp.shape[0]
+    echo "N divisions:"
+    let ndiv = readLine(stdin).parseInt() 
+
+    let mainConfig = config[0..1]
+
+    case mainConfig
+    of "FF":
+        let temp = simplex_grid_fractional(dim, ndiv)
+        if config[2] == 'F':
+            echo "Full grid:", temp
+        echo "Full grid size:", temp.shape[0]
+    of "FI":
+        let temp = simplex_grid(dim, ndiv)
+        if config[2] == 'F':
+            echo "Full grid:", temp
+        echo "Full grid size:", temp.shape[0]
+    of "IF":
+        let temp = simplex_internal_grid_fractional(dim, ndiv)
+        if config[2] == 'F':
+            echo "Full grid:", temp
+        echo "Full grid size:", temp.shape[0]
+    of "II":
+        let temp = simplex_internal_grid(dim, ndiv)
+        if config[2] == 'F':
+            echo "Full grid:", temp
+        echo "Full grid size:", temp.shape[0]
+    else:
+        echo "Invalid configuration"
+        quit(1)
