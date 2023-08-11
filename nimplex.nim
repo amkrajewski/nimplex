@@ -59,12 +59,19 @@ proc simplex_internal_grid*(dim: int,
             h = dim
     return result
 
+proc simplex_internal_grid_fractional*(dim: int,
+                                       ndiv: int): Tensor[float] =
+
+    result = simplex_internal_grid(dim, ndiv).asType(float)
+    result = result.map(x => x / float(ndiv))
+    return result
+
 echo "Simplex dimensions:"
 let dim = readLine(stdin).parseInt() 
 
 echo "N divisions:"
 let ndiv = readLine(stdin).parseInt() 
 
-let temp = simplex_internal_grid(dim, ndiv)
+let temp = simplex_internal_grid_fractional(dim, ndiv)
 echo "Internal grid:", temp
 echo "Internal grid size:", temp.shape[0]
