@@ -78,7 +78,7 @@ proc simplex_sampling_hed(dim: int,
 when isMainModule:
     echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
     let config = readLine(stdin)
-    assert config.len == 3 or config=="R"
+    assert config.len == 3 or config=="R", "Invalid configuration"
 
     echo "Simplex dimensions:"
     let dim = readLine(stdin).parseInt() 
