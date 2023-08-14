@@ -76,11 +76,17 @@ proc simplex_sampling_hed(dim: int,
     result = hypercubesample /. sums
 
 when isMainModule:
-    echo "Configuration (Full/Internal)(Fractional/Integer)(Full/Shape) - e.g. FFS:"
+    echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
     let config = readLine(stdin)
-    
+    assert config.len == 3 or config=="R"
+
     echo "Simplex dimensions:"
     let dim = readLine(stdin).parseInt() 
+
+    if config[0]=='R':
+        echo "Number of samples:"
+        echo simplex_sampling_hed(dim, readLine(stdin).parseInt())
+        quit(1)
 
     echo "N divisions:"
     let ndiv = readLine(stdin).parseInt() 
