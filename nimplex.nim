@@ -1,6 +1,6 @@
 # Copyrigth (C) 2023 Adam M. Krajewski
 
-from std/math import binom
+from std/math import binom, ln
 import std/sugar
 import arraymancer
 import strutils
@@ -66,10 +66,19 @@ proc simplex_internal_grid_fractional*(dim: int,
     result = result.map(x => x / float(ndiv))
     return result
 
+proc simplex_sampling_hed(dim: int,
+                          samples: int): Tensor[float] =
+    let hypercubesample = randomTensor[float](
+        [samples, dim], 
+        1.0
+        ).map(x => -ln(x))
+    let sums = hypercubesample.sum(axis=1)
+    result = hypercubesample /. sums
+
 when isMainModule:
     echo "Configuration (Full/Internal)(Fractional/Integer)(Full/Shape) - e.g. FFS:"
     let config = readLine(stdin)
-
+    
     echo "Simplex dimensions:"
     let dim = readLine(stdin).parseInt() 
 
