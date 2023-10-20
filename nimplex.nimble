@@ -7,5 +7,5 @@ license       = "MIT"
 
 # Dependencies
 
-requires "nim >= 1.0.0"
+requires "nim >= 2.0.0"
 requires "arraymancer >= 0.7.3"
