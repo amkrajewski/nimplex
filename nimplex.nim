@@ -86,7 +86,7 @@ when isMainModule:
     if config[0]=='R':
         echo "Number of samples:"
         echo simplex_sampling_hed(dim, readLine(stdin).parseInt())
-        quit(1)
+        quit(0)
 
     echo "N divisions:"
     let ndiv = readLine(stdin).parseInt() 
