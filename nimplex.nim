@@ -154,7 +154,7 @@ when isMainModule:
         taskRouter(config, dim, ndiv)
 
     # Configured
-    if args[0] == "-c" or args[0] == "--config":
+    elif args[0] == "-c" or args[0] == "--config":
         let config = args[1]
         assert config.len == 3 or config=="R", "Invalid configuration"
 
