@@ -172,6 +172,10 @@ when isMainModule:
 
         taskRouter(config, dim, ndiv)
 
+    elif args[0] == "-h" or args[0] == "--help":
+        echoHelp()
+        quit(0)
+
     # Fallback
     else:
         echoHelp()
