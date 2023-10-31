@@ -76,25 +76,27 @@ proc simplex_sampling_hed(dim: int,
     result = hypercubesample /. sums
 
 proc echoHelp*() = echo """
-    To run the program either (1) provide no arguments and follow the prompts 
-    or (2) use "-c" or "--config" to provide the configuration.
 
-    - For uniform random sampling, provide "R" and:
-        -c R [simplex dimension] [number of samples]
+To run the program either (1) provide no arguments and follow the prompts or 
+(2) use "-c" or "--config" to provide the configuration.
 
-    - For a grid, provide the 3-letter configuration:
-        1. Full or Internal grid:
-            - F: Full grid (including the simplex boundary)
-            - I: Internal grid (only points inside the simplex)
-        2. Fractional or Integer grid:
-            - F: Fractional grid (points are normalized to fractions of 1)
-            - I: Integer grid (points are integers)
-        3. Full or Shape:
-            - F: Full grid (present the full result)
-            - S: Shape (only the shape / size information)
-        followed by the simplex dimension and the number of divisions, like:
-            -c FFF [simplex dimension] [number of divisions]
-            -c IIF [simplex dimension] [number of divisions]
+- For uniform random sampling, provide "R" and:
+    -c R [simplex dimension] [number of samples]
+
+- For a grid, provide the 3-letter configuration:
+    1. Full or Internal grid:
+        - F: Full grid (including the simplex boundary)
+        - I: Internal grid (only points inside the simplex)
+    2. Fractional or Integer grid:
+        - F: Fractional grid (points are normalized to fractions of 1)
+        - I: Integer grid (points are integers)
+    3. Full or Shape:
+        - F: Full grid (present the full result)
+        - S: Shape (only the shape / size information)
+
+    followed by 2 integers of simplex dimensions and number of divisions, like:
+        -c FFF [simplex dimension] [number of divisions]
+        -c IIF [simplex dimension] [number of divisions]
 """
 
 when isMainModule:
