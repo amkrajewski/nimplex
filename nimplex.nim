@@ -99,45 +99,29 @@ To run the program either (1) provide no arguments and follow the prompts or
         -c IIF [simplex dimension] [number of divisions]
 """
 
-when isMainModule:
-    echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
-    let config = readLine(stdin)
-    assert config.len == 3 or config=="R", "Invalid configuration"
-
-    echo "Simplex dimensions:"
-    let dim = readLine(stdin).parseInt() 
-
-    if config[0]=='R':
-        echo "Number of samples:"
-        echo simplex_sampling_hed(dim, readLine(stdin).parseInt())
-        quit(0)
-
-    echo "N divisions:"
-    let ndiv = readLine(stdin).parseInt() 
-
+proc taskRouter(config: string, dim: int, ndiv: int) =
     let mainConfig = config[0..1]
-
-    case mainConfig
-    of "FF":
-        let temp = simplex_grid_fractional(dim, ndiv)
-        if config[2] == 'F':
-            echo "Full grid:", temp
-        echo "Full grid size:", temp.shape[0]
-    of "FI":
-        let temp = simplex_grid(dim, ndiv)
-        if config[2] == 'F':
-            echo "Full grid:", temp
-        echo "Full grid size:", temp.shape[0]
-    of "IF":
-        let temp = simplex_internal_grid_fractional(dim, ndiv)
-        if config[2] == 'F':
-            echo "Full grid:", temp
-        echo "Full grid size:", temp.shape[0]
-    of "II":
-        let temp = simplex_internal_grid(dim, ndiv)
-        if config[2] == 'F':
-            echo "Full grid:", temp
-        echo "Full grid size:", temp.shape[0]
-    else:
-        echo "Invalid configuration"
-        quit(1)
+    case mainConfig:
+        of "FF":
+            let temp = simplex_grid_fractional(dim, ndiv)
+            if config[2] == 'F':
+                echo "Full grid:", temp
+            echo "Full grid size:", temp.shape[0]
+        of "FI":
+            let temp = simplex_grid(dim, ndiv)
+            if config[2] == 'F':
+                echo "Full grid:", temp
+            echo "Full grid size:", temp.shape[0]
+        of "IF":
+            let temp = simplex_internal_grid_fractional(dim, ndiv)
+            if config[2] == 'F':
+                echo "Full grid:", temp
+            echo "Full grid size:", temp.shape[0]
+        of "II":
+            let temp = simplex_internal_grid(dim, ndiv)
+            if config[2] == 'F':
+                echo "Full grid:", temp
+            echo "Full grid size:", temp.shape[0]
+        else:
+            echo "Invalid configuration."
+            quit(1)
