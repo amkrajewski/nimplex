@@ -2,6 +2,8 @@
 
 from std/math import binom, ln
 import std/sugar
+import std/os
+
 import arraymancer
 import strutils
 
@@ -125,3 +127,51 @@ proc taskRouter(config: string, dim: int, ndiv: int) =
         else:
             echo "Invalid configuration."
             quit(1)
+
+when isMainModule:
+    let args = commandLineParams()
+
+    # Interactive
+    if args.len == 0:
+        echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
+        let config = readLine(stdin)
+
+        assert config.len == 3 or config=="R", "Invalid configuration"
+
+        echo "Simplex dimensions:"
+        let dim = readLine(stdin).parseInt() 
+
+        if config[0]=='R':
+            echo "Number of samples:"
+            let sampleN = readLine(stdin).parseInt()
+            assert sampleN > 0, "Invalid sample number. Must be a positive integer"
+            echo simplex_sampling_hed(dim, sampleN)
+            quit(0)
+
+        echo "N divisions:"
+        let ndiv = readLine(stdin).parseInt() 
+
+        taskRouter(config, dim, ndiv)
+
+    # Configured
+    if args[0] == "-c" or args[0] == "--config":
+        let config = args[1]
+        assert config.len == 3 or config=="R", "Invalid configuration"
+
+        let dim = args[2].parseInt()
+        assert dim > 0, "Invalid dimension"
+
+        if config[0]=='R':
+            let sampleN = args[3].parseInt()
+            assert sampleN > 0, "Invalid sample number. Must be a positive integer"
+            echo simplex_sampling_hed(dim, sampleN)
+            quit(0)
+        
+        let ndiv = args[3].parseInt()
+
+        taskRouter(config, dim, ndiv)
+
+    # Fallback
+    else:
+        echoHelp()
+        quit(1)
