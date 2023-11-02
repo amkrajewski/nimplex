@@ -169,6 +169,7 @@ when isMainModule:
     # Configured
     elif args[0] == "-c" or args[0] == "--config":
         let config = args[1]
+        echo "Running with configuration:", args[1..<args.len]
         assert config.len == 3 or config=="R", "Invalid configuration"
 
         let dim = args[2].parseInt()
