@@ -131,6 +131,14 @@ proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
             echo "Invalid configuration (in the first 2 letters)"
             quit(1)
 
+proc configValidation(config: string) = 
+    assert config.len == 3 or config=="R", "Invalid configuration lenght. Must be 3 letters or R for random sampling."
+    assert config[0] in @['F', 'I', 'R'], "Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, or Random uniform sampling respectively"
+    if config == "R":
+        return
+    assert config[1] in @['F', 'I'], "Invalid configuration (in the 2nd letter). Must be F, I or R for Fractional grid, Integer grid."
+    assert config[2] in @['F', 'S', 'N'], "Invalid configuration (in the 3rd letter). Must be F, S or N for Full, Shape or NumPy Output respectively"
+
 when isMainModule:
     let args = commandLineParams()
 
@@ -138,9 +146,8 @@ when isMainModule:
     if args.len == 0:
         echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
         let config = readLine(stdin)
-
-        assert config.len == 3 or config=="R", "Invalid configuration"
-
+        configValidation(config)
+        
         echo "Simplex dimensions:"
         let dim = readLine(stdin).parseInt() 
 
@@ -168,7 +175,7 @@ when isMainModule:
     elif args[0] == "-c" or args[0] == "--config":
         let config = args[1]
         echo "Running with configuration:", args[1..<args.len]
-        assert config.len == 3 or config=="R", "Invalid configuration"
+        configValidation(config)
 
         let dim = args[2].parseInt()
         assert dim > 0, "Invalid dimension"
