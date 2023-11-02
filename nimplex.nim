@@ -182,8 +182,14 @@ when isMainModule:
             quit(0)
         
         let ndiv = args[3].parseInt()
+        
+        var npyName = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+        if config[2] == 'N':
+            if args.len == 5:
+                npyName = args[4]
+            echo "Persisting to NumPy array file:", npyName
 
-        taskRouter(config, dim, ndiv)
+        taskRouter(config, dim, ndiv, npyName)
 
     elif args[0] == "-h" or args[0] == "--help":
         echoHelp()
