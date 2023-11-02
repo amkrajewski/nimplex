@@ -96,13 +96,11 @@ To run the program either (1) provide no arguments and follow the prompts or
         - F: Full grid (present the full result)
         - S: Shape (only the shape / size information)
         - N: Persist to NumPy array file ("nimplex_<configFlags>.npy" or 
-             custom path as additonal argument)
+             optionally a custom path as an additonal argument)
 
     followed by 2 integers of simplex dimensions and number of divisions, like:
         -c FFF [simplex dimension] [number of divisions]
-        -c IIF [simplex dimension] [number of divisions]
-        -c FIN [simplex dimension] [number of divisions] [path/to/file.npy]
-    
+        -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
 """
 
 proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
