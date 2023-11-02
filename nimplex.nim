@@ -105,7 +105,7 @@ To run the program either (1) provide no arguments and follow the prompts or
     
 """
 
-proc taskRouter(config: string, dim: int, ndiv: int) =
+proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
     let mainConfig = config[0..1]
     assert config[2] == 'F' or config[2] == 'S', "Invalid configuration (in the 3rd letter)"
     case mainConfig:
@@ -156,7 +156,15 @@ when isMainModule:
         echo "N divisions:"
         let ndiv = readLine(stdin).parseInt() 
 
-        taskRouter(config, dim, ndiv)
+        var npyName = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+        if config[2] == 'N':
+            echo "NumPy Array Filename (skip for default: " & npyName & "):"
+            let tempIn = readLine(stdin)
+            if tempIn.len > 0:
+                npyName = tempIn
+            echo "Persisting to NumPy array file:", npyName
+
+        taskRouter(config, dim, ndiv, npyName)
 
     # Configured
     elif args[0] == "-c" or args[0] == "--config":
