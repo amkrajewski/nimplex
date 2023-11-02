@@ -105,7 +105,7 @@ To run the program either (1) provide no arguments and follow the prompts or
 
 proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
     let mainConfig = config[0..1]
-    assert config[2] == 'F' or config[2] == 'S', "Invalid configuration (in the 3rd letter)"
+
     case mainConfig:
         of "FF":
             let temp = simplex_grid_fractional(dim, ndiv)
