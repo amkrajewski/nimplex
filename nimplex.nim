@@ -3,10 +3,11 @@
 from std/math import binom, ln
 import std/sugar
 import std/os
+import std/times
+import std/strutils
 
 import arraymancer/Tensor
 import arraymancer/io
-import strutils
 
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
@@ -86,7 +87,7 @@ template benchmark(benchmarkName: string, code: untyped) =
 
 proc echoHelp*() = echo """
 
-To run the program either (1) provide no arguments and follow the prompts or 
+To run nimplex please either (1) provide no arguments and follow the prompts or 
 (2) use "-c" or "--config" to provide the configuration per instructions below:
 
 - Provide the 3-letter configuration for task type:
@@ -109,6 +110,11 @@ To run the program either (1) provide no arguments and follow the prompts or
     -c FFS [simplex dimension] [number of divisions]
     -c RFP [simplex dimension] [number of samples]
     -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
+
+You can also utilize the following auxiliary flags:
+--help       | -h   --> Show help.
+--benchmark  | -b   --> Run benchmark for all tasks (9-dimensional space
+                        with 12 divisions per dimension / 1M random samples).
 """
 
 proc outFunction(config: string, dim: int, ndiv: int, npyName: string, result: Tensor) =
