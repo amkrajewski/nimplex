@@ -80,16 +80,14 @@ proc simplex_sampling_hed(dim: int,
 proc echoHelp*() = echo """
 
 To run the program either (1) provide no arguments and follow the prompts or 
-(2) use "-c" or "--config" to provide the configuration.
+(2) use "-c" or "--config" to provide the configuration per instructions below:
 
-- For uniform random sampling, provide "R" and:
-    -c R [simplex dimension] [number of samples]
-
-- For a grid, provide the 3-letter configuration:
-    1. Full or Internal grid:
+- Provide the 3-letter configuration for task type:
+    1. Grid type or uniform random sampling:
         - F: Full grid (including the simplex boundary)
         - I: Internal grid (only points inside the simplex)
-    2. Fractional or Integer grid:
+        - R: Random uniform sampling using hypercube exponential sampling.
+    2. Fractional or Integer positions:
         - F: Fractional grid (points are normalized to fractions of 1)
         - I: Integer grid (points are integers)
     3. Full or Shape:
@@ -98,9 +96,12 @@ To run the program either (1) provide no arguments and follow the prompts or
         - N: Persist to NumPy array file ("nimplex_<configFlags>.npy" or 
              optionally a custom path as an additonal argument)
 
-    followed by 2 integers of simplex dimensions and number of divisions, like:
-        -c FFF [simplex dimension] [number of divisions]
-        -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
+- Followed by integers of (1) simplex dimension and (2) number of divisions or
+  samples depending on the task type. Optionally, custom output file path for 
+  NumPy array can be provided as the last argument. E.g.:
+    -c FFF [simplex dimension] [number of divisions]
+    -c RFF [simplex dimension] [number of samples]
+    -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
 """
 
 proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
