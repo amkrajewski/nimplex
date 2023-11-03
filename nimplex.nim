@@ -116,17 +116,17 @@ proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
             let temp = simplex_grid(dim, ndiv)
             if config[2] == 'F':
                 echo "Full grid:", temp
-            echo "Full grid size:", temp.shape[0]
+            echo "Full grid size:", temp.shape
         of "IF":
             let temp = simplex_internal_grid_fractional(dim, ndiv)
             if config[2] == 'F':
                 echo "Full grid:", temp
-            echo "Full grid size:", temp.shape[0]
+            echo "Full grid size:", temp.shape
         of "II":
             let temp = simplex_internal_grid(dim, ndiv)
             if config[2] == 'F':
                 echo "Full grid:", temp
-            echo "Full grid size:", temp.shape[0]
+            echo "Full grid size:", temp.shape
         else:
             echo "\n--> Invalid configuration (in the first 2 letters)."
             quit(1)
