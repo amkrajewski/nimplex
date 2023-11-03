@@ -103,7 +103,7 @@ To run the program either (1) provide no arguments and follow the prompts or
         -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
 """
 
-proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
+proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
     let mainConfig = config[0..1]
 
     case mainConfig:
@@ -176,7 +176,7 @@ when isMainModule:
                 npyName = tempIn
             echo "Persisting to NumPy array file:", npyName
 
-        taskRouter(config, dim, ndiv, npyName)
+        taskRouterGrid(config, dim, ndiv, npyName)
 
     # Configured
     elif args[0] == "-c" or args[0] == "--config":
@@ -203,7 +203,7 @@ when isMainModule:
                 npyName = args[4]
             echo "Persisting to NumPy array file:", npyName
 
-        taskRouter(config, dim, ndiv, npyName)
+        taskRouterGrid(config, dim, ndiv, npyName)
 
     elif args[0] == "-h" or args[0] == "--help":
         echoHelp()
