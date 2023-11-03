@@ -129,20 +129,20 @@ proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
                 echo "Full grid:", temp
             echo "Full grid size:", temp.shape
         else:
-            echo "\n--> Invalid configuration (in the first 2 letters)."
+            echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
 
 proc configValidation(config: string) = 
-    assert config.len == 3 or config=="R", "\n--> Invalid configuration lenght. Must be 3 letters or R for random sampling."
+    assert config.len == 3, "\n--> Invalid configuration lenght. Must be 3 letters."
     assert config[0] in @['F', 'I', 'R'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, or Random uniform sampling respectively"
-    if config == "R":
-        return
-    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional grid, or Integer grid respectively"
+    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional positions, or Integer positions respectively"
+    if config[0] == 'R':
+        assert config[1] == 'F', "\n--> Integer positions not implemented for Random sampling. Must be F for Fractional positions."
     assert config[2] in @['F', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be F, S or N for Full, Shape or NumPy Output respectively"
 
 proc nDivValidation(config: string, nDiv: int, dim: int) = 
     if config[0] == 'I':
-            assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
+        assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
     else:
         assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
@@ -206,7 +206,7 @@ when isMainModule:
 
         taskRouterGrid(config, dim, ndiv, npyName)
 
-    elif args[0] == "-h" or args[0] == "--help":
+    elif args[0] in @["-h", "--help"]:
         echoHelp()
         quit(0)
 
