@@ -104,6 +104,13 @@ To run the program either (1) provide no arguments and follow the prompts or
     -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
 """
 
+proc outFunction(config: string, dim: int, ndiv: int, npyName: string, result: Tensor) =
+    case config[2]:
+        of 'F': echo "Full grid:", result
+        of 'N': result.write_npy(npyName)
+        else: discard #return nothing, just print the size
+    echo "Full grid size:", result.shape
+
 proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
     let mainConfig = config[0..1]
 
@@ -158,18 +165,17 @@ when isMainModule:
         echo "Simplex dimensions:"
         let dim = readLine(stdin).parseInt() 
 
+        var nDiv: int
         if config[0]=='R':
             echo "Number of samples:"
-            let sampleN = readLine(stdin).parseInt()
-            assert sampleN > 0, "\n--> Invalid number of samples. Must be a positive integer"
-            echo simplex_sampling_hed(dim, sampleN)
-            quit(0)
+            nDiv = readLine(stdin).parseInt()
+            assert nDiv > 0, "\n--> Invalid number of samples. Must be a positive integer"
+        else:
+            echo "N divisions:"
+            ndiv = readLine(stdin).parseInt() 
+            nDivValidation(config, ndiv, dim)
 
-        echo "N divisions:"
-        let ndiv = readLine(stdin).parseInt() 
-        nDivValidation(config, ndiv, dim)
-
-        var npyName = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+        var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
         if config[2] == 'N':
             echo "NumPy Array Filename (skip for default: " & npyName & "):"
             let tempIn = readLine(stdin)
@@ -188,17 +194,15 @@ when isMainModule:
         let dim = args[2].parseInt()
         assert dim > 0, "Invalid dimension"
 
+        var nDiv: int
         if config[0]=='R':
-            let sampleN = args[3].parseInt()
-            assert sampleN > 0, "\n--> Invalid sample number. Must be a positive integer"
-            echo simplex_sampling_hed(dim, sampleN)
-            quit(0)
-        
-        let ndiv = args[3].parseInt()
-        nDivValidation(config, ndiv, dim)
+            nDiv = args[3].parseInt()
+            assert nDiv > 0, "\n--> Invalid sample number. Must be a positive integer"
+        else:
+            ndiv = args[3].parseInt()
+            nDivValidation(config, ndiv, dim)
 
-        
-        var npyName = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+        var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
         if config[2] == 'N':
             if args.len == 5:
                 npyName = args[4]
