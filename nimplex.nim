@@ -4,7 +4,8 @@ from std/math import binom, ln
 import std/sugar
 import std/os
 
-import arraymancer
+import arraymancer/Tensor
+import arraymancer/io
 import strutils
 
 proc simplex_grid*(dim: int, 
