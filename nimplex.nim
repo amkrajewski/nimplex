@@ -91,8 +91,8 @@ To run the program either (1) provide no arguments and follow the prompts or
     2. Fractional or Integer positions:
         - F: Fractional grid (points are normalized to fractions of 1)
         - I: Integer grid (points are integers)
-    3. Full or Shape:
-        - F: Full grid (present the full result)
+    3. Print full result, its shape, or persist in a file:
+        - P: Print full grid (presents full result as a table)
         - S: Shape (only the shape / size information)
         - N: Persist to NumPy array file ("nimplex_<configFlags>.npy" or 
              optionally a custom path as an additonal argument)
@@ -100,17 +100,17 @@ To run the program either (1) provide no arguments and follow the prompts or
 - Followed by integers of (1) simplex dimension and (2) number of divisions or
   samples depending on the task type. Optionally, custom output file path for 
   NumPy array can be provided as the last argument. E.g.:
-    -c FFF [simplex dimension] [number of divisions]
-    -c RFF [simplex dimension] [number of samples]
+    -c FFS [simplex dimension] [number of divisions]
+    -c RFP [simplex dimension] [number of samples]
     -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
 """
 
 proc outFunction(config: string, dim: int, ndiv: int, npyName: string, result: Tensor) =
     case config[2]:
-        of 'F': echo "Full grid:", result
+        of 'P': echo "Full grid:", result
         of 'N': result.write_npy(npyName)
         else: discard #return nothing, just print the size
-    echo "Full grid size:", result.shape
+    echo "Full sampling shape:", result.shape
 
 proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
     case config[0..1]:
@@ -134,7 +134,7 @@ proc configValidation(config: string) =
     assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional positions, or Integer positions respectively"
     if config[0] == 'R':
         assert config[1] == 'F', "\n--> Integer positions not implemented for Random sampling. Must be F for Fractional positions."
-    assert config[2] in @['F', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be F, S or N for Full, Shape or NumPy Output respectively"
+    assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape, or persist Numpy output respectively"
 
 proc nDivValidation(config: string, nDiv: int, dim: int) = 
     if config[0] == 'I':
@@ -147,7 +147,7 @@ when isMainModule:
 
     # Interactive
     if args.len == 0:
-        echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
+        echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS or R:"
         let config = readLine(stdin)
         configValidation(config)
 
