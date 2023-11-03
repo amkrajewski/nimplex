@@ -78,6 +78,12 @@ proc simplex_sampling_hed(dim: int,
     let sums = hypercubesample.sum(axis=1)
     result = hypercubesample /. sums
 
+template benchmark(benchmarkName: string, code: untyped) =
+    block:
+        let t0 = epochTime()
+        code
+        echo "Task Time: " & $initDuration(microseconds = ((epochTime() - t0)*1e6).int) & "\n"
+
 proc echoHelp*() = echo """
 
 To run the program either (1) provide no arguments and follow the prompts or 
@@ -202,6 +208,14 @@ when isMainModule:
     elif args[0] in @["-h", "--help"]:
         echoHelp()
         quit(0)
+
+    elif args[0] in @["-b", "--benchmark"]:
+        benchmark "Simplex Grid Full (dim=9, ndiv=12):":
+            discard simplex_grid(9, 12)
+        benchmark "Simplex Grid Internal (dim=9, ndiv=12):":
+            discard simplex_internal_grid(9, 12)
+        benchmark "Simplex Random Sampling (dim=9, samples=1M):":
+            discard simplex_sampling_hed(9, 1_000_000)
 
     # Fallback
     else:
