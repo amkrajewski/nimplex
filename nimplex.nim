@@ -128,16 +128,22 @@ proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
                 echo "Full grid:", temp
             echo "Full grid size:", temp.shape[0]
         else:
-            echo "Invalid configuration (in the first 2 letters)"
+            echo "\n--> Invalid configuration (in the first 2 letters)."
             quit(1)
 
 proc configValidation(config: string) = 
-    assert config.len == 3 or config=="R", "Invalid configuration lenght. Must be 3 letters or R for random sampling."
-    assert config[0] in @['F', 'I', 'R'], "Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, or Random uniform sampling respectively"
+    assert config.len == 3 or config=="R", "\n--> Invalid configuration lenght. Must be 3 letters or R for random sampling."
+    assert config[0] in @['F', 'I', 'R'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, or Random uniform sampling respectively"
     if config == "R":
         return
-    assert config[1] in @['F', 'I'], "Invalid configuration (in the 2nd letter). Must be F, I or R for Fractional grid, Integer grid."
-    assert config[2] in @['F', 'S', 'N'], "Invalid configuration (in the 3rd letter). Must be F, S or N for Full, Shape or NumPy Output respectively"
+    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, I or R for Fractional grid, Integer grid."
+    assert config[2] in @['F', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be F, S or N for Full, Shape or NumPy Output respectively"
+
+proc nDivValidation(config: string, nDiv: int, dim: int) = 
+    if config[0] == 'I':
+            assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
+    else:
+        assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
 when isMainModule:
     let args = commandLineParams()
@@ -147,19 +153,20 @@ when isMainModule:
         echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Full/Shape) - e.g. FFS or R:"
         let config = readLine(stdin)
         configValidation(config)
-        
+
         echo "Simplex dimensions:"
         let dim = readLine(stdin).parseInt() 
 
         if config[0]=='R':
             echo "Number of samples:"
             let sampleN = readLine(stdin).parseInt()
-            assert sampleN > 0, "Invalid sample number. Must be a positive integer"
+            assert sampleN > 0, "\n--> Invalid number of samples. Must be a positive integer"
             echo simplex_sampling_hed(dim, sampleN)
             quit(0)
 
         echo "N divisions:"
         let ndiv = readLine(stdin).parseInt() 
+        nDivValidation(config, ndiv, dim)
 
         var npyName = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
         if config[2] == 'N':
@@ -182,11 +189,13 @@ when isMainModule:
 
         if config[0]=='R':
             let sampleN = args[3].parseInt()
-            assert sampleN > 0, "Invalid sample number. Must be a positive integer"
+            assert sampleN > 0, "\n--> Invalid sample number. Must be a positive integer"
             echo simplex_sampling_hed(dim, sampleN)
             quit(0)
         
         let ndiv = args[3].parseInt()
+        nDivValidation(config, ndiv, dim)
+
         
         var npyName = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
         if config[2] == 'N':
