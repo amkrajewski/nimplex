@@ -136,7 +136,7 @@ proc configValidation(config: string) =
     assert config[0] in @['F', 'I', 'R'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, or Random uniform sampling respectively"
     if config == "R":
         return
-    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, I or R for Fractional grid, Integer grid."
+    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional grid, or Integer grid respectively"
     assert config[2] in @['F', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be F, S or N for Full, Shape or NumPy Output respectively"
 
 proc nDivValidation(config: string, nDiv: int, dim: int) = 
