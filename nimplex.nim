@@ -112,29 +112,17 @@ proc outFunction(config: string, dim: int, ndiv: int, npyName: string, result: T
     echo "Full grid size:", result.shape
 
 proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
-    let mainConfig = config[0..1]
-
-    case mainConfig:
-        of "FF":
-            let temp = simplex_grid_fractional(dim, ndiv)
-            if config[2] == 'F':
-                echo "Full grid:", temp
-            echo "Full grid size:", temp.shape[0]
-        of "FI":
-            let temp = simplex_grid(dim, ndiv)
-            if config[2] == 'F':
-                echo "Full grid:", temp
-            echo "Full grid size:", temp.shape
-        of "IF":
-            let temp = simplex_internal_grid_fractional(dim, ndiv)
-            if config[2] == 'F':
-                echo "Full grid:", temp
-            echo "Full grid size:", temp.shape
-        of "II":
-            let temp = simplex_internal_grid(dim, ndiv)
-            if config[2] == 'F':
-                echo "Full grid:", temp
-            echo "Full grid size:", temp.shape
+    case config[0..1]:
+        of "FF": outFunction(config, dim, ndiv, npyName, 
+                             simplex_grid_fractional(dim, ndiv))
+        of "FI": outFunction(config, dim, ndiv, npyName, 
+                             simplex_grid(dim, ndiv))
+        of "IF": outFunction(config, dim, ndiv, npyName, 
+                             simplex_internal_grid_fractional(dim, ndiv))
+        of "II": outFunction(config, dim, ndiv, npyName, 
+                             simplex_internal_grid(dim, ndiv))
+        of "RF": outFunction(config, dim, ndiv, npyName, 
+                             simplex_sampling_hed(dim, samples=ndiv))
         else:
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
