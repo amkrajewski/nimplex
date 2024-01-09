@@ -12,6 +12,7 @@ import arraymancer/io
 import nimpy
 
 # GRID
+
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
     # L is the total number of unique points in the simplex grid, which we know a priori
@@ -78,6 +79,7 @@ proc simplex_internal_grid_fractional*(dim: int,
 proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_internal_grid_fractional(dim, ndiv).toSeq2D()
 
 # RANDOM SAMPLING
+
 proc simplex_sampling_mc(dim: int,
                           samples: int): Tensor[float] =
     let neglograndom = randomTensor[float](
@@ -90,6 +92,7 @@ proc simplex_sampling_mc(dim: int,
 proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = simplex_sampling_mc(dim, samples).toSeq2D() 
 
 # GRAPH
+
 proc simplex_graph_3C*(
     ndiv: int): (Tensor[int], seq[seq[int]]) =
 
@@ -208,6 +211,7 @@ proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[se
     return (graph[0].toSeq2D(), graph[1])
 
 # UTILS
+
 template benchmark(benchmarkName: string, code: untyped) =
     block:
         let t0 = epochTime()
@@ -227,8 +231,8 @@ To run nimplex please either (1) provide no arguments and follow the prompts or
         - R: Random/Monte Carlo uniform sampling over simplex.
         - G: Graph (list of grid nodes and list of their neighbors)
     2. Fractional or Integer positions:
-        - F: Fractional grid (points are normalized to fractions of 1)
-        - I: Integer grid (points are integers)
+        - F: Fractional grid/graph (points are normalized to fractions of 1)
+        - I: Integer grid/graph (points are integers)
     3. Print full result, its shape, or persist in a file:
         - P: Print full grid (presents full result as a table)
         - S: Shape (only the shape / size information)
@@ -247,6 +251,20 @@ You can also utilize the following auxiliary flags:
 --benchmark  | -b   --> Run benchmark for all tasks (9-dimensional space
                         with 12 divisions per dimension / 1M random samples).
 """
+
+proc configValidation(config: string) = 
+    assert config.len == 3, "\n--> Invalid configuration lenght. Must be 3 letters."
+    assert config[0] in @['F', 'I', 'R', 'G'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, Monte Carlo sampling, or Graph respectively"
+    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional positions, or Integer positions respectively"
+    if config[0] == 'R':
+        assert config[1] == 'F', "\n--> Integer positions not implemented for Random sampling. Must be F for Fractional positions."
+    assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape, or persist Numpy output respectively"
+
+proc nDivValidation(config: string, nDiv: int, dim: int) = 
+    if config[0] == 'I':
+        assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
+    else:
+        assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
 proc outFunction(config: string, dim: int, ndiv: int, npyName: string, result: Tensor) =
     case config[2]:
@@ -271,19 +289,7 @@ proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
 
-proc configValidation(config: string) = 
-    assert config.len == 3, "\n--> Invalid configuration lenght. Must be 3 letters."
-    assert config[0] in @['F', 'I', 'R'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, or Random uniform sampling respectively"
-    assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional positions, or Integer positions respectively"
-    if config[0] == 'R':
-        assert config[1] == 'F', "\n--> Integer positions not implemented for Random sampling. Must be F for Fractional positions."
-    assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape, or persist Numpy output respectively"
 
-proc nDivValidation(config: string, nDiv: int, dim: int) = 
-    if config[0] == 'I':
-        assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
-    else:
-        assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
 when isMainModule:
     let args = commandLineParams()
