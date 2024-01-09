@@ -95,10 +95,10 @@ proc simplex_graph_3C*(
     ndiv: int): (Tensor[int], seq[seq[int]]) =
 
     # L is the total number of unique points in the simplex grid, which we know a priori
-    let L: int = binom(ndiv+dim-1, dim-1)
-    var nodes = newTensor[int]([L, dim])
+    let L: int = binom(ndiv+2, 2)
+    var nodes = newTensor[int]([L, 3])
     var neighbors = newSeq[seq[int]](L)
-    var x = zeros[int](dim)
+    var x = zeros[int](3)
 
     func neighborsLink(i:int, x:Tensor, ndiv:int): seq[int] =
         let jump0 = 1
@@ -115,10 +115,10 @@ proc simplex_graph_3C*(
             result.add(i+jump1)
         return result
 
-    x[dim-1] = ndiv
-    for j in 0..dim-1:
+    x[2] = ndiv
+    for j in 0..2:
         nodes[0, j] = x[j]
-    var h = dim
+    var h = 3
 
     neighbors[0] = neighborsLink(0, x, ndiv)
 
@@ -126,17 +126,17 @@ proc simplex_graph_3C*(
         h -= 1
         let val = x[h]
         x[h] = 0
-        x[dim-1] = val - 1
+        x[2] = val - 1
         x[h-1] += 1
-        for j in 0..dim-1:
+        for j in 0..2:
             nodes[i, j] = x[j]
         neighbors[i] = neighborsLink(i, x, ndiv)
         if val != 1:
-            h = dim
+            h = 3
     return (nodes, neighbors)
 
-proc simplex_graph_3C_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
-    let graph = simplex_graph_3C(dim, ndiv)
+proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
+    let graph = simplex_graph_3C(ndiv)
     return (graph[0].toSeq2D(), graph[1])
 
 proc simplex_graph*(
