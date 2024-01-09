@@ -203,6 +203,9 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
     nodes = nodes.map(x => x / float(ndiv))
     return (nodes, graph[1])
 
+proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
+    let graph = simplex_graph_fractional(dim, ndiv)
+    return (graph[0].toSeq2D(), graph[1])
 
 # UTILS
 template benchmark(benchmarkName: string, code: untyped) =
