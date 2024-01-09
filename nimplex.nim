@@ -1,4 +1,6 @@
 # Copyrigth (C) 2023 Adam M. Krajewski
+{.passC: "-flto -ffast-math".} 
+{.passL: "-flto".} 
 
 from std/math import binom, ln
 import std/sugar
@@ -324,26 +326,26 @@ when isMainModule:
 
     # Interactive
     if args.len == 0:
-        echo "Configuration (Full/Internal/Random)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS or R:"
+        echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
         let config = readLine(stdin)
         configValidation(config)
 
-        echo "Simplex dimensions:"
+        echo "Simplex Dimensions / N of Components:"
         let dim = readLine(stdin).parseInt() 
 
         var nDiv: int
         if config[0]=='R':
-            echo "Number of samples:"
+            echo "Number of Samples:"
             nDiv = readLine(stdin).parseInt()
             assert nDiv > 0, "\n--> Invalid number of samples. Must be a positive integer"
         else:
-            echo "N divisions:"
+            echo "N Divisions per Dimension:"
             ndiv = readLine(stdin).parseInt() 
             nDivValidation(config, ndiv, dim)
 
         var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
         if config[2] == 'N':
-            echo "NumPy Array Filename (skip for default: " & npyName & "):"
+            echo "NumPy Array Output Filename (skip for default: " & npyName & "):"
             let tempIn = readLine(stdin)
             if tempIn.len > 0:
                 npyName = tempIn
