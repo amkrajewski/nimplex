@@ -197,6 +197,12 @@ proc simplex_graph_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {.ex
     let graph = simplex_graph(dim, ndiv)
     return (graph[0].toSeq2D(), graph[1])
 
+proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int]]) =
+    let graph = simplex_graph(dim, ndiv)
+    var nodes = graph[0].asType(float)
+    nodes = nodes.map(x => x / float(ndiv))
+    return (nodes, graph[1])
+
 
 # UTILS
 template benchmark(benchmarkName: string, code: untyped) =
