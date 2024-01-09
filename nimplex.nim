@@ -144,6 +144,9 @@ proc simplex_graph_3C_fractional*(ndiv: int): (Tensor[float], seq[seq[int]]) =
     nodes = nodes.map(x => x / float(ndiv))
     return (nodes, graph[1])
 
+proc simplex_graph_3C_fractional_py*(ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
+    let graph = simplex_graph_3C_fractional(ndiv)
+    return (graph[0].toSeq2D(), graph[1])
 
 proc simplex_graph*(
     dim: int, 
