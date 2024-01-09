@@ -135,6 +135,11 @@ proc simplex_graph_3C*(
             h = dim
     return (result1, neighbors)
 
+proc simplex_graph_3C_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
+    let graph = simplex_graph_3C(dim, ndiv)
+    return (graph[0].toSeq2D(), graph[1])
+
+
 
 # UTILS
 template benchmark(benchmarkName: string, code: untyped) =
