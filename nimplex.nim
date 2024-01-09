@@ -309,6 +309,10 @@ proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
                              simplex_internal_grid(dim, ndiv))
         of "RF": outFunction(config, dim, ndiv, npyName, 
                              simplex_sampling_mc(dim, samples=ndiv))
+        of "GI": outFunction_graph(config, dim, ndiv, npyName, 
+                                   simplex_graph(dim, ndiv))
+        of "GF": outFunction_graph(config, dim, ndiv, npyName, 
+                                   simplex_graph_fractional(dim, ndiv))
         else:
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
