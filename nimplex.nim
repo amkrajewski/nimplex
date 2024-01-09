@@ -184,6 +184,9 @@ proc simplex_graph*(
             h = dim
     return (nodes, neighbors)
 
+proc simplex_graph_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
+    let graph = simplex_graph(dim, ndiv)
+    return (graph[0].toSeq2D(), graph[1])
 
 
 # UTILS
