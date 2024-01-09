@@ -234,7 +234,7 @@ To run nimplex please either (1) provide no arguments and follow the prompts or
         - F: Fractional grid/graph (points are normalized to fractions of 1)
         - I: Integer grid/graph (points are integers)
     3. Print full result, its shape, or persist in a file:
-        - P: Print full grid (presents full result as a table)
+        - P: Print (presents full result as a table)
         - S: Shape (only the shape / size information)
         - N: Persist to NumPy array file ("nimplex_<configFlags>.npy" or 
              optionally a custom path as an additonal argument)
@@ -266,12 +266,36 @@ proc nDivValidation(config: string, nDiv: int, dim: int) =
     else:
         assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
-proc outFunction(config: string, dim: int, ndiv: int, npyName: string, result: Tensor) =
+proc outFunction(config: string, dim: int, ndiv: int, npyName: string, outputData: Tensor) =
     case config[2]:
-        of 'P': echo "Full grid:", result
-        of 'N': result.write_npy(npyName)
+        of 'P': echo "Full Output:", outputData
+        of 'N': outputData.write_npy(npyName)
         else: discard #return nothing, just print the size
-    echo "Full sampling shape:", result.shape
+    echo "Full shape:", outputData.shape
+
+
+proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, outputData: (Tensor, seq)) =
+    case config[2]:
+        of 'P': 
+            echo "Nodes:"
+            echo outputData[0]
+            echo "Neighbors:"
+            echo outputData[1]
+        of 'N': 
+            outputData[0].write_npy(npyName.replace(".npy", "_nodes.npy"))
+            let 
+                maxNeighbors = dim*(dim-1)
+                L = binom(ndiv+dim-1, dim-1)
+            var neighborsTensor = newTensor[int]([L, maxNeighbors])
+            for i in 0..<L:
+                for j in 0..<maxNeighbors:
+                    if j < outputData[1][i].len:
+                        neighborsTensor[i, j] = outputData[1][i][j]
+                    else:
+                        neighborsTensor[i, j] = -1
+            neighborsTensor.write_npy(npyName.replace(".npy", "_neighbors.npy"))
+        else: discard #return nothing, just print the size
+    echo "Full shape (nodes):", outputData[0].shape
 
 proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
     case config[0..1]:
