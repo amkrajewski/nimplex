@@ -11,6 +11,7 @@ import arraymancer/io
 
 import nimpy
 
+# GRID
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
     # L is the total number of unique points in the simplex grid, which we know a priori
@@ -76,6 +77,7 @@ proc simplex_internal_grid_fractional*(dim: int,
 
 proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_internal_grid_fractional(dim, ndiv).toSeq2D()
 
+# RANDOM SAMPLING
 proc simplex_sampling_mc(dim: int,
                           samples: int): Tensor[float] =
     let neglograndom = randomTensor[float](
@@ -85,8 +87,56 @@ proc simplex_sampling_mc(dim: int,
     let sums = neglograndom.sum(axis=1)
     result = neglograndom /. sums
 
-proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = simplex_sampling_mc(dim, samples).toSeq2D()    
+proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = simplex_sampling_mc(dim, samples).toSeq2D() 
 
+# GRAPH
+proc simplex_graph_3C*(
+    dim: int, 
+    ndiv: int): (Tensor[int], seq[seq[int]]) =
+
+    # L is the total number of unique points in the simplex grid, which we know a priori
+    let L: int = binom(ndiv+dim-1, dim-1)
+    var result1 = newTensor[int]([L, dim])
+    var neighbors = newSeq[seq[int]](L)
+    var x = zeros[int](dim)
+
+    func neighborsLink(i:int, x:Tensor, ndiv:int): seq[int] =
+        let jump0 = 1
+        let jump1 = 1+ndiv-x[0]
+
+        if x[0] != 0:
+            result.add(i-jump1)
+            result.add(i-jump1-jump0)
+        if x[1] != 0:
+            result.add(i-jump0)
+            result.add(i+jump1-jump0)
+        if x[2] != 0:
+            result.add(i+jump0)
+            result.add(i+jump1)
+        return result
+
+    x[dim-1] = ndiv
+    for j in 0..dim-1:
+        result1[0, j] = x[j]
+    var h = dim
+
+    neighbors[0] = neighborsLink(0, x, ndiv)
+
+    for i in 1..L-1:
+        h -= 1
+        let val = x[h]
+        x[h] = 0
+        x[dim-1] = val - 1
+        x[h-1] += 1
+        for j in 0..dim-1:
+            result1[i, j] = x[j]
+        neighbors[i] = neighborsLink(i, x, ndiv)
+        if val != 1:
+            h = dim
+    return (result1, neighbors)
+
+
+# UTILS
 template benchmark(benchmarkName: string, code: untyped) =
     block:
         let t0 = epochTime()
