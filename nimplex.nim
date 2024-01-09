@@ -35,13 +35,13 @@ proc simplex_grid*(dim: int,
 
 proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = simplex_grid(dim, ndiv).toSeq2D()
 
-
 proc simplex_grid_fractional*(dim: int,
                               ndiv: int): Tensor[float] =
-
     result = simplex_grid(dim, ndiv).asType(float)
     result = result.map(x => x / float(ndiv))
     return result
+
+proc simplex_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_grid_fractional(dim, ndiv).toSeq2D()
 
 proc simplex_internal_grid*(dim: int, 
                             ndiv: int): Tensor[int] =
