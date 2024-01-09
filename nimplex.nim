@@ -74,6 +74,8 @@ proc simplex_internal_grid_fractional*(dim: int,
     result = result.map(x => x / float(ndiv))
     return result
 
+proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_internal_grid_fractional(dim, ndiv).toSeq2D()
+
 proc simplex_sampling_hed(dim: int,
                           samples: int): Tensor[float] =
     let hypercubesample = randomTensor[float](
