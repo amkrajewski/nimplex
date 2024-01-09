@@ -9,9 +9,10 @@ import std/strutils
 import arraymancer/Tensor
 import arraymancer/io
 
+import nimpy
+
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
-
     # L is the total number of unique points in the simplex grid, which we know a priori
     let L: int = binom(ndiv+dim-1, dim-1)
     result = newTensor[int]([L, dim])
@@ -31,6 +32,8 @@ proc simplex_grid*(dim: int,
         if val != 1:
             h = dim
     return result
+
+proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = simplex_grid(dim, ndiv).toSeq2D()
 
 
 proc simplex_grid_fractional*(dim: int,
