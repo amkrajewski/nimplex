@@ -78,12 +78,12 @@ proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] 
 
 proc simplex_sampling_mc(dim: int,
                           samples: int): Tensor[float] =
-    let hypercubesample = randomTensor[float](
+    let neglograndom = randomTensor[float](
         [samples, dim], 
         1.0
         ).map(x => -ln(x))
-    let sums = hypercubesample.sum(axis=1)
-    result = hypercubesample /. sums
+    let sums = neglograndom.sum(axis=1)
+    result = neglograndom /. sums
 
 template benchmark(benchmarkName: string, code: untyped) =
     block:
