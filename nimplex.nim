@@ -76,7 +76,7 @@ proc simplex_internal_grid_fractional*(dim: int,
 
 proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_internal_grid_fractional(dim, ndiv).toSeq2D()
 
-proc simplex_sampling_hed(dim: int,
+proc simplex_sampling_mc(dim: int,
                           samples: int): Tensor[float] =
     let hypercubesample = randomTensor[float](
         [samples, dim], 
@@ -100,7 +100,7 @@ To run nimplex please either (1) provide no arguments and follow the prompts or
     1. Grid type or uniform random sampling:
         - F: Full grid (including the simplex boundary)
         - I: Internal grid (only points inside the simplex)
-        - R: Random uniform sampling using hypercube exponential sampling.
+        - R: Random/Monte Carlo uniform sampling over simplex.
     2. Fractional or Integer positions:
         - F: Fractional grid (points are normalized to fractions of 1)
         - I: Integer grid (points are integers)
@@ -141,7 +141,7 @@ proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
         of "II": outFunction(config, dim, ndiv, npyName, 
                              simplex_internal_grid(dim, ndiv))
         of "RF": outFunction(config, dim, ndiv, npyName, 
-                             simplex_sampling_hed(dim, samples=ndiv))
+                             simplex_sampling_mc(dim, samples=ndiv))
         else:
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
@@ -227,7 +227,7 @@ when isMainModule:
         benchmark "Simplex Grid Internal (dim=9, ndiv=12):":
             discard simplex_internal_grid(9, 12)
         benchmark "Simplex Random Sampling (dim=9, samples=1M):":
-            discard simplex_sampling_hed(9, 1_000_000)
+            discard simplex_sampling_mc(9, 1_000_000)
 
     # Fallback
     else:
