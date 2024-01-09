@@ -138,6 +138,13 @@ proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.
     let graph = simplex_graph_3C(ndiv)
     return (graph[0].toSeq2D(), graph[1])
 
+proc simplex_graph_3C_fractional*(ndiv: int): (Tensor[float], seq[seq[int]]) =
+    let graph = simplex_graph_3C(ndiv)
+    var nodes = graph[0].asType(float)
+    nodes = nodes.map(x => x / float(ndiv))
+    return (nodes, graph[1])
+
+
 proc simplex_graph*(
     dim: int, 
     ndiv: int): (Tensor[int], seq[seq[int]]) =
@@ -206,6 +213,7 @@ To run nimplex please either (1) provide no arguments and follow the prompts or
         - F: Full grid (including the simplex boundary)
         - I: Internal grid (only points inside the simplex)
         - R: Random/Monte Carlo uniform sampling over simplex.
+        - G: Graph (list of grid nodes and list of their neighbors)
     2. Fractional or Integer positions:
         - F: Fractional grid (points are normalized to fractions of 1)
         - I: Integer grid (points are integers)
