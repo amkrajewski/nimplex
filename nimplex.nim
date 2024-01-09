@@ -45,7 +45,6 @@ proc simplex_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportp
 
 proc simplex_internal_grid*(dim: int, 
                             ndiv: int): Tensor[int] =
-
     # L is the total number of unique points inside the simplex grid, which we know a priori
     let L: int = binom(ndiv-1, dim-1)
     result = newTensor[int]([L, dim])
@@ -65,6 +64,8 @@ proc simplex_internal_grid*(dim: int,
         if val != 2:
             h = dim
     return result
+
+proc simplex_internal_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = simplex_internal_grid(dim, ndiv).toSeq2D()
 
 proc simplex_internal_grid_fractional*(dim: int,
                                        ndiv: int): Tensor[float] =
