@@ -85,6 +85,8 @@ proc simplex_sampling_mc(dim: int,
     let sums = neglograndom.sum(axis=1)
     result = neglograndom /. sums
 
+proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = simplex_sampling_mc(dim, samples).toSeq2D()    
+
 template benchmark(benchmarkName: string, code: untyped) =
     block:
         let t0 = epochTime()
