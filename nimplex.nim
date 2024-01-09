@@ -91,7 +91,6 @@ proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy
 
 # GRAPH
 proc simplex_graph_3C*(
-    dim: int, 
     ndiv: int): (Tensor[int], seq[seq[int]]) =
 
     # L is the total number of unique points in the simplex grid, which we know a priori
@@ -333,6 +332,12 @@ when isMainModule:
             discard simplex_internal_grid(9, 12)
         benchmark "Simplex Random Sampling (dim=9, samples=1M):":
             discard simplex_sampling_mc(9, 1_000_000)
+        benchmark "Simplex Graph (dim=9, ndiv=12):":
+            discard simplex_graph(9, 12)
+        benchmark "Simplex Graph ND (dim=3, ndiv=1000):":
+            discard simplex_graph(3, 1000)
+        benchmark "Simplex Graph 3D (dim=3, ndiv=1000):":
+            discard simplex_graph_3C(1000)
 
     # Fallback
     else:
