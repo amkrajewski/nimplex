@@ -139,6 +139,51 @@ proc simplex_graph_3C_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {
     let graph = simplex_graph_3C(dim, ndiv)
     return (graph[0].toSeq2D(), graph[1])
 
+proc simplex_graph*(
+    dim: int, 
+    ndiv: int): (Tensor[int], seq[seq[int]]) =
+
+    # L is the total number of unique points in the simplex grid, which we know a priori
+    let L: int = binom(ndiv+dim-1, dim-1)
+    var nodes = newTensor[int]([L, dim])
+    var neighbors = newSeq[seq[int]](L)
+    var x = zeros[int](dim)
+
+    proc neighborsLink(i:int, x:Tensor, ndiv:int, dim:int, 
+                       neighbors: var seq[seq[int]]): void =
+        var jumps = newSeq[int](dim-1)
+        jumps[0] = 1  #binom(x,0)=1
+        for j in 1..<(dim-1):
+            jumps[j] = binom(j+ndiv-sum(x[0..(dim-2-j)]), j)
+        var temp: int
+        for order in 0..(dim-2): 
+            temp = 0
+            if x[order] != 0:
+                for dir in 0..(dim-2-order): 
+                    temp += jumps[dim-2-order-dir]
+                    neighbors[i].add(i - temp)
+                    neighbors[i - temp].add(i)
+
+    x[dim-1] = ndiv
+    for j in 0..dim-1:
+        nodes[0, j] = x[j]
+    var h = dim
+
+    neighborsLink(0, x, ndiv, dim, neighbors)
+
+    for i in 1..L-1:
+        h -= 1
+        let val = x[h]
+        x[h] = 0
+        x[dim-1] = val - 1
+        x[h-1] += 1
+        for j in 0..dim-1:
+            nodes[i, j] = x[j]
+        neighborsLink(i, x, ndiv, dim, neighbors)
+        if val != 1:
+            h = dim
+    return (nodes, neighbors)
+
 
 
 # UTILS
