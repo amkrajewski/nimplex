@@ -3,6 +3,7 @@ import ../nimplex
 import arraymancer/Tensor
 import std/sequtils
 import std/sugar
+import std/sets
 
 # SMALL GRAPHS
 echo "*** SMALL GRAPHS ***"
@@ -161,3 +162,20 @@ suite "large simplex integer 3-component (ternary) graph":
     test "correct neighbors list for a cherry-picked node at index 123":
         check neighbors[123] == @[76, 75, 122, 124, 169, 170]
     
+suite "3C special case method agreement with general case":
+    let
+        ndiv = 200
+        (nodes1, neighbors1) = nimplex.simplex_graph(3, ndiv)
+        (nodes2, neighbors2) = nimplex.simplex_graph_3C(ndiv)
+
+    test "correct dimensionality of nodes/vertices for both methods":
+        check nodes1.shape[1] == 3
+        check nodes2.shape[1] == nodes1.shape[1]
+    test "correct number of nodes/vertices for both methods":
+        check nodes1.shape[0] == 20301
+        check nodes2.shape[0] == nodes1.shape[0]
+    test "both methods produce the same nodes/vertices":
+        check nodes1 == nodes2
+    test "both methods produce the same neighbors (in any order))":
+        for i in 0..<nodes1.shape[0]:
+            check neighbors1[i].toHashSet() == neighbors2[i].toHashSet()
