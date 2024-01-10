@@ -4,6 +4,8 @@ import arraymancer/Tensor
 import std/sequtils
 import std/sugar
 
+# SMALL GRAPHS
+
 suite "small simplex integer 2-component (binary) graph":
     let (nodes, neighbors) = nimplex.simplex_graph(2, 5)
     let neighborsNumber: seq[int] = neighbors.map(n => n.len)
@@ -104,4 +106,30 @@ suite "small simplex integer 4-component (quaternary) graph":
             @[30, 29, 28, 32, 31, 34], 
             @[33, 32, 31]]
         
-    
+suite "small simplex fractional 4-component (quaternary) graph":
+    # Only testing the node positions, since the neighbors are the same as in the integer case suite above
+    let (nodes, _) = nimplex.simplex_graph_fractional(4, 4)
+    echo "Nodes:\n", nodes
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 4
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 35
+    test "correct node/vertex positions in the simplex":
+        check nodes.toSeq2D() == @[
+            @[0.0, 0.0, 0.0, 1.0], @[0.0, 0.0, 0.25, 0.75], @[0.0, 0.0, 0.5, 0.5], @[0.0, 0.0, 0.75, 0.25], @[0.0, 0.0, 1.0, 0.0], 
+            @[0.0, 0.25, 0.0, 0.75], @[0.0, 0.25, 0.25, 0.5], @[0.0, 0.25, 0.5, 0.25], @[0.0, 0.25, 0.75, 0.0], 
+            @[0.0, 0.5, 0.0, 0.5], @[0.0, 0.5, 0.25, 0.25], @[0.0, 0.5, 0.5, 0.0], 
+            @[0.0, 0.75, 0.0, 0.25], @[0.0, 0.75, 0.25, 0.0], 
+            @[0.0, 1.0, 0.0, 0.0], 
+            @[0.25, 0.0, 0.0, 0.75], @[0.25, 0.0, 0.25, 0.5], @[0.25, 0.0, 0.5, 0.25], @[0.25, 0.0, 0.75, 0.0], 
+            @[0.25, 0.25, 0.0, 0.5], @[0.25, 0.25, 0.25, 0.25], @[0.25, 0.25, 0.5, 0.0], 
+            @[0.25, 0.5, 0.0, 0.25], @[0.25, 0.5, 0.25, 0.0],
+            @[0.25, 0.75, 0.0, 0.0],
+            @[0.5, 0.0, 0.0, 0.5], @[0.5, 0.0, 0.25, 0.25], @[0.5, 0.0, 0.5, 0.0],
+            @[0.5, 0.25, 0.0, 0.25], @[0.5, 0.25, 0.25, 0.0],
+            @[0.5, 0.5, 0.0, 0.0],
+            @[0.75, 0.0, 0.0, 0.25], @[0.75, 0.0, 0.25, 0.0],
+            @[0.75, 0.25, 0.0, 0.0],
+            @[1.0, 0.0, 0.0, 0.0]]
+            
