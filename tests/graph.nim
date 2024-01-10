@@ -4,8 +4,10 @@ import arraymancer/Tensor
 import std/sequtils
 import std/sugar
 import std/sets
+import std/times
 
 # SMALL GRAPHS
+let t0 = cpuTime()
 echo "*** SMALL GRAPHS ***"
 
 suite "small simplex integer 2-component (binary) graph":
@@ -171,6 +173,7 @@ suite "small simplex fractional 4-component (quaternary) graph":
 
 
 # LARGE GRAPHS 
+let t1 = cpuTime()
 echo "*** LARGE GRAPHS ***"
 
 suite "large simplex integer 3-component (ternary) graph":
@@ -267,3 +270,9 @@ suite "very large simplex fractional 12-component graph (1M+ nodes  / 93M+ edges
             123700, 123701, 123918, 124149, 124159, 124162, 124163, 124710, 124941, 124951, 124954, 124955, 
             199038, 200292, 200523, 200533, 200536, 200537, 366998, 368252, 368483, 368493, 368496, 368497, 
             719714, 720968, 721199, 721209, 721212, 721213]
+
+# BENCHMARK RESULTS
+let t2 = cpuTime()
+echo "\n*** BENCHMARK RESULTS ***\n"
+echo "Small Graphs:\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
+echo "Large Graphs:\n" & $initDuration(milliseconds = ((t2 - t1)*1e3).int) & "\n"
