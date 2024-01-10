@@ -9,48 +9,61 @@ import std/sets
 echo "*** SMALL GRAPHS ***"
 
 suite "small simplex integer 2-component (binary) graph":
-    let (nodes, neighbors) = nimplex.simplex_graph(2, 5)
-    let neighborsNumber: seq[int] = neighbors.map(n => n.len)
+    let 
+        (nodes, neighbors) = nimplex.simplex_graph(2, 5)
+        neighborsNumber: seq[int] = neighbors.map(n => n.len)
         
     echo "Nodes:\n", nodes
     echo "Neighbors:\n", neighbors
 
     test "correct dimensionality of nodes/vertices":
         check nodes.shape[1] == 2
+
     test "correct number of nodes/vertices":
         check nodes.shape[0] == 6
+
     test "correct maximum number of neighbors":
         check neighborsNumber.max == 2*(2-1)
+
     test "correct minimum number of neighbors":
         check neighborsNumber.min == (2-1)
+
     test "correct node/vertex positions in the simplex":
         check nodes.toSeq2D() == 
             @[@[0, 5], @[1, 4], @[2, 3], @[3, 2], @[4, 1], @[5, 0]]
+
     test "correct neighbors list for each node/vertex":
         check neighbors == 
             @[@[1], @[0, 2], @[1, 3], @[2, 4], @[3, 5], @[4]]
 
+
 suite "small simplex integer 3-component (ternary) graph":
-    let (nodes, neighbors) = nimplex.simplex_graph(3, 3)
-    let neighborsNumber: seq[int] = neighbors.map(n => n.len)
+    let 
+        (nodes, neighbors) = nimplex.simplex_graph(3, 3)
+        neighborsNumber: seq[int] = neighbors.map(n => n.len)
         
     echo "Nodes:\n", nodes
     echo "Neighbors:\n", neighbors
 
     test "correct dimensionality of nodes/vertices":
         check nodes.shape[1] == 3
+
     test "correct number of nodes/vertices":
         check nodes.shape[0] == 10
+
     test "correct maximum number of neighbors":
         check neighborsNumber.max == 3*(3-1)
+
     test "correct minimum number of neighbors":
         check neighborsNumber.min == (3-1)
+
     test "correct node/vertex positions in the simplex":
         check nodes.toSeq2D() == @[
             @[0, 0, 3], @[0, 1, 2], @[0, 2, 1], @[0, 3, 0], 
             @[1, 0, 2], @[1, 1, 1], @[1, 2, 0], 
             @[2, 0, 1], @[2, 1, 0], 
             @[3, 0, 0]]
+
     test "correct neighbors list for each node/vertex":
         check neighbors == @[
             @[1, 4], @[0, 2, 4, 5], @[1, 3, 5, 6], @[2, 6], 
@@ -59,20 +72,25 @@ suite "small simplex integer 3-component (ternary) graph":
             @[8, 7]]
 
 suite "small simplex integer 4-component (quaternary) graph":
-    let (nodes, neighbors) = nimplex.simplex_graph(4, 4)
-    let neighborsNumber: seq[int] = neighbors.map(n => n.len)
+    let 
+        (nodes, neighbors) = nimplex.simplex_graph(4, 4)
+        neighborsNumber: seq[int] = neighbors.map(n => n.len)
 
     echo "Nodes:\n", nodes
     echo "Neighbors:\n", neighbors
 
     test "correct dimensionality of nodes/vertices":
         check nodes.shape[1] == 4
+
     test "correct number of nodes/vertices":
         check nodes.shape[0] == 35
+
     test "correct maximum number of neighbors":
         check neighborsNumber.max == 4*(4-1)
+
     test "correct minimum number of neighbors":
         check neighborsNumber.min == (4-1)
+
     test "correct node/vertex positions in the simplex":
         check nodes.toSeq2D() == @[
             @[0, 0, 0, 4], @[0, 0, 1, 3], @[0, 0, 2, 2], @[0, 0, 3, 1], @[0, 0, 4, 0], 
@@ -90,6 +108,7 @@ suite "small simplex integer 4-component (quaternary) graph":
             @[3, 0, 0, 1], @[3, 0, 1, 0], 
             @[3, 1, 0, 0], 
             @[4, 0, 0, 0]]
+
     test "correct neighbors list for each node/vertex":
         check neighbors == @[
             @[1, 5, 15], @[0, 2, 5, 6, 15, 16], @[1, 3, 6, 7, 16, 17], @[2, 4, 7, 8, 17, 18], @[3, 8, 18], 
@@ -110,13 +129,16 @@ suite "small simplex integer 4-component (quaternary) graph":
         
 suite "small simplex fractional 4-component (quaternary) graph":
     # Only testing the node positions, since the neighbors are the same as in the integer case suite above
-    let (nodes, _) = nimplex.simplex_graph_fractional(4, 4)
+    let 
+        (nodes, _) = nimplex.simplex_graph_fractional(4, 4)
     echo "Nodes:\n", nodes
 
     test "correct dimensionality of nodes/vertices":
         check nodes.shape[1] == 4
+
     test "correct number of nodes/vertices":
         check nodes.shape[0] == 35
+
     test "correct node/vertex positions in the simplex":
         check nodes.toSeq2D() == @[
             @[0.0, 0.0, 0.0, 1.0], @[0.0, 0.0, 0.25, 0.75], @[0.0, 0.0, 0.5, 0.5], @[0.0, 0.0, 0.75, 0.25], @[0.0, 0.0, 1.0, 0.0], 
@@ -147,18 +169,25 @@ suite "large simplex integer 3-component (ternary) graph":
 
     test "correct dimensionality of nodes/vertices":
         check nodes.shape[1] == 3
+
     test "correct number of nodes/vertices":
         check nodes.shape[0] == 1225
+
     test "correct maximum number of neighbors":
         check neighborsNumber.max == 3*(3-1)
+
     test "correct minimum number of neighbors":
         check neighborsNumber.min == (3-1)
+
     test "correct positions in the simplex of a cherry-picked node at index 0":
         check nodes[0, _].toSeq2D()[0] == @[0, 0, ndiv]
+
     test "correct positions in the simplex of a cherry-picked node at index 123":
         check nodes[123, _].toSeq2D()[0] == @[2, 26, 20]
+
     test "correct neighbors list for a cherry-picked node at index 0":
         check neighbors[0] == @[1, ndiv+1]
+
     test "correct neighbors list for a cherry-picked node at index 123":
         check neighbors[123] == @[76, 75, 122, 124, 169, 170]
     
@@ -171,11 +200,14 @@ suite "3C special case method agreement with general case (20k nodes)":
     test "correct dimensionality of nodes/vertices for both methods":
         check nodes1.shape[1] == 3
         check nodes2.shape[1] == nodes1.shape[1]
+
     test "correct number of nodes/vertices for both methods":
         check nodes1.shape[0] == 20301
         check nodes2.shape[0] == nodes1.shape[0]
+
     test "both methods produce the same nodes/vertices":
         check nodes1 == nodes2
+        
     test "both methods produce the same neighbors (in any order))":
         for i in 0..<nodes1.shape[0]:
             check neighbors1[i].toHashSet() == neighbors2[i].toHashSet()
