@@ -162,7 +162,7 @@ suite "large simplex integer 3-component (ternary) graph":
     test "correct neighbors list for a cherry-picked node at index 123":
         check neighbors[123] == @[76, 75, 122, 124, 169, 170]
     
-suite "3C special case method agreement with general case":
+suite "3C special case method agreement with general case (20k nodes)":
     let
         ndiv = 200
         (nodes1, neighbors1) = nimplex.simplex_graph(3, ndiv)
@@ -179,3 +179,43 @@ suite "3C special case method agreement with general case":
     test "both methods produce the same neighbors (in any order))":
         for i in 0..<nodes1.shape[0]:
             check neighbors1[i].toHashSet() == neighbors2[i].toHashSet()
+
+suite "very large simplex fractional 12-component graph (1M+ nodes  / 9M+ edges)":
+    let 
+        ndiv = 12
+        (nodes, neighbors) = nimplex.simplex_graph(12, ndiv)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 12
+
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 1_352_078
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 93_117_024
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 12*(12-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == (12-1)
+
+    test "correct positions in the simplex of a cherry-picked node at index 0":
+        check nodes[0, _].toSeq2D()[0] == @[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ndiv]
+
+    test "correct positions in the simplex of a cherry-picked node at index 123_456":
+        check nodes[123_456, _].toSeq2D()[0] == @[0, 0, 0, 6, 0, 1, 0, 0, 1, 1, 1, 2]
+
+    test "correct neighbors list for a cherry-picked node at index 0":
+        check neighbors[0] == @[1, 13, 91, 455, 1820, 6188, 18564, 50388, 125970, 293930, 646646]
+        
+    test "correct neighbors list for a cherry-picked node at index 123_456":
+        check neighbors[123_456] == @[
+            121740, 120816, 120564, 120438, 120382, 120367, 120363, 120362, 123204, 123078, 123022, 123007, 
+            123003, 123002, 123441, 123437, 123436, 123452, 123451, 123455, 123457, 123459, 123460, 123466, 
+            123469, 123470, 123491, 123501, 123504, 123505, 123561, 123571, 123574, 123575, 123687, 123697, 
+            123700, 123701, 123918, 124149, 124159, 124162, 124163, 124710, 124941, 124951, 124954, 124955, 
+            199038, 200292, 200523, 200533, 200536, 200537, 366998, 368252, 368483, 368493, 368496, 368497, 
+            719714, 720968, 721199, 721209, 721212, 721213]
