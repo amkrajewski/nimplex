@@ -180,7 +180,7 @@ suite "3C special case method agreement with general case (20k nodes)":
         for i in 0..<nodes1.shape[0]:
             check neighbors1[i].toHashSet() == neighbors2[i].toHashSet()
 
-suite "very large simplex fractional 12-component graph (1M+ nodes  / 9M+ edges)":
+suite "very large simplex fractional 12-component graph (1M+ nodes  / 93M+ edges)":
     let 
         ndiv = 12
         (nodes, neighbors) = nimplex.simplex_graph(12, ndiv)
@@ -210,7 +210,7 @@ suite "very large simplex fractional 12-component graph (1M+ nodes  / 9M+ edges)
 
     test "correct neighbors list for a cherry-picked node at index 0":
         check neighbors[0] == @[1, 13, 91, 455, 1820, 6188, 18564, 50388, 125970, 293930, 646646]
-        
+
     test "correct neighbors list for a cherry-picked node at index 123_456":
         check neighbors[123_456] == @[
             121740, 120816, 120564, 120438, 120382, 120367, 120363, 120362, 123204, 123078, 123022, 123007, 
