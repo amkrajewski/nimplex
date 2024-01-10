@@ -5,6 +5,7 @@ import std/sequtils
 import std/sugar
 
 # SMALL GRAPHS
+echo "*** SMALL GRAPHS ***"
 
 suite "small simplex integer 2-component (binary) graph":
     let (nodes, neighbors) = nimplex.simplex_graph(2, 5)
@@ -132,4 +133,31 @@ suite "small simplex fractional 4-component (quaternary) graph":
             @[0.75, 0.0, 0.0, 0.25], @[0.75, 0.0, 0.25, 0.0],
             @[0.75, 0.25, 0.0, 0.0],
             @[1.0, 0.0, 0.0, 0.0]]
-            
+
+
+# LARGE GRAPHS 
+echo "*** LARGE GRAPHS ***"
+
+suite "large simplex integer 3-component (ternary) graph":
+    let 
+        ndiv = 48
+        (nodes, neighbors) = nimplex.simplex_graph(3, ndiv)
+        neighborsNumber: seq[int] = neighbors.map(n => n.len)
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 3
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 1225
+    test "correct maximum number of neighbors":
+        check neighborsNumber.max == 3*(3-1)
+    test "correct minimum number of neighbors":
+        check neighborsNumber.min == (3-1)
+    test "correct positions in the simplex of a cherry-picked node at index 0":
+        check nodes[0, _].toSeq2D()[0] == @[0, 0, ndiv]
+    test "correct positions in the simplex of a cherry-picked node at index 123":
+        check nodes[123, _].toSeq2D()[0] == @[2, 26, 20]
+    test "correct neighbors list for a cherry-picked node at index 0":
+        check neighbors[0] == @[1, ndiv+1]
+    test "correct neighbors list for a cherry-picked node at index 123":
+        check neighbors[123] == @[76, 75, 122, 124, 169, 170]
+    
