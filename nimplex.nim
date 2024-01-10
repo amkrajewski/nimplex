@@ -216,9 +216,9 @@ proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[se
 
 template benchmark(benchmarkName: string, code: untyped) =
     block:
-        let t0 = epochTime()
+        let t0 = cpuTime()
         code
-        let t1 = epochTime()
+        let t1 = cpuTime()
         echo benchmarkName & "\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
 
 proc echoHelp*() = echo """
