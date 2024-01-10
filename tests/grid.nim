@@ -1,7 +1,10 @@
 import std/unittest
 import ../nimplex
 import arraymancer/Tensor
+import std/times
 
+let t0 = cpuTime()
+# SMALL GRIDS
 
 suite "small simplex full integer grids":
     let result = nimplex.simplex_grid(2, 5)
@@ -61,6 +64,9 @@ suite "small simplex internal fractional grids":
             for j in 0..1:
                 check abs(result[i, j] - reference[i][j]) < 0.0001
 
+let t1 = cpuTime()
+# LARGE GRIDS
+
 suite "large simplex full integer grids":
     let result = nimplex.simplex_grid(7, 24)
     let resultCherryPick = result[124_492, _].toSeq2D()[0]
@@ -114,3 +120,7 @@ suite "large simplex internal fractional grids":
         let reference = @[0.0833333, 0.291666, 0.125, 0.0833333, 0.0416666, 0.166666, 0.208333]
         for i in 0..6:
             check abs(resultCherryPick[i] - reference[i]) < 0.0001
+
+let t2 = cpuTime()
+echo "Small Grids:\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
+echo "Large Grids:\n" & $initDuration(milliseconds = ((t2 - t1)*1e3).int) & "\n"
