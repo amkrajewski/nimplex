@@ -15,6 +15,24 @@ suite "test if correct output is given when nimplex is run in command line with 
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
 
+    test "generate large integer simplex grid (FIS 9 12) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c FIS 9 12")
+            outputLines = output.splitLines
+            reference = @["Running with configuration:@[\"FIS\", \"9\", \"12\"]", "Full shape:[125970, 9]"]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i] == reference[i]
+
+    test "generate large internal integer simplex grid (IIS 7 12) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c IIS 7 12")
+            outputLines = output.splitLines
+            reference = @["Running with configuration:@[\"IIS\", \"7\", \"12\"]", "Full shape:[462, 7]"]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i] == reference[i]
+
     test "generate small integer simplex grid (FIP 3 3) and print values to stdout":
         let 
             (output, exitCode) = execCmdEx("./nimplex -c FIP 3 3")
