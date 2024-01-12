@@ -231,7 +231,7 @@ suite "test if correct graph output is given when nimplex is run in command line
         for i in 0..<referenceNeighbors.len:
             check outputNeighbors[i].toHashSet() == referenceNeighbors[i].toHashSet()
 
-suite "Test NumPy exports corectness":
+suite "Test NumPy exports corectness for grids":
 
     test "check if compiled nimplex is present in the current working directory":
         require fileExists("nimplex")
@@ -260,5 +260,53 @@ suite "Test NumPy exports corectness":
         check result.shape == loadedNumpy.shape
         check result == loadedNumpy
 
+suite "Test NumPy exports corectness for graphs":
 
+    test "check if compiled nimplex is present in the current working directory":
+        require fileExists("nimplex")
+
+    test "generate auto-named a medium fractional simplex graph (GFP 7 11) and export it to NumPy (nimplex_GF_7_11_nodes.npy and nimplex_GF_7_11_neighbors.npy)":
+        let (output, exitCode) = execCmdEx("./nimplex -c GFN 7 11")
+        check exitCode == 0
+        check fileExists("nimplex_GF_7_11_nodes.npy")
+        check fileExists("nimplex_GF_7_11_neighbors.npy")
+
+    test "generate a medium fractional simplex graph (GFP 7 11) named testExport.npy and testExport.npy and export it to NumPy":
+        let (output, exitCode) = execCmdEx("./nimplex -c GFN 7 11 testExport.npy")
+        check exitCode == 0
+        check fileExists("testExport_nodes.npy")
+        check fileExists("testExport_neighbors.npy")
+
+    test "Verify that hashes of the two NumPy exports are exactly the same binary for nodes":
+        let
+            hash1 = readFile("nimplex_GF_7_11_nodes.npy").hash.toHex
+            hash2 = readFile("testExport_nodes.npy").hash.toHex
+
+        check hash1 == hash2
+
+    test "Verify that hashes of the two NumPy exports are exactly the same binary for neighbors":
+        let
+            hash1 = readFile("nimplex_GF_7_11_neighbors.npy").hash.toHex
+            hash2 = readFile("testExport_neighbors.npy").hash.toHex
+
+        check hash1 == hash2
+
+    test "Verify that the exported NumPy files match the direct result from nimplex (tested for corectness in graph.nim)":
+        let 
+            result = nimplex.simplex_graph_fractional(7, 11)
+            resultNodes = result[0]
+            resultNeighbors = result[1]
+            loadedNumpyNodes = read_npy[float]("testExport_nodes.npy")
+            loadedNumpyNeighbors = read_npy[int]("testExport_neighbors.npy")
+
+        check resultNodes.shape == loadedNumpyNodes.shape
+        check resultNodes == loadedNumpyNodes
+
+        var loadedNumpyNeighborsParsed: seq[seq[int]] 
+        for nn in loadedNumpyNeighbors.toSeq2D:
+            loadedNumpyNeighborsParsed.add(nn.filterIt(it != -1))
+
+        check resultNeighbors.len == loadedNumpyNeighborsParsed.len
+        for i in 0..<resultNeighbors.len:
+            check resultNeighbors[i].toHashSet() == loadedNumpyNeighborsParsed[i].toHashSet()
     
