@@ -122,7 +122,8 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 outputGrid[i].add(parseFloat(v))
 
         for i in 0..<reference.len:
-            check abs(outputGrid[i][0] - reference[i][0]) < 0.0001
+            for j in 0..<3:
+                check abs(outputGrid[i][j] - reference[i][j]) < 0.0001
 
 suite "test if correct graph output is given when nimplex is run in command line with some selected configurations":
 
