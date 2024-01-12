@@ -13,8 +13,24 @@ import arraymancer/io
 
 import nimpy
 
-# GRID
+## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
+## 
+## ## Installation
+## Install
+## 
+## ## Capabilities
+## Capabilities
+## 
+## ## Usage in Nim
+## Usage in Nim
+## 
+## ## Usage in Python
+## Usage in Python
+## 
+## ## CLI
+## CLI
 
+# GRID
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
     # L is the total number of unique points in the simplex grid, which we know a priori
@@ -224,13 +240,17 @@ when not defined(nimdoc):
 # UTILS
 
 template benchmark(benchmarkName: string, code: untyped) =
+    ## A simple benchmarking template which takes a name and a code block to run. It prints the benchmark name and the duration of the code block execution in natural time units
+    ## quantized to microseconds (e.g., 119 milliseconds and 296 microseconds). All tasks together should take 500-1000 milliseconds on a modern CPU.
     block:
         let t0 = cpuTime()
         code
         let t1 = cpuTime()
         echo benchmarkName & "\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
 
-proc echoHelp*() = echo """
+proc echoHelp*() = 
+    ## Prints the help message for the CLI, which is a concise version of one given in nimplex's documentation.
+    echo """
 
 To run nimplex please either (1) provide no arguments and follow the prompts or 
 (2) use "-c" or "--config" to provide the configuration per instructions below:
@@ -264,6 +284,7 @@ You can also utilize the following auxiliary flags:
 """
 
 proc configValidation(config: string) = 
+    ## Validates the 3-letter configuration string provided by the user.
     assert config.len == 3, "\n--> Invalid configuration lenght. Must be 3 letters."
     assert config[0] in @['F', 'I', 'R', 'G'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, Monte Carlo sampling, or Graph respectively"
     assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional positions, or Integer positions respectively"
@@ -272,12 +293,14 @@ proc configValidation(config: string) =
     assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape, or persist Numpy output respectively"
 
 proc nDivValidation(config: string, nDiv: int, dim: int) = 
+    ## Validates the number of divisions per each simplex dimension provided by the user for all tasks except Random sampling.
     if config[0] == 'I':
         assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
     else:
         assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
 proc outFunction(config: string, dim: int, ndiv: int, npyName: string, outputData: Tensor) =
+    ## Handles the output of grid and random sampling tasks when run from the CLI, based on the 3rd letter of the configuration string.
     case config[2]:
         of 'P': echo "Full Output:", outputData
         of 'N': outputData.write_npy(npyName)
@@ -286,6 +309,7 @@ proc outFunction(config: string, dim: int, ndiv: int, npyName: string, outputDat
 
 
 proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, outputData: (Tensor, seq)) =
+    ## Handles the output of graph tasks when run from the CLI, based on the 3rd letter of the configuration string.
     case config[2]:
         of 'P': 
             echo "Nodes:"
@@ -308,7 +332,8 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
         else: discard #return nothing, just print the size
     echo "Full shape (nodes):", outputData[0].shape
 
-proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
+proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
+    ## Routes the task to the appropriate calculation and output function based on the first 2 letters of the configuration string.
     case config[0..1]:
         of "FF": outFunction(config, dim, ndiv, npyName, 
                              simplex_grid_fractional(dim, ndiv))
@@ -331,8 +356,12 @@ proc taskRouterGrid(config: string, dim: int, ndiv: int, npyName: string) =
 
 
 when isMainModule:
-    let args = commandLineParams()
-
+    
+    let args = commandLineParams() ## \
+    ## Command line arguments parsed when the module is run as a script, rather than as a library, allowing efortless CLI usage without any Python or Nim knowledge.
+    ## When empty, interactive mode is triggered and user is navigated through the configuration process. Otherwise, the first argument is expected to be `-c` or `--config` 
+    ## followed by the configuration flags and parameters as described in the help message below. See `echoHelp()` for more details.
+    
     # Interactive
     if args.len == 0:
         echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
@@ -360,7 +389,7 @@ when isMainModule:
                 npyName = tempIn
             echo "Persisting to NumPy array file:", npyName
 
-        taskRouterGrid(config, dim, ndiv, npyName)
+        taskRouter(config, dim, ndiv, npyName)
 
     # Configured
     elif args[0] == "-c" or args[0] == "--config":
@@ -385,13 +414,14 @@ when isMainModule:
                 npyName = args[4]
             echo "Persisting to NumPy array file:", npyName
 
-        taskRouterGrid(config, dim, ndiv, npyName)
+        taskRouter(config, dim, ndiv, npyName)
 
     elif args[0] in @["-h", "--help"]:
         echoHelp()
         quit(0)
 
     elif args[0] in @["-b", "--benchmark"]:
+        # A few benchmarks for the library to compare across different systems, implementations, and languages.
         benchmark "Simplex Grid Full (dim=9, ndiv=12):":
             discard simplex_grid(9, 12)
         benchmark "Simplex Grid Internal (dim=9, ndiv=12):":
