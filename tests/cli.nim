@@ -8,7 +8,7 @@ import arraymancer/io
 import std/hashes
 import ../nimplex
 
-suite "test if correct output is given when nimplex is run in command line with some selected configurations":
+suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
         require fileExists("nimplex")
 
@@ -124,7 +124,51 @@ suite "test if correct output is given when nimplex is run in command line with 
         for i in 0..<reference.len:
             check abs(outputGrid[i][0] - reference[i][0]) < 0.0001
 
+suite "test if correct graph output is given when nimplex is run in command line with some selected configurations":
+
+    test "check if compiled nimplex is present in the current working directory":
+        require fileExists("nimplex")
+
+    test "generate small integer simplex graph (GIS 3 3) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c GIS 3 3")
+            outputLines = output.splitLines
+            reference = @[
+                "Running with configuration:@[\"GIS\", \"3\", \"3\"]", 
+                "Full shape (nodes):[10, 3]"]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i] == reference[i]
+
+    test "generate small integer simplex graph (GIP 3 3) and print values to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c GIP 3 3")
+            outputLines = output.splitLines
+            reference = @[
+                "Running with configuration:@[\"GIP\", \"3\", \"3\"]", 
+                "Nodes:",
+                "Tensor[system.int] of shape \"[10, 3]\" on backend \"Cpu\"", 
+                "|0      0     3|", 
+                "|0      1     2|", 
+                "|0      2     1|", 
+                "|0      3     0|", 
+                "|1      0     2|", 
+                "|1      1     1|", 
+                "|1      2     0|", 
+                "|2      0     1|", 
+                "|2      1     0|", 
+                "|3      0     0|", 
+                "Neighbors:",
+                "@[@[1, 4], @[0, 2, 4, 5], @[1, 3, 5, 6], @[2, 6], @[1, 0, 5, 7], @[2, 1, 4, 6, 7, 8], @[3, 2, 5, 8], @[5, 4, 8, 9], @[6, 5, 7, 9], @[8, 7]]",
+                "Full shape (nodes):[10, 3]"]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i] == reference[i]
+
 suite "Test NumPy exports corectness":
+
+    test "check if compiled nimplex is present in the current working directory":
+        require fileExists("nimplex")
 
     test "generate auto-named a medium fractional internal simplex grid (IFP 7 11) and export it to NumPy (nimplex_IF_7_11.npy)":
         let (output, exitCode) = execCmdEx("./nimplex -c IFN 7 11")
