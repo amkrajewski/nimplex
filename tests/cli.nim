@@ -7,6 +7,7 @@ import arraymancer/Tensor
 import arraymancer/io
 import std/hashes
 import ../nimplex
+import std/sets
 
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
@@ -141,7 +142,7 @@ suite "test if correct graph output is given when nimplex is run in command line
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
 
-    test "generate small integer simplex graph (GIP 3 3) and print values to stdout":
+    test "generate small integer simplex graph (GIP 3 3), print values to stdout, and check them for corectness":
         let 
             (output, exitCode) = execCmdEx("./nimplex -c GIP 3 3")
             outputLines = output.splitLines
@@ -165,6 +166,70 @@ suite "test if correct graph output is given when nimplex is run in command line
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
+
+    test "generate small fractional simplex graph (GFS 3 3) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c GFS 3 3")
+            outputLines = output.splitLines
+            reference = @[
+                "Running with configuration:@[\"GFS\", \"3\", \"3\"]", 
+                "Full shape (nodes):[10, 3]"]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i] == reference[i]
+
+    test "generate small fractional simplex graph (GFP 3 3), print values to stdout, and check them for node corectness":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c GFP 3 3")
+            outputLines = output.splitLines
+            referenceNodes = @[
+                @[0.0, 0.0, 1.0],
+                @[0.0, 0.333333, 0.666667],
+                @[0.0, 0.666667, 0.333333],
+                @[0.0, 1.0, 0.0],
+                @[0.333333, 0.0, 0.666667],
+                @[0.333333, 0.333333, 0.333333],
+                @[0.333333, 0.666667, 0.0],
+                @[0.666667, 0.0, 0.333333],
+                @[0.666667, 0.333333, 0.0],
+                @[1.0, 0.0, 0.0]]
+    
+        check exitCode == 0
+
+        var outputGrid = newSeq[seq[float]](outputLines.len-6)
+        for i in 0..<referenceNodes.len:
+            for v in outputLines[i+3].replace("|","").splitWhitespace:
+                outputGrid[i].add(parseFloat(v))
+        
+        for i in 0..<referenceNodes.len:
+            for j in 0..<3:
+                check abs(outputGrid[i][j] - referenceNodes[i][j]) < 0.0001
+
+
+    test "generate small fractional simplex graph (GFP 3 3), print values to stdout, and check them for neighbor corectness":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c GFP 3 3")
+            outputLines = output.splitLines
+            referenceNeighbors = @[
+                @[1, 4], 
+                @[0, 2, 4, 5], 
+                @[1, 3, 5, 6], 
+                @[2, 6], 
+                @[1, 0, 5, 7], 
+                @[2, 1, 4, 6, 7, 8],
+                @[3, 2, 5, 8], 
+                @[5, 4, 8, 9], 
+                @[6, 5, 7, 9], 
+                @[8, 7]]
+        check exitCode == 0
+        var outputNeighbors = newSeq[seq[int]](outputLines.len-7)
+        for i in 0..<referenceNeighbors.len:
+            let parseList = outputLines[14].split("@")[i+2].replace("[", "").replace("],", "").replace("]", "").replace(" ","").split(",")
+            for v in parseList:
+                outputNeighbors[i].add(parseInt(v))
+        
+        for i in 0..<referenceNeighbors.len:
+            check outputNeighbors[i].toHashSet() == referenceNeighbors[i].toHashSet()
 
 suite "Test NumPy exports corectness":
 
