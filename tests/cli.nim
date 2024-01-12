@@ -75,7 +75,7 @@ suite "test if correct output is given when nimplex is run in command line with 
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
 
-    test "(significant if previous failes) test if values themself generated for small integer internal simplex grid (IIP 3 5) are correct":
+    test "(significant if previous failes) values themself generated for small integer internal simplex grid (IIP 3 5) corectness":
         let 
             (output, exitCode) = execCmdEx("./nimplex -c IIP 3 5")
             outputLines = output.splitLines
@@ -95,3 +95,27 @@ suite "test if correct output is given when nimplex is run in command line with 
         for i in 0..<reference.len:
             check outputGrid[i] == reference[i]
 
+    test "(independent of numerical precision of a given machine) fractional internal simplex grid (IFP 3 6) correctness":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c IFP 3 6")
+            outputLines = output.splitLines
+            reference = @[
+                @[0.166667, 0.166667, 0.666667],
+                @[0.166667, 0.333333, 0.5],
+                @[0.166667, 0.5, 0.333333],
+                @[0.166667, 0.666667, 0.166667],
+                @[0.333333, 0.166667, 0.5],
+                @[0.333333, 0.333333, 0.333333],
+                @[0.333333, 0.5, 0.166667],
+                @[0.5, 0.166667, 0.333333],
+                @[0.5, 0.333333, 0.166667],
+                @[0.666667, 0.166667, 0.166667]]
+
+        check exitCode == 0
+        var outputGrid = newSeq[seq[float]](outputLines.len-3)
+        for i in 0..<reference.len:
+            for v in outputLines[i+2].replace("|","").splitWhitespace:
+                outputGrid[i].add(parseFloat(v))
+
+        for i in 0..<reference.len:
+            check abs(outputGrid[i][0] - reference[i][0]) < 0.0001
