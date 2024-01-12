@@ -37,15 +37,11 @@ proc simplex_grid*(dim: int,
             h = dim
     return result
 
-proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = simplex_grid(dim, ndiv).toSeq2D()
-
 proc simplex_grid_fractional*(dim: int,
                               ndiv: int): Tensor[float] =
     result = simplex_grid(dim, ndiv).asType(float)
     result = result.map(x => x / float(ndiv))
     return result
-
-proc simplex_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_grid_fractional(dim, ndiv).toSeq2D()
 
 proc simplex_internal_grid*(dim: int, 
                             ndiv: int): Tensor[int] =
@@ -69,16 +65,12 @@ proc simplex_internal_grid*(dim: int,
             h = dim
     return result
 
-proc simplex_internal_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = simplex_internal_grid(dim, ndiv).toSeq2D()
-
 proc simplex_internal_grid_fractional*(dim: int,
                                        ndiv: int): Tensor[float] =
 
     result = simplex_internal_grid(dim, ndiv).asType(float)
     result = result.map(x => x / float(ndiv))
     return result
-
-proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = simplex_internal_grid_fractional(dim, ndiv).toSeq2D()
 
 # RANDOM SAMPLING
 
@@ -90,8 +82,6 @@ proc simplex_sampling_mc(dim: int,
         ).map(x => -ln(x))
     let sums = neglograndom.sum(axis=1)
     result = neglograndom /. sums
-
-proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = simplex_sampling_mc(dim, samples).toSeq2D() 
 
 # GRAPH
 
@@ -139,19 +129,11 @@ proc simplex_graph_3C*(
             h = 3
     return (nodes, neighbors)
 
-proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
-    let graph = simplex_graph_3C(ndiv)
-    return (graph[0].toSeq2D(), graph[1])
-
 proc simplex_graph_3C_fractional*(ndiv: int): (Tensor[float], seq[seq[int]]) =
     let graph = simplex_graph_3C(ndiv)
     var nodes = graph[0].asType(float)
     nodes = nodes.map(x => x / float(ndiv))
     return (nodes, graph[1])
-
-proc simplex_graph_3C_fractional_py*(ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
-    let graph = simplex_graph_3C_fractional(ndiv)
-    return (graph[0].toSeq2D(), graph[1])
 
 proc simplex_graph*(
     dim: int, 
@@ -198,19 +180,46 @@ proc simplex_graph*(
             h = dim
     return (nodes, neighbors)
 
-proc simplex_graph_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
-    let graph = simplex_graph(dim, ndiv)
-    return (graph[0].toSeq2D(), graph[1])
-
 proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int]]) =
     let graph = simplex_graph(dim, ndiv)
     var nodes = graph[0].asType(float)
     nodes = nodes.map(x => x / float(ndiv))
     return (nodes, graph[1])
 
-proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
-    let graph = simplex_graph_fractional(dim, ndiv)
-    return (graph[0].toSeq2D(), graph[1])
+
+# PYTHON BINDINGS
+when not defined(nimdoc):
+
+    proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = 
+        simplex_grid(dim, ndiv).toSeq2D()
+
+    proc simplex_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = 
+        simplex_grid_fractional(dim, ndiv).toSeq2D()
+
+    proc simplex_internal_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = 
+        simplex_internal_grid(dim, ndiv).toSeq2D()
+
+    proc simplex_internal_grid_fractional_py*(dim: int, ndiv: int): seq[seq[float]] {.exportpy.} = 
+        simplex_internal_grid_fractional(dim, ndiv).toSeq2D()
+
+    proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = 
+        simplex_sampling_mc(dim, samples).toSeq2D() 
+
+    proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
+        let graph = simplex_graph_3C(ndiv)
+        return (graph[0].toSeq2D(), graph[1])
+
+    proc simplex_graph_3C_fractional_py*(ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
+        let graph = simplex_graph_3C_fractional(ndiv)
+        return (graph[0].toSeq2D(), graph[1])
+
+    proc simplex_graph_py*(dim: int, ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
+        let graph = simplex_graph(dim, ndiv)
+        return (graph[0].toSeq2D(), graph[1])
+
+    proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
+        let graph = simplex_graph_fractional(dim, ndiv)
+        return (graph[0].toSeq2D(), graph[1])
 
 # UTILS
 
