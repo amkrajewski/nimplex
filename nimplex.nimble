@@ -2,7 +2,7 @@
 
 version       = "0.4.0"
 author        = "Adam M. Krajewski"
-description   = "NIM simPLEX space division algorithm and other tools"
+description   = "NIM simPLEX: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces."
 license       = "MIT"
 
 # Dependencies
