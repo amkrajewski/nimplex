@@ -3,6 +3,8 @@ import std/unittest
 import std/strutils
 import std/sequtils
 import std/sugar
+import arraymancer/Tensor
+import std/hashes
 
 suite "test if correct output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
@@ -119,3 +121,23 @@ suite "test if correct output is given when nimplex is run in command line with 
 
         for i in 0..<reference.len:
             check abs(outputGrid[i][0] - reference[i][0]) < 0.0001
+
+suite "Test NumPy exports corectness":
+
+    test "generate auto-named a medium fractional internal simplex grid (IFP 7 11) and export it to NumPy (nimplex_IF_7_11.npy)":
+        let (output, exitCode) = execCmdEx("./nimplex -c IFN 7 11")
+        check exitCode == 0
+        check fileExists("nimplex_IF_7_11.npy")
+
+    test "generate a medium fractional internal simplex grid (IFP 7 11) named testExport.npy and export it to NumPy":
+        let (output, exitCode) = execCmdEx("./nimplex -c IFN 7 11 testExport.npy")
+        check exitCode == 0
+        check fileExists("testExport.npy")
+
+    test "Verify that hashes of the two NumPy exports are exactly the same binary":
+        let 
+            hash1 = readFile("nimplex_IF_7_11.npy").hash.toHex
+            hash2 = readFile("testExport.npy").hash.toHex
+        check hash1 == hash2
+
+    
