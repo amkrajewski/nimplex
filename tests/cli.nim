@@ -4,7 +4,9 @@ import std/strutils
 import std/sequtils
 import std/sugar
 import arraymancer/Tensor
+import arraymancer/io
 import std/hashes
+import ../nimplex
 
 suite "test if correct output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
@@ -139,5 +141,14 @@ suite "Test NumPy exports corectness":
             hash1 = readFile("nimplex_IF_7_11.npy").hash.toHex
             hash2 = readFile("testExport.npy").hash.toHex
         check hash1 == hash2
+
+    test "Verify that the exported NumPy files match the direct result from nimplex (tested for corectness in grid.nim)":
+        let 
+            result = nimplex.simplex_internal_grid_fractional(7, 11)
+            loadedNumpy = read_npy[float]("testExport.npy")
+
+        check result.shape == loadedNumpy.shape
+        check result == loadedNumpy
+
 
     
