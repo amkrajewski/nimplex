@@ -16,10 +16,16 @@ import nimpy
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
 ## 
 ## ## Installation
-## Install
+## There are several ways to quickly get *nimplex* up and running on your system. The choice primarily depends on your preffered way of interacting with the library (Nim, Python, or CLI) and your system configuration.
+## 
+## If you happen to be on one of the common systems (for which we auto-compile the binaries), you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
+## and run the executable. 
+## 
 ## 
 ## ## Capabilities
-## Capabilities
+## ***Note:*** See the [README.md](https://github.com/amkrajewski/nimplex/blob/main/README.md) for more details and helpful figures. Technical discussion is provided in the manuscript.
+##
+## `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}`
 ## 
 ## ## Usage in Nim
 ## Usage in Nim
@@ -29,6 +35,9 @@ import nimpy
 ## 
 ## ## CLI
 ## CLI
+## 
+
+
 
 # GRID
 proc simplex_grid*(dim: int, 
