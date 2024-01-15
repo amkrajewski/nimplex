@@ -16,10 +16,21 @@ import nimpy
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
 ## 
 ## ## Installation
-## There are several ways to quickly get *nimplex* up and running on your system. The choice primarily depends on your preffered way of interacting with the library (Nim, Python, or CLI) and your system configuration.
+## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarilyon your preffered way of interacting with the library (Nim, Python, or CLI) and your system configuration.
 ## 
-## If you happen to be on one of the common systems (for which we auto-compile the binaries), you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
+## If you happen to be on one of the common systems (for which we auto-compile the binaries) and you do not need to modify anything in the source code, you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
 ## and run the executable. 
+## 
+## **The cool part is that the same binary file:**
+## 
+## 1. Is a **interactive command line interface (CLI) tool**, which will guide you through how to use it if you run it without any arguments like so:
+##    ```bash
+##    ./nimplex   
+##    ```
+## 2. Is a **compiled Python library**, which you can import and use in your Python code like so:
+##    ```python
+##    import nimplex
+##    ```
 ## 
 ## 
 ## ## Capabilities
