@@ -1,4 +1,5 @@
 import std/[os, osproc]
+import system
 import std/unittest
 import std/strutils
 import std/sequtils
@@ -11,7 +12,11 @@ import std/sets
 
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
-        require fileExists("nimplex")
+        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
+        if hostOS == "Windows":
+            require fileExists("nimplex.exe")
+        else:
+            require fileExists("nimplex")
 
     test "generate small integer simplex grid (FIS 3 3) and print shape to stdout":
         let 
@@ -129,7 +134,11 @@ suite "test if correct grid output is given when nimplex is run in command line 
 suite "test if correct graph output is given when nimplex is run in command line with some selected configurations":
 
     test "check if compiled nimplex is present in the current working directory":
-        require fileExists("nimplex")
+        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
+        if hostOS == "Windows":
+            require fileExists("nimplex.exe")
+        else:
+            require fileExists("nimplex")
 
     test "generate small integer simplex graph (GIS 3 3) and print shape to stdout":
         let 
@@ -234,7 +243,11 @@ suite "test if correct graph output is given when nimplex is run in command line
 suite "Test NumPy exports corectness for grids":
 
     test "check if compiled nimplex is present in the current working directory":
-        require fileExists("nimplex")
+        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
+        if hostOS == "Windows":
+            require fileExists("nimplex.exe")
+        else:
+            require fileExists("nimplex")
 
     test "generate auto-named a medium fractional internal simplex grid (IFP 7 11) and export it to NumPy (nimplex_IF_7_11.npy)":
         let (output, exitCode) = execCmdEx("./nimplex -c IFN 7 11")
@@ -263,7 +276,11 @@ suite "Test NumPy exports corectness for grids":
 suite "Test NumPy exports corectness for graphs":
 
     test "check if compiled nimplex is present in the current working directory":
-        require fileExists("nimplex")
+        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
+        if hostOS == "Windows":
+            require fileExists("nimplex.exe")
+        else:
+            require fileExists("nimplex")
 
     test "generate auto-named a medium fractional simplex graph (GFP 7 11) and export it to NumPy (nimplex_GF_7_11_nodes.npy and nimplex_GF_7_11_neighbors.npy)":
         let (output, exitCode) = execCmdEx("./nimplex -c GFN 7 11")
