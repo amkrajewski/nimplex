@@ -1,4 +1,4 @@
-name: Run grid, graph, and CLI tests on every push on Windows installed with setup-nim-action
+name: (Windows) Grid, graph, and CLI tests on every push; installed with setup-nim-action
 
 on:
   push:

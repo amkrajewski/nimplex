@@ -1,4 +1,4 @@
-name: Run grid, graph, and CLI tests on every push on MacOS installed with Homebrew
+name: (MaxOS) Grid, graph, and CLI tests on every push; installed with Homebrew
 
 on:
   push:
