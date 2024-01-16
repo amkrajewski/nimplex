@@ -1,0 +1,26 @@
+name: Run grid, graph, and CLI tests on every push on Linux installed with setup-nim-action
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: '2.0.0'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: nimble install -y arraymancer nimpy
+      - name: Compile nimplex
+        run: nim c -d:release nimplex.nim
+      - name: Run grid tests
+        run: nim c -r -d:release tests/grid.nim 
+      - name: Run graph tests
+        run: nim c -r -d:release tests/graph.nim
+      - name: Run CLI tests
+        run: nim c -r -d:release tests/cli.nim

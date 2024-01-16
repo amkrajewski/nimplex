@@ -1,4 +1,4 @@
-name: Run grid, graph, and CLI tests on every push on a platform matrix
+name: Run grid, graph, and CLI tests on every push on MacOS installed with Homebrew
 
 on:
   push:
@@ -6,19 +6,12 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Update packages submodule
-        run: git submodule update --recursive --remote
-      - uses: jiro4989/setup-nim-action@v1
-        with:
-          nim-version: '2.0.0'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Nim with Homebrew
+        run: brew install nim
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
       - name: Compile nimplex
