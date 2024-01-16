@@ -51,11 +51,11 @@ import nimpy
 ## brew install nim
 ## ```
 ## 
-## Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two dependencies: 
+## Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two top-level dependencies: 
 ## [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
 ## helps with the Python bindings. You can do it with a single command:
 ## ```cmd
-## nimble install arraymancer nimpy
+## nimble install -y arraymancer nimpy
 ## ```
 ## 
 ## Finally, you can clone the repository and compile the library with:

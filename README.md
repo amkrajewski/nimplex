@@ -2,6 +2,13 @@
 
 NIM simPLEX: A concise scientific library (with CLI) providing uniform density grid and sampling in simplex spaces.
 
+[![Run grid, graph, and CLI tests on every push on Linux installed with setup-nim-action](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml)
+
+[![Run grid, graph, and CLI tests on every push on MacOS installed with Homebrew](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml)
+
+[![Run grid, graph, and CLI tests on every push on Windows installed with setup-nim-action](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Windows.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Windows.yaml)
+
+
 ## Installation
 There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (CLI, Nim, or Python) and your system configuration.
 
@@ -36,11 +43,11 @@ or on MacOS, assuming you have [Homebrew](https://brew.sh/) installed:
 brew install nim
 ```
 
-Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two dependencies: 
+Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two top-level dependencies: 
 [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
 helps with the Python bindings. You can do it with a single command:
 ```cmd
-nimble install arraymancer nimpy
+nimble install  -y arraymancer nimpy
 ```
 
 Finally, you can clone the repository and compile the library with:
