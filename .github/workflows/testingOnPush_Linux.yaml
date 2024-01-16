@@ -2,7 +2,7 @@ name: (Linux) Grid, Graph, and CLI Tests
 
 on:
   push:
-    - paths:
+    paths:
       - 'tests/**'
       - 'nimplex.nim'
       - '.github/workflows/testingOnPush_Linux.yaml'
