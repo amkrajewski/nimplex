@@ -1,4 +1,4 @@
-name: (Linux) Grid, graph, and CLI tests on every push; installed with setup-nim-action
+name: (Linux) Grid, Graph, and CLI Tests
 
 on:
   push:
