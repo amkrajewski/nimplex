@@ -4,7 +4,6 @@
 
 from std/math import binom, ln
 import std/sugar
-import std/os
 import std/times
 import std/strutils
 
@@ -19,49 +18,59 @@ import nimpy
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
 ## 
 ## ## Installation
-## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (Nim, Python, or CLI) and your system configuration.
+## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (CLI, Nim, or Python) and your system configuration.
 ## 
 ## If you happen to be on one of the common systems (for which we auto-compile the binaries) and you do not need to modify anything in the source code, you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
-## and run the executable. 
+## and run the executable (*nimplex* / *nimplex.exe*) or Python library (*nimplex.so* / *nimplex.pyd*) directly just by placing it in your working directory and using it as:
 ## 
-## **The cool part is that the same binary file:**
-## 
-## 1. Is a **interactive command line interface (CLI) tool**, which will guide you through how to use it if you run it without any arguments like so:
-##    ```bash
+## 1. An **interactive command line interface (CLI) tool**, which will guide you through how to use it if you run it without any arguments like so (on Linux/MacOS):
+##    ```cmd
 ##    ./nimplex   
 ##    ```
 ##    or with a concise configuration defining the task type and parameters (explained later in [Usage in Nim](#usage-in-nim)):
-##    ```bash
+##    ```cmd
 ##    ./nimplex -c IFP 3 10
 ##    ```
-## 2. Is a **compiled Python library**, which you can import and use in your Python code like so:
+## 2. An **compiled Python library**, which you can import and use in your Python code like so:
 ##    ```python
 ##    import nimplex
 ##    ```
+##    and immediately use the functions provided by the library, as described in [Usage in Python](#usage-in-python):
+##    ```python
+##    nimplex.simplex_internal_grid_fractional(dim=3, ndiv=10)
+##    ```
 ## 
-## If you want to modify the source code or compile the library yourself, you can also do it fairly easily. The only requirement is to have [Nim](https://nim-lang.org/) installed on your system
+## If the above doesn't work for you, or you want to modify the source code, you can compile the library yourself fairly easily in a couple minutes. 
+## The only requirement is to have [Nim](https://nim-lang.org/) installed on your system
 ## ([Installation Instructions](https://nim-lang.org/install.html)) which can be done on most Linux distributions with a single command:
-## ```bash
+## ```cmd
 ## apt-get install nim
 ## ```
 ## or on MacOS, assuming you have [Homebrew](https://brew.sh/) installed:
-## ```bash
+## ```cmd
 ## brew install nim
 ## ```
+## 
 ## Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two dependencies: 
 ## [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
 ## helps with the Python bindings. You can do it with a single command:
-## ```bash
+## ```cmd
 ## nimble install arraymancer nimpy
 ## ```
+## 
 ## Finally, you can clone the repository and compile the library with:
-## ```bash
+## ```cmd
 ## git clone https://github.com/amkrajewski/nimplex
 ## cd nimplex
 ## nim c -r -d:release nimplex.nim -benchmark
 ## ```
-## which will compile the library and run a few benchmarks to make sure everything runs. You should then see a compiled binary file `nimplex` in the current directory, 
-## which you can run as described above.
+## which will compile the library and run a few benchmarks to make sure everything runs smoothly. You should then see a compiled binary file `nimplex` in the current directory which exposes the CLI tool.
+## If you want to use the Python bindings, you can compile the library with slightly different flags (depending on your system configuration) like so for Linux/MacOS:
+## ```cmd
+## nim c --d:release --threads:on --app:lib --out:nimplex.so nimplex
+## ```
+## and you should see a compiled library file `nimplex.so` in the current directory which can be immediately imported and used in Python.
+## 
 ## 
 ## ## Capabilities
 ## ***Note:*** See the [README.md](https://github.com/amkrajewski/nimplex/blob/main/README.md) for more details and helpful figures. Technical discussion is provided in the manuscript.
@@ -403,10 +412,8 @@ proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
 
-
-
-when isMainModule:
-    
+when appType != "lib":
+    when isMainModule:
         let args = commandLineParams() ## \
         ## Command line arguments parsed when the module is run as a script, rather than as a library, allowing efortless CLI usage without any Python or Nim knowledge.
         ## When empty, interactive mode is triggered and user is navigated through the configuration process. Otherwise, the first argument is expected to be `-c` or `--config` 
