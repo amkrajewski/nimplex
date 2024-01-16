@@ -1,4 +1,4 @@
-name: (Linux) Grid, Graph, and CLI Tests
+name: Linux (Ubuntu) Tests
 
 on:
   push:

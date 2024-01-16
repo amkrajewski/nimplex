@@ -1,4 +1,4 @@
-name: (Windows) Grid, Graph, and CLI Tests
+name: Windows Tests 
 
 on:
   push:
