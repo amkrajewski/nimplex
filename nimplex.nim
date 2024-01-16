@@ -16,7 +16,7 @@ import nimpy
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
 ## 
 ## ## Installation
-## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarilyon your preffered way of interacting with the library (Nim, Python, or CLI) and your system configuration.
+## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (Nim, Python, or CLI) and your system configuration.
 ## 
 ## If you happen to be on one of the common systems (for which we auto-compile the binaries) and you do not need to modify anything in the source code, you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
 ## and run the executable. 
@@ -27,11 +27,38 @@ import nimpy
 ##    ```bash
 ##    ./nimplex   
 ##    ```
+##    or with a concise configuration defining the task type and parameters (explained later in [Usage in Nim](#usage-in-nim)):
+##    ```bash
+##    ./nimplex -c IFP 3 10
+##    ```
 ## 2. Is a **compiled Python library**, which you can import and use in your Python code like so:
 ##    ```python
 ##    import nimplex
 ##    ```
 ## 
+## If you want to modify the source code or compile the library yourself, you can also do it fairly easily. The only requirement is to have [Nim](https://nim-lang.org/) installed on your system
+## ([Installation Instructions](https://nim-lang.org/install.html)) which can be done on most Linux distributions with a single command:
+## ```bash
+## apt-get install nim
+## ```
+## or on MacOS, assuming you have [Homebrew](https://brew.sh/) installed:
+## ```bash
+## brew install nim
+## ```
+## Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two dependencies: 
+## [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
+## helps with the Python bindings. You can do it with a single command:
+## ```bash
+## nimble install arraymancer nimpy
+## ```
+## Finally, you can clone the repository and compile the library with:
+## ```bash
+## git clone https://github.com/amkrajewski/nimplex
+## cd nimplex
+## nim c -r -d:release nimplex.nim -benchmark
+## ```
+## which will compile the library and run a few benchmarks to make sure everything runs. You should then see a compiled binary file `nimplex` in the current directory, 
+## which you can run as described above.
 ## 
 ## ## Capabilities
 ## ***Note:*** See the [README.md](https://github.com/amkrajewski/nimplex/blob/main/README.md) for more details and helpful figures. Technical discussion is provided in the manuscript.
