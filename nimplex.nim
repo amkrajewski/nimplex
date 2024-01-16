@@ -8,6 +8,9 @@ import std/os
 import std/times
 import std/strutils
 
+when appType != "lib":
+    import std/os
+
 import arraymancer/Tensor
 import arraymancer/io
 
@@ -404,85 +407,85 @@ proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
 
 when isMainModule:
     
-    let args = commandLineParams() ## \
-    ## Command line arguments parsed when the module is run as a script, rather than as a library, allowing efortless CLI usage without any Python or Nim knowledge.
-    ## When empty, interactive mode is triggered and user is navigated through the configuration process. Otherwise, the first argument is expected to be `-c` or `--config` 
-    ## followed by the configuration flags and parameters as described in the help message below. See `echoHelp()` for more details.
-    
-    # Interactive
-    if args.len == 0:
-        echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
-        let config = readLine(stdin)
-        configValidation(config)
+        let args = commandLineParams() ## \
+        ## Command line arguments parsed when the module is run as a script, rather than as a library, allowing efortless CLI usage without any Python or Nim knowledge.
+        ## When empty, interactive mode is triggered and user is navigated through the configuration process. Otherwise, the first argument is expected to be `-c` or `--config` 
+        ## followed by the configuration flags and parameters as described in the help message below. See `echoHelp()` for more details.
+        
+        # Interactive
+        if args.len == 0:
+            echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
+            let config = readLine(stdin)
+            configValidation(config)
 
-        echo "Simplex Dimensions / N of Components:"
-        let dim = readLine(stdin).parseInt() 
+            echo "Simplex Dimensions / N of Components:"
+            let dim = readLine(stdin).parseInt() 
 
-        var nDiv: int
-        if config[0]=='R':
-            echo "Number of Samples:"
-            nDiv = readLine(stdin).parseInt()
-            assert nDiv > 0, "\n--> Invalid number of samples. Must be a positive integer"
+            var nDiv: int
+            if config[0]=='R':
+                echo "Number of Samples:"
+                nDiv = readLine(stdin).parseInt()
+                assert nDiv > 0, "\n--> Invalid number of samples. Must be a positive integer"
+            else:
+                echo "N Divisions per Dimension:"
+                ndiv = readLine(stdin).parseInt() 
+                nDivValidation(config, ndiv, dim)
+
+            var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+            if config[2] == 'N':
+                echo "NumPy Array Output Filename (skip for default: " & npyName & "):"
+                let tempIn = readLine(stdin)
+                if tempIn.len > 0:
+                    npyName = tempIn
+                echo "Persisting to NumPy array file:", npyName
+
+            taskRouter(config, dim, ndiv, npyName)
+
+        # Configured
+        elif args[0] == "-c" or args[0] == "--config":
+            let config = args[1]
+            echo "Running with configuration:", args[1..<args.len]
+            configValidation(config)
+
+            let dim = args[2].parseInt()
+            assert dim > 0, "Invalid dimension"
+
+            var nDiv: int
+            if config[0]=='R':
+                nDiv = args[3].parseInt()
+                assert nDiv > 0, "\n--> Invalid sample number. Must be a positive integer"
+            else:
+                ndiv = args[3].parseInt()
+                nDivValidation(config, ndiv, dim)
+
+            var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+            if config[2] == 'N':
+                if args.len == 5:
+                    npyName = args[4]
+                echo "Persisting to NumPy array file:", npyName
+
+            taskRouter(config, dim, ndiv, npyName)
+
+        elif args[0] in @["-h", "--help"]:
+            echoHelp()
+            quit(0)
+
+        elif args[0] in @["-b", "--benchmark"]:
+            # A few benchmarks for the library to compare across different systems, implementations, and languages.
+            benchmark "Simplex Grid Full (dim=9, ndiv=12):":
+                discard simplex_grid(9, 12)
+            benchmark "Simplex Grid Internal (dim=9, ndiv=12):":
+                discard simplex_internal_grid(9, 12)
+            benchmark "Simplex Random Sampling (dim=9, samples=1M):":
+                discard simplex_sampling_mc(9, 1_000_000)
+            benchmark "Simplex Graph (dim=9, ndiv=12):":
+                discard simplex_graph(9, 12)
+            benchmark "Simplex Graph ND (dim=3, ndiv=1000):":
+                discard simplex_graph(3, 1000)
+            benchmark "Simplex Graph 3D (dim=3, ndiv=1000):":
+                discard simplex_graph_3C(1000)
+
+        # Fallback
         else:
-            echo "N Divisions per Dimension:"
-            ndiv = readLine(stdin).parseInt() 
-            nDivValidation(config, ndiv, dim)
-
-        var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
-        if config[2] == 'N':
-            echo "NumPy Array Output Filename (skip for default: " & npyName & "):"
-            let tempIn = readLine(stdin)
-            if tempIn.len > 0:
-                npyName = tempIn
-            echo "Persisting to NumPy array file:", npyName
-
-        taskRouter(config, dim, ndiv, npyName)
-
-    # Configured
-    elif args[0] == "-c" or args[0] == "--config":
-        let config = args[1]
-        echo "Running with configuration:", args[1..<args.len]
-        configValidation(config)
-
-        let dim = args[2].parseInt()
-        assert dim > 0, "Invalid dimension"
-
-        var nDiv: int
-        if config[0]=='R':
-            nDiv = args[3].parseInt()
-            assert nDiv > 0, "\n--> Invalid sample number. Must be a positive integer"
-        else:
-            ndiv = args[3].parseInt()
-            nDivValidation(config, ndiv, dim)
-
-        var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
-        if config[2] == 'N':
-            if args.len == 5:
-                npyName = args[4]
-            echo "Persisting to NumPy array file:", npyName
-
-        taskRouter(config, dim, ndiv, npyName)
-
-    elif args[0] in @["-h", "--help"]:
-        echoHelp()
-        quit(0)
-
-    elif args[0] in @["-b", "--benchmark"]:
-        # A few benchmarks for the library to compare across different systems, implementations, and languages.
-        benchmark "Simplex Grid Full (dim=9, ndiv=12):":
-            discard simplex_grid(9, 12)
-        benchmark "Simplex Grid Internal (dim=9, ndiv=12):":
-            discard simplex_internal_grid(9, 12)
-        benchmark "Simplex Random Sampling (dim=9, samples=1M):":
-            discard simplex_sampling_mc(9, 1_000_000)
-        benchmark "Simplex Graph (dim=9, ndiv=12):":
-            discard simplex_graph(9, 12)
-        benchmark "Simplex Graph ND (dim=3, ndiv=1000):":
-            discard simplex_graph(3, 1000)
-        benchmark "Simplex Graph 3D (dim=3, ndiv=1000):":
-            discard simplex_graph_3C(1000)
-
-    # Fallback
-    else:
-        echoHelp()
-        quit(1)
+            echoHelp()
+            quit(1)
