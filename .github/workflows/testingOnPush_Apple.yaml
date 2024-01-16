@@ -1,4 +1,4 @@
-name: (MaxOS) Grid, Graph, and CLI Tests
+name: (MacOS) Grid, Graph, and CLI Tests
 
 on:
   push:
