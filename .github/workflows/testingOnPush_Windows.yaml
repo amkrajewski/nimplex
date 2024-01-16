@@ -2,6 +2,10 @@ name: (Windows) Grid, Graph, and CLI Tests
 
 on:
   push:
+    - paths:
+      - 'tests/**'
+      - 'nimplex.nim'
+      - '.github/workflows/testingOnPush_Windows.yaml'
   workflow_dispatch:
 
 jobs:
