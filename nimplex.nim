@@ -87,7 +87,7 @@ import nimpy
 ##     
 ## 2. **Simplex / Compositional Grids** are a more structured approach to sampling, where all possible compositions quantized to a given resolution, like 1% for 100 divisions per dimension, are generated. This is useful for example when
 ##     one wants to map a function over the simplex space. In total `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}` are generated, where `d` is the dimensionality of the simplex space and `n_d` is the number of
-##     divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **2M points per second in 9-dimensional space** on a modern CPU. A choice is given 
+##     divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **5M points per second in 9-dimensional space** on a modern CPU. A choice is given 
 ##     between generating the gird as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
 ## 
 ##     
@@ -98,6 +98,27 @@ import nimpy
 ##     entirely, for instance, because manufacturing setup has minimum feed rate (leakage). Nimplex introduces a new algorithm to generate these points procedurally (see manuscript for details) based on further modification of NEXCOM algorithm.
 ##     In total `N_I(d, n_d) = \binom{n_d-1}{d-1}` are generated, critically without any performance penalty compared to the full grid, which can reach orders of magnitude when `d` approaches `n_d`. Similar to the full grid, a choice is given
 ##    between generating the gird as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
+## 
+## 4. **Simplex / Compositional Graphs** generation is ***the most critical capability***, first introduced in the nimplex manuscript. They are created by using combinatorics and disocvered patterns to assign edges between all neighboring nodes 
+##     during the simplex grid (graph nodes) generation process. Effectively, a traversal graph is generated, spanning all possible compositions (given a resolution) creating an extremely efficient representation of the problem space, which 
+##     allows deployment of numerous graph algorithms. 
+## 
+##     .. figure:: ../assets/Fig3.png
+##        :alt: Simplex Graph for Ternary Space
+## 
+##     Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of
+##     edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
+## 
+##     As explored in the manuscript, such representations, even of different dimensions, can can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from
+##     manuscript, inspired by problem of joining titanium with stainless steel in [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649) using 3-component
+##     spaces, one encode 3 separate paths where some components are shared in predetermined fashion. This to efficiently encode the problem space in form of a structure graph (left panel below) and then use it to construct a
+##     single **simplex graph complex** (right panel below) as a single consistent structure.
+## 
+##     .. figure:: ../assets/Fig4.png
+##        :alt: Simplex Graph Complex
+## 
+## Several other methods are in testing and will likely be added in the future releases. If you have any suggestions, please open an issue on GitHub as we are always soliciting new ideas and use cases based on real-world problems in the 
+## scientific computing community.
 ## 
 ## ## Usage in Nim
 ## Usage within Nim is fairly straightforward. You can install it using Nimble as explained earlier, or install it directly from GitHub:
@@ -155,6 +176,7 @@ import nimpy
 ## ./nimplex -c IFP 3 10
 ## ```
 ## 
+## # API
 
 
 # GRID
