@@ -269,8 +269,7 @@ proc simplex_sampling_mc(dim: int,
 
 proc simplex_graph_3C*(
     ndiv: int): (Tensor[int], seq[seq[int]]) =
-
-    # L is the total number of unique points in the simplex grid, which we know a priori
+    ## A special case of `simplex_graph`_ for 3-component spaces, which is optimized for performance by avoiding the use of `binom` function and filling the neighbor list sequentially only once per node (in both directions).
     let L: int = binom(ndiv+2, 2)
     var nodes = newTensor[int]([L, 3])
     var neighbors = newSeq[seq[int]](L)
@@ -312,6 +311,7 @@ proc simplex_graph_3C*(
     return (nodes, neighbors)
 
 proc simplex_graph_3C_fractional*(ndiv: int): (Tensor[float], seq[seq[int]]) =
+    ## A special case of `simplex_graph_fractional`_ for 3-component spaces utilizing optimized `simplex_graph_3C`_.
     let graph = simplex_graph_3C(ndiv)
     var nodes = graph[0].asType(float)
     nodes = nodes.map(x => x / float(ndiv))
@@ -320,8 +320,12 @@ proc simplex_graph_3C_fractional*(ndiv: int): (Tensor[float], seq[seq[int]]) =
 proc simplex_graph*(
     dim: int, 
     ndiv: int): (Tensor[int], seq[seq[int]]) =
-
-    # L is the total number of unique points in the simplex grid, which we know a priori
+    ## Generates a simplex graph in a `dim`-component space based on (1) grid of nodes following `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`),
+    ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of 
+    ## (1) a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
+    ## just like in `simplex_grid`_, and (2) a `seq[seq[int]]` containing a list of neighbors for each node. The current implementation utilizes GC-allocated `seq` for neighbors
+    ## to reduce memory footprint in cases where `ndiv` is close to `dim` and not all nodes have the complete set of `dim(dim-1)` neighbors. This is a tradeoff between memory and performance, which can be
+    ## adjusted by switching to a (N_S(dim, ndiv), dim(dim-1)) `Tensor[int]` with `-1` padding for missing neighbors, just like done in `outFunction_graph`_ for NumPy output generation.
     let L: int = binom(ndiv+dim-1, dim-1)
     var nodes = newTensor[int]([L, dim])
     var neighbors = newSeq[seq[int]](L)
@@ -363,6 +367,8 @@ proc simplex_graph*(
     return (nodes, neighbors)
 
 proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int]]) =
+    ## Conceptually similar to `simplex_graph`_ but the first part of the result tuple (graph nodes) is an Arraymancer `Tensor[float]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
+    ## expressed as fractions summing to 1 (same as `simplex_grid_fractional`).
     let graph = simplex_graph(dim, ndiv)
     var nodes = graph[0].asType(float)
     nodes = nodes.map(x => x / float(ndiv))
