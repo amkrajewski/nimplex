@@ -100,7 +100,11 @@ import nimpy
 ##    between generating the gird as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
 ## 
 ## ## Usage in Nim
-## Usage in Nim
+## Usage within Nim is fairly straightforward. You can install it using Nimble with a simple:
+## ```cmd
+## nimble install -y https://github.com/amkrajewski/nimplex
+## ```
+## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone.
 ## 
 ## ## Usage in Python
 ## Usage in Python
