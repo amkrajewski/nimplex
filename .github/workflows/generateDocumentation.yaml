@@ -26,6 +26,7 @@ jobs:
       - run: nimble install
       - name: Build documentation
         run: |
+          sed -i '' 's/assets/nimplex\/assets/g' nimplex.nim
           nim doc --outdir:docs --index:on --git.url:https://github.com/amkrajewski/nimplex --git.commit:main --docInternal nimplex.nim
           cp docs/nimplex.html docs/index.html
       - name: Copy assets to docs
