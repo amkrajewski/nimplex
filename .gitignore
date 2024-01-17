@@ -6,3 +6,4 @@
 htmldocs/
 *.so
 *.pyd
+.DS_Store
