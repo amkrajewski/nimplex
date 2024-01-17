@@ -73,9 +73,31 @@ import nimpy
 ## 
 ## 
 ## ## Capabilities
-## ***Note:*** See the [README.md](https://github.com/amkrajewski/nimplex/blob/main/README.md) for more details and helpful figures. Technical discussion is provided in the manuscript.
-##
-## `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}`
+## ***Note:*** Full technical discussion of methods and motivations is provided in the manuscript. The sections below are meant to provide a concise overview of the library's capabilities.
+## 
+## The library provides a growing number of methods specific to compositional (simplex) spaces:
+## 1. **Monte Carlo sampling** is the simplest method conceptually, where points are rendomly sampled from a simplex. In low dimensional cases, this can be accomplished by sampling from a uniform distribution in 
+##     (d-1)-Cartesian space and then rejecting points outside the simplex (left panel below). However, in this approach, the inefficiency growth is **factorial** with the dimensionality of the simplex space. 
+##     Instead, some try to sample from a uniform distribution in (d)-Cartesian space and normalize the points to sum to 1, however, this leads to over-sampling in the center of each simplex dimension (middle panel below). 
+##     One can, however, fairly easily sample from a special case of Dirichlet distribution, as explained in the manuscript, which leads to uniform sampling in the simplex space (right panel below). **Nimplex can sample 
+##     around 10M points per second in 9-dimensional space** on a modern CPU.
+##    
+##     .. figure:: ../assets/Fig1.png
+##        :alt: Random Simplex Sampling
+##     
+## 2. **Simplex / Compositional Grids** are a more structured approach to sampling, where all possible compositions quantized to a given resolution, like 1% for 100 divisions per dimension, are generated. This is useful for example when
+##     one wants to map a function over the simplex space. In total `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}` are generated, where `d` is the dimensionality of the simplex space and `n_d` is the number of
+##     divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **2M points per second in 9-dimensional space** on a modern CPU. A choice is given 
+##     between generating the gird as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
+## 
+##     
+##     .. figure:: ../assets/Fig2.png
+##        :alt: Integer and Fractional Simplex Grids in Ternary Space
+## 
+## 3. **Internal Simplex / Compositional Grids** are a modification of the above method, where only points inside the simplex, i.e. all components are present, are generated. This is useful in cases where, one cannot discard any component
+##     entirely, for instance, because manufacturing setup has minimum feed rate (leakage). Nimplex introduces a new algorithm to generate these points procedurally (see manuscript for details) based on further modification of NEXCOM algorithm.
+##     In total `N_I(d, n_d) = \binom{n_d-1}{d-1}` are generated, critically without any performance penalty compared to the full grid, which can reach orders of magnitude when `d` approaches `n_d`. Similar to the full grid, a choice is given
+##    between generating the gird as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
 ## 
 ## ## Usage in Nim
 ## Usage in Nim
