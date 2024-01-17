@@ -37,7 +37,7 @@ import nimpy
 ##    ```
 ##    and immediately use the functions provided by the library, as described in [Usage in Python](#usage-in-python):
 ##    ```python
-##    nimplex.simplex_internal_grid_fractional(dim=3, ndiv=10)
+##    nimplex.simplex_internal_grid_fractional_py(dim=3, ndiv=10)
 ##    ```
 ## 
 ## If the above doesn't work for you, or you want to modify the source code, you can compile the library yourself fairly easily in a couple minutes. 
@@ -100,17 +100,19 @@ import nimpy
 ##    between generating the gird as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
 ## 
 ## ## Usage in Nim
-## Usage within Nim is fairly straightforward. You can install it using Nimble with a simple:
+## Usage within Nim is fairly straightforward. You can install it using Nimble as explained earlier, or install it directly from GitHub:
 ## ```cmd
 ## nimble install -y https://github.com/amkrajewski/nimplex
 ## ```
-## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone.
+## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
+## **Then simply follow the API documentation below.**
 ## 
 ## ## Usage in Python
-## Usage in Python
+## To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary. Once you have the library installed and imported,
+## **simply follow the API documentation below, with an exception that you need to add `_py` to the function names.** If you happen to forget adding `_py`, the Python interpreter will throw an error with a suggestion to do so.
 ## 
 ## ## CLI
-## CLI
+##  
 ## 
 
 
