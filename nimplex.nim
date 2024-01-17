@@ -184,6 +184,7 @@ import nimpy
 # GRID
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
+    ## .. image:: ../assets/small_FI.png               
     ## Generates a full (including the simplex boundary) simplex grid in a `dim`-component space with `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`).
     ## The result is a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
     ## expressed as integer numbers of quantum units. The grid is generated procedurally using a modified version of NEXCOM algorithm (see manuscript for details).
@@ -210,6 +211,7 @@ proc simplex_grid*(dim: int,
 
 proc simplex_grid_fractional*(dim: int,
                               ndiv: int): Tensor[float] =
+    ## .. image:: ../assets/small_FF.png
     ## Conceptually similar to `simplex_grid`_ but results in
     ## Arraymancer `Tensor[float]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
     ## expressed as fractions summing to 1. The grid is generated procedurally using a modified version of NEXCOM algorithm (see manuscript for details) and then normalized
@@ -320,6 +322,7 @@ proc simplex_graph_3C_fractional*(ndiv: int): (Tensor[float], seq[seq[int]]) =
 proc simplex_graph*(
     dim: int, 
     ndiv: int): (Tensor[int], seq[seq[int]]) =
+    ## .. image:: ../assets/small_GI.png
     ## Generates a simplex graph in a `dim`-component space based on (1) grid of nodes following `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`),
     ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of 
     ## (1) a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
