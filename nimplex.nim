@@ -184,9 +184,13 @@ import nimpy
 # GRID
 proc simplex_grid*(dim: int, 
                    ndiv: int): Tensor[int] =
+    ## Generates a full (including the simplex boundary) simplex grid in a `dim`-component space with `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`).
+    ## The result is a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
+    ## expressed as integer numbers of quantum units. The grid is generated procedurally using a modified version of NEXCOM algorithm (see manuscript for details).
     # L is the total number of unique points in the simplex grid, which we know a priori
     let L: int = binom(ndiv+dim-1, dim-1)
     result = newTensor[int]([L, dim])
+    # x is the current composition
     var x = zeros[int](dim)
     x[dim-1] = ndiv
     for j in 0..dim-1:
@@ -206,12 +210,17 @@ proc simplex_grid*(dim: int,
 
 proc simplex_grid_fractional*(dim: int,
                               ndiv: int): Tensor[float] =
+    ## Conceptually similar to `simplex_grid`_ but results in
+    ## Arraymancer `Tensor[float]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
+    ## expressed as fractions summing to 1. The grid is generated procedurally using a modified version of NEXCOM algorithm (see manuscript for details) and then normalized
+    ## to 1 in a quick single-pass post-processing step.
     result = simplex_grid(dim, ndiv).asType(float)
     result = result.map(x => x / float(ndiv))
     return result
 
 proc simplex_internal_grid*(dim: int, 
                             ndiv: int): Tensor[int] =
+    ## Same as `simplex_grid`_ but generates only points inside the simplex, i.e., all components are present.
     # L is the total number of unique points inside the simplex grid, which we know a priori
     let L: int = binom(ndiv-1, dim-1)
     result = newTensor[int]([L, dim])
@@ -234,7 +243,9 @@ proc simplex_internal_grid*(dim: int,
 
 proc simplex_internal_grid_fractional*(dim: int,
                                        ndiv: int): Tensor[float] =
-
+    ## Conceptually similar to `simplex_internal_grid`_ but results in 
+    ## Arraymancer `Tensor[float]` of shape `(N_I(dim, ndiv), dim)` containing all possible compositions in the simplex space
+    ## expressed as fractions summing to 1 (same as ``simplex_grid_fractional``). 
     result = simplex_internal_grid(dim, ndiv).asType(float)
     result = result.map(x => x / float(ndiv))
     return result
@@ -242,7 +253,11 @@ proc simplex_internal_grid_fractional*(dim: int,
 # RANDOM SAMPLING
 
 proc simplex_sampling_mc(dim: int,
-                          samples: int): Tensor[float] =
+                         samples: int): Tensor[float] =
+    ## Randomly samples `samples` number of points from a simplex in a `dim`-component space. The result is a deterministically allocated Arraymancer `Tensor[float]` of shape `(samples, dim)` containing all sampled points
+    ## expressed as fractions summing to 1. As eluded to in [Capabilities](#capabilities), this is not as straightforward as in Euclidean spaces.
+    ## The sampling is done by generating `samples` number of points from a special case of Dirichlet distribution (alpha=1) by sampling from a uniform distribution in (dim)-Cartesian space, then
+    ## taking the negative logarithm of each coordinate, and finally normalizing each point to sum to 1. This approach is described in the manuscript and contrasted with another (lower performance) approach involving sorting.
     let neglograndom = randomTensor[float](
         [samples, dim], 
         1.0
