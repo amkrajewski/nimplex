@@ -485,7 +485,8 @@ proc outFunction(config: string, npyName: string, outputData: Tensor) =
 
 
 proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, outputData: (Tensor, seq)) =
-    ## Handles the output of graph tasks when run from the CLI, based on the 3rd letter of the configuration string.
+    ## Handles the output of graph tasks when run from the CLI, based on the 3rd letter of the configuration string `config`, the number of dimensions `dim`, the number of divisions per dimension `ndiv`, which
+    ## together are used to determine the graph edges Tensor shape (using math) faster than querying the input edges sequence. The destiantion filename `npyName`, which should include the extension, also needs to be provided.
     case config[2]:
         of 'P': 
             echo "Nodes:"
