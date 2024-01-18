@@ -474,8 +474,9 @@ proc nDivValidation(config: string, nDiv: int, dim: int) =
     else:
         assert ndiv > 0, "\n--> Invalid number of divisions. Must be a positive integer."
 
-proc outFunction(config: string, dim: int, ndiv: int, npyName: string, outputData: Tensor) =
-    ## Handles the output of grid and random sampling tasks when run from the CLI, based on the 3rd letter of the configuration string.
+proc outFunction(config: string, npyName: string, outputData: Tensor) =
+    ## Handles the output of a simplex grid or random sampling in `outputData` `Tensor` when run from the CLI, based on the 3rd letter of the configuration string `config`,
+    ## and the destiantion filename `npyName`, which should include the extension.
     case config[2]:
         of 'P': echo "Full Output:", outputData
         of 'N': outputData.write_npy(npyName)
@@ -510,15 +511,15 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
 proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
     ## Routes the task to the appropriate calculation and output function based on the first 2 letters of the configuration string.
     case config[0..1]:
-        of "FF": outFunction(config, dim, ndiv, npyName, 
+        of "FF": outFunction(config, npyName, 
                              simplex_grid_fractional(dim, ndiv))
-        of "FI": outFunction(config, dim, ndiv, npyName, 
+        of "FI": outFunction(config, npyName, 
                              simplex_grid(dim, ndiv))
-        of "IF": outFunction(config, dim, ndiv, npyName, 
+        of "IF": outFunction(config, npyName, 
                              simplex_internal_grid_fractional(dim, ndiv))
-        of "II": outFunction(config, dim, ndiv, npyName, 
+        of "II": outFunction(config, npyName, 
                              simplex_internal_grid(dim, ndiv))
-        of "RF": outFunction(config, dim, ndiv, npyName, 
+        of "RF": outFunction(config, npyName, 
                              simplex_sampling_mc(dim, samples=ndiv))
         of "GI": outFunction_graph(config, dim, ndiv, npyName, 
                                    simplex_graph(dim, ndiv))
