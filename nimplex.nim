@@ -144,7 +144,8 @@ import nimpy
 ## ```
 ## 
 ## ### Configured
-## Or it can be run with a concise configuration defining the task type and parameters. The configuration is a 3-letter string and 2-3 additional parameters, as explained below.
+## Or it can be run in "configured" mode by using `-c` or `--config` flags, followed by a concise configuration defining the task type and parameters. 
+## The configuration is a 3-letter string and 2-3 additional parameters, as explained below.
 ## - **3-letter configuration**: 
 ##     1. Grid type or uniform random sampling:
 ##         - **F**: Full grid (including the simplex boundary)
@@ -177,6 +178,12 @@ import nimpy
 ## ```cmd
 ## ./nimplex -c IFP 3 10
 ## ```
+## 
+## ### Auxiliary Flags
+## You can also utilize the following auxiliary flags:
+## - `--help` or `-h` --> Show help.
+## - `--benchmark` or `-b` --> Run a set of tasks to benchmark performnace (`simplex_grid(9, 12)`, `simplex_internal_grid(9, 12)`, `simplex_sampling_mc(9, 1_000_000)`, `simplex_graph(9, 12)`) and
+##     compare performance across implementations (`simplex_graph(3, 1000)` vs `simplex_graph_3C(1000)`).
 ## 
 ## # API
 
