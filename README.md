@@ -148,3 +148,9 @@ Or if you want to print the full result to the console, allowing you to pipe it 
 ```cmd
 ./nimplex -c IFP 3 10
 ```
+
+### Auxiliary Flags
+You can also utilize the following auxiliary flags:
+- `--help` or `-h` --> Show help.
+- `--benchmark` or `-b` --> Run a set of tasks to benchmark performnace (`simplex_grid(9, 12)`, `simplex_internal_grid(9, 12)`, `simplex_sampling_mc(9, 1_000_000)`, `simplex_graph(9, 12)`) and
+    compare performance across implementations (`simplex_graph(3, 1000)` vs `simplex_graph_3C(1000)`).
