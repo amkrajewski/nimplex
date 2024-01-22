@@ -618,6 +618,8 @@ when appType != "lib":
             # A few benchmarks for the library to compare across different systems, implementations, and languages.
             benchmark "Simplex Grid Full (dim=9, ndiv=12):":
                 discard simplex_grid(9, 12)
+            benchmark "Simplex Grid Full Fractional (dim=9, ndiv=12):":
+                discard simplex_grid_fractional(9, 12)
             benchmark "Simplex Grid Internal (dim=9, ndiv=12):":
                 discard simplex_internal_grid(9, 12)
             benchmark "Simplex Random Sampling (dim=9, samples=1M):":
