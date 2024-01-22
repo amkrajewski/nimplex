@@ -74,6 +74,27 @@ suite "verify attainable simplex grid given by pure components is equivalent to 
             for j in 0..2:
                 check abs(result[i, j] - result2[i, j]) < 0.0001
 
+suite "small simplex attainable grids (binary with ndiv=6 in ternary from [1,1,1] to [1,0,0])":
+    let result = simplex_grid_attainable(@[@[1.0,0.0,0.0],@[1.0,1.0,1.0]],6)
+    echo "Shape:", result.shape
+    echo "Result:", result.toSeq2D()
+    test "correct dimensionality":
+        check result.shape[1] == 3
+    test "grid has correct number of nodes/vertices":
+        check result.shape[0] == 7
+    test "correct values":
+        let reference = @[
+            @[6/18, 6/18, 6/18],
+            @[8/18, 5/18, 5/18],
+            @[10/18, 4/18, 4/18],
+            @[12/18, 3/18, 3/18],
+            @[14/18, 2/18, 2/18],
+            @[16/18, 1/18, 1/18],
+            @[18/18, 0/18, 0/18]]
+        for i in 0..6:
+            for j in 0..2:
+                check abs(result[i, j] - reference[i][j]) < 0.0001
+                
 let t1 = cpuTime()
 # LARGE GRIDS
 
