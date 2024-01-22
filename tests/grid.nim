@@ -64,6 +64,16 @@ suite "small simplex internal fractional grids":
             for j in 0..1:
                 check abs(result[i, j] - reference[i][j]) < 0.0001
 
+suite "verify attainable simplex grid given by pure components is equivalent to the simplex grid itself (fractional)":
+    let result = simplex_grid_attainable(@[@[1.0,0.0,0.0],@[0.0,1.0,0.0],@[0.0,0.0,1.0]],6)
+    let result2 = simplex_grid_fractional(3,6)
+    test "matching shape":
+        check result.shape == result2.shape
+    test "matching values":
+        for i in 0..27:
+            for j in 0..2:
+                check abs(result[i, j] - result2[i, j]) < 0.0001
+
 let t1 = cpuTime()
 # LARGE GRIDS
 
