@@ -227,6 +227,18 @@ proc simplex_grid_fractional*(dim: int,
     result = result.map(x => x / float(ndiv))
     return result
 
+proc simplex_grid_attainable*(components: seq[seq[float]],
+                              ndiv: int): Tensor[float] =
+    # Integer grid with positions summing to ndiv
+    result = simplex_grid(components.len, ndiv).asType(float)
+    # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
+    var cmpTensor: Tensor[float] = components.toTensor()
+    # Normalize components to sum to 1 and THEN divide by ndiv to offload the grid normalization here (for performance reasons)
+    cmpTensor = cmpTensor /. cmpTensor.sum(axis=1)
+    cmpTensor = cmpTensor.map(x => x / float(ndiv))
+    # Matrix multiplication to get the final grid
+    result = result * cmpTensor
+
 proc simplex_internal_grid*(dim: int, 
                             ndiv: int): Tensor[int] =
     ## Same as `simplex_grid`_ but generates only points inside the simplex, i.e., all components are present.
