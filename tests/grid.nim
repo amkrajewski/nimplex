@@ -65,23 +65,23 @@ suite "small simplex internal fractional grids":
                 check abs(result[i, j] - reference[i][j]) < 0.0001
 
 suite "verify attainable simplex grid given by pure components is equivalent to the simplex grid itself (fractional)":
-    let (result0, result1) = simplex_attainable_grids(@[@[1.0,0.0,0.0],@[0.0,1.0,0.0],@[0.0,0.0,1.0]],6)
-    let result2 = simplex_grid_fractional(3,6)
+    let result0 = simplex_grid_fractional(3,6)
+    let result1 = attainable2elemental(@[@[1.0,0.0,0.0],@[0.0,1.0,0.0],@[0.0,0.0,1.0]], result0)
     test "matching shape":
-        check result1.shape == result2.shape
+        check result0.shape == result1.shape
     test "matching values":
         for i in 0..27:
             for j in 0..2:
-                check abs(result1[i, j] - result2[i, j]) < 0.0001
+                check abs(result0[i, j] - result1[i, j]) < 0.0001
 
 suite "small simplex attainable grids (binary with ndiv=6 in ternary from [1,1,1] to [1,0,0])":
-    let (result0, result1) = simplex_attainable_grids(@[@[1.0,0.0,0.0],@[1.0,1.0,1.0]],6)
-    echo "Shape:", result1.shape
-    echo "Result:", result1.toSeq2D()
+    let result = attainable2elemental(@[@[1.0,0.0,0.0],@[1.0,1.0,1.0]], simplex_grid_fractional(2,6))
+    echo "Shape:", result.shape
+    echo "Result:", result.toSeq2D()
     test "correct dimensionality":
-        check result1.shape[1] == 3
+        check result.shape[1] == 3
     test "grid has correct number of nodes/vertices":
-        check result1.shape[0] == 7
+        check result.shape[0] == 7
     test "correct values":
         let reference = @[
             @[6/18, 6/18, 6/18],
@@ -93,7 +93,7 @@ suite "small simplex attainable grids (binary with ndiv=6 in ternary from [1,1,1
             @[18/18, 0/18, 0/18]]
         for i in 0..6:
             for j in 0..2:
-                check abs(result1[i, j] - reference[i][j]) < 0.0001
+                check abs(result[i, j] - reference[i][j]) < 0.0001
 
 let t1 = cpuTime()
 # LARGE GRIDS
