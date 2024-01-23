@@ -66,7 +66,7 @@ suite "small simplex internal fractional grids":
 
 suite "verify attainable simplex grid given by pure components is equivalent to the simplex grid itself (fractional)":
     let result0 = simplex_grid_fractional(3,6)
-    let result1 = attainable2elemental(@[@[1.0,0.0,0.0],@[0.0,1.0,0.0],@[0.0,0.0,1.0]], result0)
+    let result1 = result0.attainable2elemental(@[@[1.0,0.0,0.0],@[0.0,1.0,0.0],@[0.0,0.0,1.0]])
     test "matching shape":
         check result0.shape == result1.shape
     test "matching values":
@@ -75,7 +75,7 @@ suite "verify attainable simplex grid given by pure components is equivalent to 
                 check abs(result0[i, j] - result1[i, j]) < 0.0001
 
 suite "small simplex attainable grids (binary with ndiv=6 in ternary from [1,1,1] to [1,0,0])":
-    let result = attainable2elemental(@[@[1.0,0.0,0.0],@[1.0,1.0,1.0]], simplex_grid_fractional(2,6))
+    let result = simplex_grid_fractional(2,6).attainable2elemental(@[@[1.0,0.0,0.0],@[1.0,1.0,1.0]])
     echo "Shape:", result.shape
     echo "Result:", result.toSeq2D()
     test "correct dimensionality":

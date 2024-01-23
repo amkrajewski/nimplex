@@ -387,8 +387,8 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
 
 # CORE UTILS
 
-proc attainable2elemental*(components: seq[seq[float]],
-                           simplexGrid: Tensor[float]): Tensor[float] =
+proc attainable2elemental*(simplexGrid: Tensor[float],
+                           components: seq[seq[float]]): Tensor[float] =
     # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
     var cmpTensor: Tensor[float] = components.toTensor()
     # Normalize components to sum to 1
@@ -414,8 +414,8 @@ when not defined(nimdoc):
     proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = 
         simplex_sampling_mc(dim, samples).toSeq2D() 
 
-    #proc simplex_sampling_mc_attainable_py*(components: seq[seq[float]], samples: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
-    #    simplex_sampling_mc_attainable(components, samples).toSeq2D()
+    proc simplex_sampling_mc_attainable_py*(components: seq[seq[float]], samples: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
+        simplex_sampling_mc_attainable(components, samples).toSeq2D()
 
     proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
         let graph = simplex_graph_3C(ndiv)
