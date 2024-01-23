@@ -396,6 +396,16 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
     nodes = nodes.map(x => x / float(ndiv))
     return (nodes, graph[1])
 
+# CORE UTILS
+
+proc attainable2elemental*(components: seq[seq[float]],
+                           simplexGrid: Tensor[float]): Tensor[float] =
+    # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
+    var cmpTensor: Tensor[float] = components.toTensor()
+    # Normalize components to sum to 1
+    cmpTensor = cmpTensor /. cmpTensor.sum(axis=1)
+    # Matrix multiplication to get the final grid
+    result = simplexGrid * cmpTensor
 
 # PYTHON BINDINGS
 when not defined(nimdoc):
