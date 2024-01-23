@@ -398,6 +398,7 @@ proc attainable2elemental*(simplexGrid: Tensor[float],
 
 # PYTHON BINDINGS
 when not defined(nimdoc):
+    # Direct translation of the Nim API to Python using Nimpy
 
     proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = 
         simplex_grid(dim, ndiv).toSeq2D()
@@ -414,9 +415,6 @@ when not defined(nimdoc):
     proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = 
         simplex_sampling_mc(dim, samples).toSeq2D() 
 
-    proc simplex_sampling_mc_attainable_py*(components: seq[seq[float]], samples: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
-        simplex_sampling_mc_attainable(components, samples).toSeq2D()
-
     proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
         let graph = simplex_graph_3C(ndiv)
         return (graph[0].toSeq2D(), graph[1])
@@ -432,6 +430,35 @@ when not defined(nimdoc):
     proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
         let graph = simplex_graph_fractional(dim, ndiv)
         return (graph[0].toSeq2D(), graph[1])
+
+    # Extra functions for Python bindings only
+    proc embeddedpair_simplex_grid_fractional_py*(components: seq[seq[float]], ndiv: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
+        let temp = simplex_grid_fractional(components.len, ndiv)
+        result[0] = temp.toSeq2D()
+        result[1] = temp.attainable2elemental(components).toSeq2D()
+
+    proc embeddedpair_simplex_internal_grid_fractional_py*(components: seq[seq[float]], ndiv: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
+        let temp = simplex_internal_grid_fractional(components.len, ndiv)
+        result[0] = temp.toSeq2D()
+        result[1] = temp.attainable2elemental(components).toSeq2D()
+
+    proc embeddedpair_simplex_sampling_mc_py*(components: seq[seq[float]], samples: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
+        let temp = simplex_sampling_mc(components.len, samples)
+        result[0] = temp.toSeq2D()
+        result[1] = temp.attainable2elemental(components).toSeq2D()
+
+    proc embeddedpair_simplex_graph_3C_fractional_py*(components: seq[seq[float]], ndiv: int): (seq[seq[float]], seq[seq[float]], seq[seq[int]]) {.exportpy.} =
+        let temp = simplex_graph_3C_fractional(ndiv)
+        result[0] = temp[0].toSeq2D()
+        result[1] = temp[0].attainable2elemental(components).toSeq2D()
+        result[2] = temp[1]
+
+    proc embeddedpair_simplex_graph_fractional_py*(components: seq[seq[float]], ndiv: int): (seq[seq[float]], seq[seq[float]], seq[seq[int]]) {.exportpy.} =
+        let temp = simplex_graph_fractional(components.len, ndiv)
+        result[0] = temp[0].toSeq2D()
+        result[1] = temp[0].attainable2elemental(components).toSeq2D()
+        result[2] = temp[1]
+
 
 # UTILS
 
@@ -637,3 +664,6 @@ when appType != "lib":
         else:
             echoHelp()
             quit(1)
+
+## ## Extra Python Binding Functions
+## 
