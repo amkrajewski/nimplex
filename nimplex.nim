@@ -227,17 +227,6 @@ proc simplex_grid_fractional*(dim: int,
     result = result.map(x => x / float(ndiv))
     return result
 
-proc simplex_grid_attainable*(components: seq[seq[float]],
-                              ndiv: int): Tensor[float] =
-    # Integer grid with positions summing to ndiv
-    result = simplex_grid(components.len, ndiv).asType(float)
-    # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
-    var cmpTensor: Tensor[float] = components.toTensor()
-    # Normalize components to sum to 1 and THEN divide by ndiv to offload the grid normalization here (for performance reasons)
-    cmpTensor = cmpTensor /. cmpTensor.sum(axis=1)
-    cmpTensor = cmpTensor.map(x => x / float(ndiv))
-    # Matrix multiplication to get the final grid
-    result = result * cmpTensor
 
 proc simplex_internal_grid*(dim: int, 
                             ndiv: int): Tensor[int] =
@@ -273,7 +262,7 @@ proc simplex_internal_grid_fractional*(dim: int,
 
 # RANDOM SAMPLING
 
-proc simplex_sampling_mc(dim: int,
+proc simplex_sampling_mc*(dim: int,
                          samples: int): Tensor[float] =
     ## Randomly samples `samples` number of points from a simplex in a `dim`-component space. The result is a deterministically allocated Arraymancer `Tensor[float]` of shape `(samples, dim)` containing all sampled points
     ## expressed as fractions summing to 1. As eluded to in [Capabilities](#capabilities), this is not as straightforward as in Euclidean spaces.
@@ -424,6 +413,9 @@ when not defined(nimdoc):
 
     proc simplex_sampling_mc_py*(dim: int, samples: int): seq[seq[float]] {.exportpy.} = 
         simplex_sampling_mc(dim, samples).toSeq2D() 
+
+    #proc simplex_sampling_mc_attainable_py*(components: seq[seq[float]], samples: int): (seq[seq[float]], seq[seq[float]]) {.exportpy.} =
+    #    simplex_sampling_mc_attainable(components, samples).toSeq2D()
 
     proc simplex_graph_3C_py*(ndiv: int): (seq[seq[int]], seq[seq[int]]) {.exportpy.} = 
         let graph = simplex_graph_3C(ndiv)
