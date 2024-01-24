@@ -134,6 +134,47 @@ import nimpy
 ## To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary. Once you have the library installed and imported,
 ## **simply follow the API documentation below, with an exception that you need to add `_py` to the function names.** If you happen to forget adding `_py`, the Python interpreter will throw an error with a suggestion to do so.
 ## 
+## In addition to the bindings, several extra functions cover some higher level use cases, which are not available in Nim because in Nim they can be easily constructed and optimized by the compiler; whereas in Python they would involve type
+## conversions and other overheads when stacked together. These functions are:
+## ```nim
+## proc embeddedpair_simplex_grid_fractional_py(
+##      components: seq[seq[float]], ndiv: int): 
+##      (seq[seq[float]], seq[seq[float]]) = 
+## ````
+## Takes the `components` list of lists of floats, which represents a list of 
+## compositions in the **elemental** space, and `ndiv` number of divisions per dimension to use when constructing the **attainable** space. It infers the dimensionality of the attainable space from the length of the `components` list
+## to construct it, and uses values from `components` to place each point in the elemental space using `attainable2elemental`_ function. The result is a tuple of (1) a `seq[seq[float]]` of attainable space points and (2) a `seq[seq[float]]` of elemental space points, both
+## using fractional coordinates (summing to 1). 
+## 
+## ```nim
+## proc embeddedpair_simplex_internal_grid_fractional_py(
+##      components: seq[seq[float]], ndiv: int): 
+##      (seq[seq[float]], seq[seq[float]]) = 
+## ```
+## Same as `embeddedpair_simplex_grid_fractional_py` but for **internal** grid. Note that the internal grid does *not* include the simplex boundary, so the compositions given by `components` will not be present.
+## 
+## ```nim
+## proc embeddedpair_simplex_sampling_mc_py(
+##      components: seq[seq[float]], samples: int): 
+##      (seq[seq[float]], seq[seq[float]]) = 
+## ```
+## Same as `embeddedpair_simplex_grid_fractional_py` but for **random sampling** (**M**onte **C**arlo).
+## 
+## ```nim
+## proc embeddedpair_simplex_graph_fractional_py(
+##      components: seq[seq[float]], ndiv: int): 
+##      (seq[seq[float]], seq[seq[float]], seq[seq[int]]) = 
+## ```
+## Same as the `simplex_graph_fractional`_ but the result tuple now includes a `seq[seq[float]]` of elemental space points at the second position, while the first position is still a `seq[seq[float]]` of attainable space points and
+## `seq[seq[int]]` of neighbor lists for each node is now at the third position
+## 
+## ```nim
+## proc embeddedpair_simplex_graph_3C_fractional_py(
+##      components: seq[seq[float]], ndiv: int): 
+##      (seq[seq[float]], seq[seq[float]], seq[seq[int]]) = 
+## ```
+## Same as `embeddedpair_simplex_graph_fractional_py` but for optimized 3-component using `simplex_graph_3C_fractional`_.
+## 
 ## ## CLI
 ## 
 ## ### Interactive
@@ -185,7 +226,7 @@ import nimpy
 ## - `--benchmark` or `-b` --> Run a set of tasks to benchmark performnace (`simplex_grid(9, 12)`, `simplex_internal_grid(9, 12)`, `simplex_sampling_mc(9, 1_000_000)`, `simplex_graph(9, 12)`) and
 ##     compare performance across implementations (`simplex_graph(3, 1000)` vs `simplex_graph_3C(1000)`).
 ## 
-## # API
+## ## API
 
 
 # GRID
@@ -664,6 +705,3 @@ when appType != "lib":
         else:
             echoHelp()
             quit(1)
-
-## ## Extra Python Binding Functions
-## 
