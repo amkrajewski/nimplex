@@ -1,0 +1,118 @@
+name: Compile binaries for platform matrix on release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  linuxBuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: '2.0.0'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: nimble install -y arraymancer nimpy
+      - name: Compile nimplex as binary for X86_64 Linux
+        run: nim c -d:release --cpu:amd64 nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-linux-amd64
+          path: nimplex
+      - name: Compile nimplex as binary for ARM Linux
+        run: nim c -d:release --cpu:arm64 nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-linux-arm64
+          path: nimplex
+      - name: Compile nimplex as Python module for X86_64 Linux
+        run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.so nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-python-linux-amd64.so
+          path: nimplex.so
+      - name: Compile nimplex as Python module for ARM Linux
+        run: nim c -d:release --cpu:arm64 --app:lib --out:nimplex.so nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-python-linux-arm64.so
+          path: nimplex.so
+  macosBuildX86_64:
+    runs-on: macos-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Nim with Homebrew
+        run: brew install nim
+      - name: Install dependencies
+        run: nimble install -y arraymancer nimpy
+      - name: Compile nimplex as binary for X86_64 MacOS
+        run: nim c -d:release --cpu:amd64 nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-macos-amd64
+          path: nimplex
+      - name: Compile nimplex as Python module for X86_64 MacOS
+        run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.so nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-python-macos-amd64.so
+          path: nimplex.so
+  macosBuildARM64:
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Nim with Homebrew
+        run: brew install nim
+      - name: Install dependencies
+        run: nimble install -y arraymancer nimpy
+      - name: Compile nimplex as binary for ARM MacOS
+        run: nim c -d:release --cpu:arm64 nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-macos-arm64
+          path: nimplex
+      - name: Compile nimplex as Python module for ARM MacOS
+        run: nim c -d:release --cpu:arm64 --app:lib --out:nimplex.so nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-python-macos-arm64.so
+          path: nimplex.so
+  windowsBuild:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: '2.0.0'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: nimble install -y arraymancer nimpy
+      - name: Compile nimplex as binary for X86 Windows
+        run: nim c -d:release --cpu:amd64 nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-windows-amd64.exe
+          path: nimplex.exe
+      - name: Compile nimplex as Python module for X86 Windows
+        run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.pyd nimplex.nim
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: nimplex-python-windows-amd64.pyd
+          path: nimplex.pyd
+          
