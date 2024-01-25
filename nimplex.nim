@@ -15,6 +15,9 @@ import arraymancer/io
 
 import nimpy
 
+when defined(nimdoc):
+    import utils/plotting
+
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
 ## 
 ## Such spaces are considered when an entity can be split into a set of distinct components (a composition), and they play a critical role in many disciplines of science, engineering, and mathematics. For instance, in materials science, chemical composition refers to the way a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. And in economics, portfolio composition may refer to how finite capital is split across vehicles, such as cash, equity instruments, real estate, and commodities, based on their monetary value.

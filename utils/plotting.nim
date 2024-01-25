@@ -1,7 +1,11 @@
 import arraymancer/Tensor
 import nimpy
 
+## This submodule contains utility functions related to plotting of the compositional data.
+
 proc simplex2cartesian*(simplexPoints: Tensor[float]): Tensor[float] =
+    ## Converts Arraymancer `Tensor[float]` of `simplexPoints` with fractional coordinates (e.g., from grid or random sampling) to points in a cartesian space (within unit n-sphere)
+    ## for purposes of plotting in the much more common cartesian space.
     let dim = simplexPoints.shape[1]
     assert dim > 0, "0-component simplex is not defined"
     
