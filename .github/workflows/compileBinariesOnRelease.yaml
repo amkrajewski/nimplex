@@ -23,7 +23,7 @@ jobs:
         id: upload-release-asset-1 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex
@@ -36,7 +36,7 @@ jobs:
         id: upload-release-asset-2 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex.so
@@ -60,7 +60,7 @@ jobs:
         id: upload-release-asset-3 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex
@@ -73,7 +73,7 @@ jobs:
         id: upload-release-asset-4 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex.so
@@ -97,7 +97,7 @@ jobs:
         id: upload-release-asset-5 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex
@@ -110,7 +110,7 @@ jobs:
         id: upload-release-asset-6 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex.so
@@ -136,7 +136,7 @@ jobs:
         id: upload-release-asset-7 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex.exe
@@ -149,7 +149,7 @@ jobs:
         id: upload-release-asset-8 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }} 
           asset_path: ./nimplex.pyd
