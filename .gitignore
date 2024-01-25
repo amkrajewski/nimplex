@@ -1,5 +1,6 @@
 ## My NIM gitignore
 *
+!LICENSE
 !**/
 !*.*
 **/*.npy
