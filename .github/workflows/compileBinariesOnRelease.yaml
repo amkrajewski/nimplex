@@ -20,7 +20,7 @@ jobs:
       - name: Compile nimplex as binary for X86_64 Linux
         run: nim c -d:release --cpu:amd64 nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-1 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -33,7 +33,7 @@ jobs:
       - name: Compile nimplex as Python module for X86_64 Linux
         run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.so nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-2 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
       - name: Compile nimplex as binary for X86_64 MacOS
         run: nim c -d:release --cpu:amd64 nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-3 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,7 +70,7 @@ jobs:
       - name: Compile nimplex as Python module for X86_64 MacOS
         run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.so nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-4 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +94,7 @@ jobs:
       - name: Compile nimplex as binary for ARM MacOS
         run: nim c -d:release --cpu:arm64 nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-5 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +107,7 @@ jobs:
       - name: Compile nimplex as Python module for ARM MacOS
         run: nim c -d:release --cpu:arm64 --app:lib --out:nimplex.so nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-6 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
       - name: Compile nimplex as binary for X86 Windows
         run: nim c -d:release --cpu:amd64 nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-7 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -146,7 +146,7 @@ jobs:
       - name: Compile nimplex as Python module for X86 Windows
         run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.pyd nimplex.nim
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-8 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -156,5 +156,5 @@ jobs:
           asset_name: nimplex-python-windows-amd64.pyd
           asset_content_type: application/octet-stream
 
-          
+
           
