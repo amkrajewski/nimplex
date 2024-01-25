@@ -230,6 +230,8 @@ when defined(nimdoc):
 ##     compare performance across implementations (`simplex_graph(3, 1000)` vs `simplex_graph_3C(1000)`).
 ## 
 ## ## API
+## **The following sections cover the core API of the library.** Further documentation for auxiliary functions, defined in **utils** submodule, can be found by following links under [Imports](#6) below
+## or by searching the API [Index](theindex.html) in the top left corner of this page.
 
 
 # GRID
