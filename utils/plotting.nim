@@ -33,3 +33,8 @@ proc simplex2cartesian*(simplexPoints: Tensor[float]): Tensor[float] =
         
         else:
             raise newException(ValueError, "(input dim" & $dim & ") The simplex2cartesian utility function is defined only for 1, 2, 3, and 4-component simplexes corresponding to 0D, 1D, 2D, and 3D spaces respectively, as the main motivation for this function is to visualize the simplex in 2D or 3D space. If you need to convert a simplex of higher dimensionality, please open an issue on GitHub or implement it yourself and submit a PR.")
+
+# PYTHON BINDINGS
+when not defined(nimdoc):
+    proc cartesian2simplex_py*(simplexPoints: seq[seq[float]]): seq[seq[float]] {.exportpy.} =
+        return simplex2cartesian(simplexPoints.toTensor()).toSeq2D()
