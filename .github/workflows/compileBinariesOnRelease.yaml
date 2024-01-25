@@ -5,7 +5,7 @@ on:
     types: [created]
 
 jobs:
-  linuxBuild:
+  linuxBuildX86:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,34 +16,34 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
+
       - name: Compile nimplex as binary for X86_64 Linux
         run: nim c -d:release --cpu:amd64 nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-linux-amd64
-          path: nimplex
-      - name: Compile nimplex as binary for ARM Linux
-        run: nim c -d:release --cpu:arm64 nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: nimplex-linux-arm64
-          path: nimplex
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex
+          asset_name: nimplex-linux-amd64
+          asset_content_type: application/octet-stream
+      
       - name: Compile nimplex as Python module for X86_64 Linux
         run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.so nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-python-linux-amd64.so
-          path: nimplex.so
-      - name: Compile nimplex as Python module for ARM Linux
-        run: nim c -d:release --cpu:arm64 --app:lib --out:nimplex.so nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: nimplex-python-linux-arm64.so
-          path: nimplex.so
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex.so
+          asset_name: nimplex-python-linux-amd64.so
+          asset_content_type: application/octet-stream
+
+
   macosBuildX86_64:
     runs-on: macos-12
     steps:
@@ -53,20 +53,34 @@ jobs:
         run: brew install nim
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
+
       - name: Compile nimplex as binary for X86_64 MacOS
         run: nim c -d:release --cpu:amd64 nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-macos-amd64
-          path: nimplex
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex
+          asset_name: nimplex-macos-amd64
+          asset_content_type: application/octet-stream
+
       - name: Compile nimplex as Python module for X86_64 MacOS
         run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.so nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-python-macos-amd64.so
-          path: nimplex.so
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex.so
+          asset_name: nimplex-python-macos-amd64.so
+          asset_content_type: application/octet-stream
+
+
   macosBuildARM64:
     runs-on: macos-13
     steps:
@@ -76,20 +90,34 @@ jobs:
         run: brew install nim
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
+
       - name: Compile nimplex as binary for ARM MacOS
         run: nim c -d:release --cpu:arm64 nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-macos-arm64
-          path: nimplex
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex
+          asset_name: nimplex-macos-arm64
+          asset_content_type: application/octet-stream
+
       - name: Compile nimplex as Python module for ARM MacOS
         run: nim c -d:release --cpu:arm64 --app:lib --out:nimplex.so nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-python-macos-arm64.so
-          path: nimplex.so
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex.so
+          asset_name: nimplex-python-macos-arm64.so
+          asset_content_type: application/octet-stream
+
+
   windowsBuild:
     runs-on: windows-latest
     steps:
@@ -101,18 +129,32 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
+
       - name: Compile nimplex as binary for X86 Windows
         run: nim c -d:release --cpu:amd64 nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-windows-amd64.exe
-          path: nimplex.exe
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex.exe
+          asset_name: nimplex-windows-amd64.exe
+          asset_content_type: application/octet-stream
+
       - name: Compile nimplex as Python module for X86 Windows
         run: nim c -d:release --cpu:amd64 --app:lib --out:nimplex.pyd nimplex.nim
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: nimplex-python-windows-amd64.pyd
-          path: nimplex.pyd
+          upload_url: ${{ github.event.release.upload_url }} 
+          asset_path: ./nimplex.pyd
+          asset_name: nimplex-python-windows-amd64.pyd
+          asset_content_type: application/octet-stream
+
+          
           
