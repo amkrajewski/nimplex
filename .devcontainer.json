@@ -1,0 +1,18 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/miniconda",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "nimsaem.nimvscode",
+          "ms-python.python",
+          "ms-toolsai.jupyter"
+        ]
+      }
+    },
+    "hostRequirements": {
+       "cpus": 4,
+       "memory": "16gb",
+       "storage": "16gb"
+    },
+    "onCreateCommand": "conda install -y python=3.10 jupyter numpy"
+}
