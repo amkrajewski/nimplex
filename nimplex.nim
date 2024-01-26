@@ -13,8 +13,6 @@ when appType != "lib":
 import arraymancer/Tensor
 import arraymancer/io
 
-import nimpy
-
 when defined(nimdoc):
     import utils/plotting
 
@@ -246,7 +244,8 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
 # PYTHON BINDINGS
 when not defined(nimdoc):
     # Direct translation of the Nim API to Python using Nimpy
-
+    import nimpy
+    
     proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = 
         simplex_grid(dim, ndiv).toSeq2D()
 

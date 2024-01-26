@@ -1,5 +1,4 @@
 import arraymancer/Tensor
-import nimpy
 
 ## This submodule contains utility functions related to plotting of the compositional data.
 
@@ -40,5 +39,7 @@ proc simplex2cartesian*(simplexPoints: Tensor[float]): Tensor[float] =
 
 # PYTHON BINDINGS
 when not defined(nimdoc):
+    import nimpy
+    
     proc cartesian2simplex_py*(simplexPoints: seq[seq[float]]): seq[seq[float]] {.exportpy.} =
         return simplex2cartesian(simplexPoints.toTensor()).toSeq2D()
