@@ -19,7 +19,7 @@ when defined(nimdoc):
     import utils/plotting
 
 # All documentation introduction lives in this included file, while API is generated from docstrings in the code.
-include assets/docs
+include docs/docs
 
 # GRID
 proc simplex_grid*(dim: int, 
