@@ -41,5 +41,5 @@ proc simplex2cartesian*(simplexPoints: Tensor[float]): Tensor[float] =
 when not defined(nimdoc):
     import nimpy
     
-    proc cartesian2simplex_py*(simplexPoints: seq[seq[float]]): seq[seq[float]] {.exportpy.} =
+    proc simplex2cartesian_py*(simplexPoints: seq[seq[float]]): seq[seq[float]] {.exportpy.} =
         return simplex2cartesian(simplexPoints.toTensor()).toSeq2D()
