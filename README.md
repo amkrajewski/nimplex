@@ -11,8 +11,16 @@
 
 Such spaces are considered when an entity can be split into a set of distinct components (a composition), and they play a critical role in many disciplines of science, engineering, and mathematics. For instance, in materials science, chemical composition refers to the way a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. And in economics, portfolio composition may refer to how finite capital is split across assets, such as cash, equity instruments, real estate, and commodities, based on their monetary value.
 
+## Quick Start
+
+If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can efortlessely modify/extend the source code and re-compile it if you wish.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amkrajewski/nimplex?quickstart=1)
+
 ## Installation
 There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (CLI, Nim, or Python) and your system configuration.
+
+### Pre-Compiled Binaries (quick but not recommended)
 
 If you happen to be on one of the common systems (for which we auto-compile the binaries) and you do not need to modify anything in the source code, you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
 and run the executable (*nimplex* / *nimplex.exe*) or Python library (*nimplex.so* / *nimplex.pyd*) directly just by placing it in your working directory and using it as:
@@ -34,16 +42,23 @@ and run the executable (*nimplex* / *nimplex.exe*) or Python library (*nimplex.s
    nimplex.simplex_internal_grid_fractional(dim=3, ndiv=10)
    ```
 
+### Reproducible Installation (recommended)
+
 If the above doesn't work for you, or you want to modify the source code, you can compile the library yourself fairly easily in a couple minutes. 
 The only requirement is to have [Nim](https://nim-lang.org/) installed on your system
-([Installation Instructions](https://nim-lang.org/install.html)) which can be done on most Linux distributions with a single command:
-```cmd
-apt-get install nim
-```
-or on MacOS, assuming you have [Homebrew](https://brew.sh/) installed:
-```cmd
-brew install nim
-```
+([Installation Instructions](https://nim-lang.org/install.html)) which can be done with a single command on most Unix (Linux/MacOS) systems:
+- with your distribution's package manager, for instance on Ubuntu/Debian **Linux**:
+  ```cmd
+  apt-get install nim
+  ```
+- on **MacOS**, assuming you have [Homebrew](https://brew.sh/) installed:
+  ```cmd
+  brew install nim
+  ```
+- using [**conda**](https://docs.conda.io/en/latest/) cross-platform package manager:
+  ```cmd
+  conda install -c conda-forge nim
+  ```
 
 Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two top-level dependencies: 
 [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
@@ -59,7 +74,8 @@ cd nimplex
 nim c -r -d:release nimplex.nim -benchmark
 ```
 which will compile the library and run a few benchmarks to make sure everything runs smoothly. You should then see a compiled binary file `nimplex` in the current directory which exposes the CLI tool.
-If you want to use the Python bindings, you can compile the library with slightly different flags (depending on your system configuration) like so for Linux/MacOS:
+
+If you want to use the **Python bindings**, you can compile the library with slightly different flags (depending on your system configuration) like so for Linux/MacOS:
 ```cmd
 nim c --d:release --threads:on --app:lib --out:nimplex.so nimplex
 ```

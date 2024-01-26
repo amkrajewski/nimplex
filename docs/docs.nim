@@ -2,8 +2,17 @@
 ## 
 ## Such spaces are considered when an entity can be split into a set of distinct components (a composition), and they play a critical role in many disciplines of science, engineering, and mathematics. For instance, in materials science, chemical composition refers to the way a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. And in economics, portfolio composition may refer to how finite capital is split across vehicles, such as cash, equity instruments, real estate, and commodities, based on their monetary value.
 ## 
+## ## Quick Start
+## If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can efortlessely modify/extend the source code and re-compile it if you wish.
+## 
+## .. figure:: https://github.com/codespaces/badge.svg
+##   :alt: Open in GitHub Codespaces
+##   :target: https://codespaces.new/amkrajewski/nimplex?quickstart=1
+## 
 ## ## Installation
 ## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (CLI, Nim, or Python) and your system configuration.
+## 
+## ### Pre-Compiled Binaries (quick but not recommended)
 ## 
 ## If you happen to be on one of the common systems (for which we auto-compile the binaries) and you do not need to modify anything in the source code, you can simply download the latest release from the [nimplex GitHub repository](https://github.com/amkrajewski/nimplex)
 ## and run the executable (*nimplex* / *nimplex.exe*) or Python library (*nimplex.so* / *nimplex.pyd*) directly just by placing it in your working directory and using it as:
@@ -25,17 +34,24 @@
 ##    nimplex.simplex_internal_grid_fractional_py(dim=3, ndiv=10)
 ##    ```
 ## 
+## ### Reproducible Installation (recommended)
+## 
 ## If the above doesn't work for you, or you want to modify the source code, you can compile the library yourself fairly easily in a couple minutes. 
 ## The only requirement is to have [Nim](https://nim-lang.org/) installed on your system
-## ([Installation Instructions](https://nim-lang.org/install.html)) which can be done on most Linux distributions with a single command:
-## ```cmd
-## apt-get install nim
-## ```
-## or on MacOS, assuming you have [Homebrew](https://brew.sh/) installed:
-## ```cmd
-## brew install nim
-## ```
-## 
+## ([Installation Instructions](https://nim-lang.org/install.html)) which can be done with a single command on most Unix (Linux/MacOS) systems:
+## - with your distribution's package manager, for instance on Ubuntu/Debian **Linux**:
+##   ```cmd
+##   apt-get install nim
+##   ```
+## - on **MacOS**, assuming you have [Homebrew](https://brew.sh/) installed:
+##   ```cmd
+##   brew install nim
+##   ```
+## - using [**conda**](https://docs.conda.io/en/latest/) cross-platform package manager:
+##   ```cmd
+##   conda install -c conda-forge nim
+##   ```
+##
 ## Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two top-level dependencies: 
 ## [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
 ## helps with the Python bindings. You can do it with a single command:
@@ -58,6 +74,7 @@
 ## 
 ## 
 ## ## Capabilities
+## 
 ## ***Note:*** Full technical discussion of methods and motivations is provided in the manuscript. The sections below are meant to provide a concise overview of the library's capabilities.
 ## 
 ## The library provides a growing number of methods specific to compositional (simplex) spaces:
@@ -161,6 +178,7 @@
 ## ## CLI
 ## 
 ## ### Interactive
+## 
 ## Using Nimplex through the CLI relies on the same core library, but provides a simple interface for users who do not want to write any code. It can be used interactively, where the user is guided through the configuration process by 
 ## just running the executable without any arguments:
 ## ```cmd
@@ -168,6 +186,7 @@
 ## ```
 ## 
 ## ### Configured
+## 
 ## Or it can be run in "configured" mode by using `-c` or `--config` flags, followed by a concise configuration defining the task type and parameters. 
 ## The configuration is a 3-letter string and 2-3 additional parameters, as explained below.
 ## - **3-letter configuration**: 
@@ -204,11 +223,13 @@
 ## ```
 ## 
 ## ### Auxiliary Flags
+## 
 ## You can also utilize the following auxiliary flags:
 ## - `--help` or `-h` --> Show help.
 ## - `--benchmark` or `-b` --> Run a set of tasks to benchmark performnace (`simplex_grid(9, 12)`, `simplex_internal_grid(9, 12)`, `simplex_sampling_mc(9, 1_000_000)`, `simplex_graph(9, 12)`) and
 ##     compare performance across implementations (`simplex_graph(3, 1000)` vs `simplex_graph_3C(1000)`).
 ## 
 ## ## API
+## 
 ## **The following sections cover the core API of the library.** Further documentation for auxiliary functions, defined in **utils** submodule, can be found by following links under [Imports](#6) below
 ## or by searching the API [Index](theindex.html) in the top left corner of this page.
