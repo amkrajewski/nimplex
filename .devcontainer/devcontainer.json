@@ -3,8 +3,7 @@
   "customizations": {
     "codespaces": {
       "openFiles": [
-        "examples/quickstart.ipynb",
-        "README.md"
+        "examples/quickstart.ipynb"
       ]
     },
     "vscode": {
@@ -12,7 +11,10 @@
         "nimsaem.nimvscode",
         "ms-python.python",
         "ms-toolsai.jupyter"
-      ]
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/conda/bin/python"
+      }
     }
   },
   "hostRequirements": {
