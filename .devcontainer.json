@@ -14,5 +14,5 @@
        "memory": "16gb",
        "storage": "16gb"
     },
-    "onCreateCommand": "conda install -y -c conda-forge nim && nimble install -y arraymancer nimpy && conda install -y python=3.11 jupyter numpy pandas plotly && nim c --d:release --threads:on --app:lib --out:examples/nimplex.so nimplex && nim c --d:release --threads:on --app:lib --out:examples/nimplexplotting.so utils/plotting"
+    "onCreateCommand": "conda install -y -c conda-forge nim && nimble install -y arraymancer nimpy && conda install -y python=3.11 jupyter numpy pandas plotly && nim c --d:release --threads:on --app:lib --out:examples/nimplex.so nimplex && nim c --d:release --threads:on --app:lib --out:examples/utils/plotting.so utils/plotting"
 }
