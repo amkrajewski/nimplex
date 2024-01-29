@@ -22,7 +22,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
         let 
             (output, exitCode) = execCmdEx("./nimplex -c FIS 3 3")
             outputLines = output.splitLines
-            reference = @["Running with configuration:@[\"FIS\", \"3\", \"3\"]", "Full shape:[10, 3]"]
+            reference = @["Running with configuration:@[\"FIS\", \"3\", \"3\"]", "Shape:[10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -31,7 +31,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
         let 
             (output, exitCode) = execCmdEx("./nimplex -c FIS 9 12")
             outputLines = output.splitLines
-            reference = @["Running with configuration:@[\"FIS\", \"9\", \"12\"]", "Full shape:[125970, 9]"]
+            reference = @["Running with configuration:@[\"FIS\", \"9\", \"12\"]", "Shape:[125970, 9]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -40,7 +40,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
         let 
             (output, exitCode) = execCmdEx("./nimplex -c IIS 7 12")
             outputLines = output.splitLines
-            reference = @["Running with configuration:@[\"IIS\", \"7\", \"12\"]", "Full shape:[462, 7]"]
+            reference = @["Running with configuration:@[\"IIS\", \"7\", \"12\"]", "Shape:[462, 7]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -61,8 +61,8 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 "|1      2     0|", 
                 "|2      0     1|", 
                 "|2      1     0|", 
-                "|3      0     0|", 
-                "Full shape:[10, 3]"]
+                "|3      0     0|"
+                ]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -79,8 +79,8 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 "|1      3     1|", 
                 "|2      1     2|", 
                 "|2      2     1|", 
-                "|3      1     1|", 
-                "Full shape:[6, 3]"]
+                "|3      1     1|"
+                ]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -146,7 +146,7 @@ suite "test if correct graph output is given when nimplex is run in command line
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration:@[\"GIS\", \"3\", \"3\"]", 
-                "Full shape (nodes):[10, 3]"]
+                "Nodes Shape:[10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -170,8 +170,8 @@ suite "test if correct graph output is given when nimplex is run in command line
                 "|2      1     0|", 
                 "|3      0     0|", 
                 "Neighbors:",
-                "@[@[1, 4], @[0, 2, 4, 5], @[1, 3, 5, 6], @[2, 6], @[1, 0, 5, 7], @[2, 1, 4, 6, 7, 8], @[3, 2, 5, 8], @[5, 4, 8, 9], @[6, 5, 7, 9], @[8, 7]]",
-                "Full shape (nodes):[10, 3]"]
+                "@[@[1, 4], @[0, 2, 4, 5], @[1, 3, 5, 6], @[2, 6], @[1, 0, 5, 7], @[2, 1, 4, 6, 7, 8], @[3, 2, 5, 8], @[5, 4, 8, 9], @[6, 5, 7, 9], @[8, 7]]"
+                ]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -182,7 +182,7 @@ suite "test if correct graph output is given when nimplex is run in command line
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration:@[\"GFS\", \"3\", \"3\"]", 
-                "Full shape (nodes):[10, 3]"]
+                "Nodes Shape:[10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -231,7 +231,7 @@ suite "test if correct graph output is given when nimplex is run in command line
                 @[6, 5, 7, 9], 
                 @[8, 7]]
         check exitCode == 0
-        var outputNeighbors = newSeq[seq[int]](outputLines.len-7)
+        var outputNeighbors = newSeq[seq[int]](outputLines.len-6)
         for i in 0..<referenceNeighbors.len:
             let parseList = outputLines[14].split("@")[i+2].replace("[", "").replace("],", "").replace("]", "").replace(" ","").split(",")
             for v in parseList:
