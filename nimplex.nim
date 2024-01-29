@@ -242,14 +242,14 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
 
 proc pure_component_indexes*(dim: int, ndiv: int): seq[int] =
     ## This helper function returns a `seq[int]` of indexes of pure components in a simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_grid`_).
-    for d in 0..<dim:
+    for d in 1..dim:
         result.add(binom(ndiv+d-1, ndiv)-1)
     # Reverse the order as the last pure component is the first in the grid
     result.reverse()
 
 proc pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
     ## This helper function returns a `seq[int]` of indexes of pure components in an **internal** simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_internal_grid`_).
-    for d in 0..<dim:
+    for d in 1..dim:
         result.add(binom(ndiv-1, dim-1)-1)
     # Reverse the order as the last pure component is the first in the grid
     result.reverse()
