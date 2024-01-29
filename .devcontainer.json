@@ -1,24 +1,24 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/miniconda",
-    "customizations": {
-      "codespaces": {
-        "openFiles": [
-          "examples/quickstart.ipynb",
-          "README.md"
-        ]
-      },
-      "vscode": {
-        "extensions": [
-          "nimsaem.nimvscode",
-          "ms-python.python",
-          "ms-toolsai.jupyter"
-        ]
-      }
+  "dockerfile": "Dockerfile",
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "examples/quickstart.ipynb",
+        "README.md"
+      ]
     },
-    "hostRequirements": {
-       "cpus": 4,
-       "memory": "16gb",
-       "storage": "16gb"
-    },
-    "onCreateCommand": "conda install -y -c conda-forge nim && conda install -y python=3.11 liblapack jupyter numpy pandas plotly && nimble install -y arraymancer nimpy && pip install pqam-rmsadtandoc2023 && nim c --d:release --out:examples/nimplex nimplex && nim c --d:release --threads:on --app:lib --out:examples/nimplex.so nimplex && nim c --d:release --threads:on --app:lib --out:examples/utils/plotting.so utils/plotting"
+    "vscode": {
+      "extensions": [
+        "nimsaem.nimvscode",
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "hostRequirements": {
+      "cpus": 4,
+      "memory": "16gb",
+      "storage": "16gb"
+  },
+  "onCreateCommand": "nim c --d:release --out:examples/nimplex nimplex && nim c --d:release --threads:on --app:lib --out:examples/nimplex.so nimplex && nim c --d:release --threads:on --app:lib --out:examples/utils/plotting.so utils/plotting"
 }

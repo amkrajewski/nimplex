@@ -1,6 +1,7 @@
 ## My NIM gitignore
 *
 !LICENSE
+!Dockerfile
 !**/
 !*.*
 **/*.npy
