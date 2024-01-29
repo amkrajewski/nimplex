@@ -3,7 +3,7 @@
   "customizations": {
     "codespaces": {
       "openFiles": [
-        "examples/quickstart.ipynb"
+        "examples/README.md"
       ]
     },
     "vscode": {

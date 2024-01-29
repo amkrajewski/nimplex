@@ -10,3 +10,6 @@ htmldocs/
 *.pyd
 .DS_Store
 smallTest.ipynb
+# Example Output Files
+examples/gridForAda.txt
+examples/gridForJulia.npy
