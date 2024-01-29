@@ -392,11 +392,16 @@ proc outFunction(config: string, npyName: string, outputData: Tensor) =
     ## Handles the output of a simplex grid or random sampling in `outputData` `Tensor` when run from the CLI, based on the 3rd letter of the configuration string `config`,
     ## and the destiantion filename `npyName`, which should include the extension.
     case config[2]:
-        of 'P': echo "Full Output:", outputData
-        of 'N': outputData.write_npy(npyName)
-        else: discard #return nothing, just print the size
-    echo "Full shape:", outputData.shape
-
+        of 'P': 
+            echo "Full Output:", outputData
+        of 'N': 
+            outputData.write_npy(npyName)
+            echo "Shape:", outputData.shape
+        of 'S': 
+            echo "Shape:", outputData.shape
+        else: 
+            echo "Invalid Config"
+    
 
 proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, outputData: (Tensor, seq)) =
     ## Handles the output of graph tasks when run from the CLI, based on the 3rd letter of the configuration string `config`, the number of dimensions `dim`, the number of divisions per dimension `ndiv`, which
@@ -420,8 +425,13 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
                     else:
                         neighborsTensor[i, j] = -1
             neighborsTensor.write_npy(npyName.replace(".npy", "_neighbors.npy"))
-        else: discard #return nothing, just print the size
-    echo "Full shape (nodes):", outputData[0].shape
+            echo "Nodes Shape:", outputData[0].shape
+            echo "Neighbors Lenght:", outputData[1].len
+        of 'S': 
+            echo "Nodes Shape:", outputData[0].shape
+            echo "Neighbors Lenght:", outputData[1].len
+        else: 
+            echo "Invalid Congig"
 
 proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
     ## Routes the task to the appropriate calculation and output function based on the first 2 letters of the configuration string.
