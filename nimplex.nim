@@ -319,6 +319,12 @@ when not defined(nimdoc):
         result[1] = temp[0].attainable2elemental(components).toSeq2D()
         result[2] = temp[1]
 
+    proc pure_component_indexes_py*(dim: int, ndiv: int): seq[int] {.exportpy.} =
+        pure_component_indexes(dim, ndiv)
+
+    proc pure_component_indexes_internal_py*(dim: int, ndiv: int): seq[int] {.exportpy.} =
+        pure_component_indexes_internal(dim, ndiv)
+
 
 # UTILS
 
