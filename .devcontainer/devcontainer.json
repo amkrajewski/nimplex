@@ -1,5 +1,5 @@
 {
-  "dockerfile": "Dockerfile",
+  "dockerfile": "./Dockerfile",
   "customizations": {
     "codespaces": {
       "openFiles": [
