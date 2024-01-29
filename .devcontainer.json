@@ -1,6 +1,12 @@
 {
     "image": "mcr.microsoft.com/devcontainers/miniconda",
     "customizations": {
+      "codespaces": {
+        "openFiles": [
+          "examples/quickstart.ipynb",
+          "README.md"
+        ]
+      },
       "vscode": {
         "extensions": [
           "nimsaem.nimvscode",
