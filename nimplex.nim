@@ -128,7 +128,7 @@ proc simplex_graph_3C*(
     var x = zeros[int](3)
 
     func neighborsLink(i:int, x:Tensor, ndiv:int): seq[int] =
-        let jump0 = 1
+        const jump0 = 1
         let jump1 = 1+ndiv-x[0]
 
         if x[0] != 0:
@@ -235,7 +235,7 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
     ## compositions in the **elemental** space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, to allow for both types of inputs. 
     ## It then projects each point from the attainable space to the elemental space using matrix multiplication.
     runnableExamples:
-        let components = @[
+        const components = @[
             @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
             @[3.0, 1.0, 0.0],    # Fe3C
             @[0.2, 0.0, 0.8]     # Fe20 Mo80
@@ -445,20 +445,20 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
 proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
     ## Routes the task to the appropriate calculation and output function based on the first 2 letters of the configuration string.
     case config[0..1]:
-        of "FF": outFunction(config, npyName, 
-                             simplex_grid_fractional(dim, ndiv))
-        of "FI": outFunction(config, npyName, 
-                             simplex_grid(dim, ndiv))
-        of "IF": outFunction(config, npyName, 
-                             simplex_internal_grid_fractional(dim, ndiv))
-        of "II": outFunction(config, npyName, 
-                             simplex_internal_grid(dim, ndiv))
-        of "RF": outFunction(config, npyName, 
-                             simplex_sampling_mc(dim, samples=ndiv))
-        of "GI": outFunction_graph(config, dim, ndiv, npyName, 
-                                   simplex_graph(dim, ndiv))
-        of "GF": outFunction_graph(config, dim, ndiv, npyName, 
-                                   simplex_graph_fractional(dim, ndiv))
+        of "FF": outFunction(
+            config, npyName, simplex_grid_fractional(dim, ndiv))
+        of "FI": outFunction(
+            config, npyName, simplex_grid(dim, ndiv))
+        of "IF": outFunction(
+            config, npyName, simplex_internal_grid_fractional(dim, ndiv))
+        of "II": outFunction(
+            config, npyName, simplex_internal_grid(dim, ndiv))
+        of "RF": outFunction(
+            config, npyName, simplex_sampling_mc(dim, samples=ndiv))
+        of "GI": outFunction_graph(
+            config, dim, ndiv, npyName, simplex_graph(dim, ndiv))
+        of "GF": outFunction_graph(
+            config, dim, ndiv, npyName, simplex_graph_fractional(dim, ndiv))
         else:
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
