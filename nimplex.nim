@@ -1,13 +1,22 @@
 # Copyrigth (C) 2023 Adam M. Krajewski
+# License: MIT
+
+# Pragmas with compiler and linker options
 {.passC: "-flto -ffast-math".} 
 {.passL: "-flto".} 
 
+# Standard Nim library imports
 from std/math import binom, ln
 import std/sugar
 import std/times
 import std/strutils
 from std/algorithm import reverse
 
+# Arraymancer library for tensor operations
+import arraymancer/Tensor
+import arraymancer/io
+
+# OS module can cause issues for Python bindings, so it's not imported in the library mode, when it is not needed.
 when appType != "lib":
     import std/os
 
@@ -15,6 +24,9 @@ import arraymancer/Tensor
 import arraymancer/io
 
 when defined(nimdoc):
+    # All of (comprehensive) introduction to the documentation lives in this included Nim file, while API is generated from docstrings in the code. It was moved there for cleaner code.
+    include docs/docs
+    # The plotting utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
     import utils/plotting
 
 # All documentation introduction lives in this included file, while API is generated from docstrings in the code.
