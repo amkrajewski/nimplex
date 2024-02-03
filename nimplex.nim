@@ -43,16 +43,16 @@ proc simplex_grid*(dim: int,
     # x is the current composition
     var x = zeros[int](dim)
     x[dim-1] = ndiv
-    for j in 0..dim-1:
+    for j in 0..<dim:
         result[0, j] = x[j]
     var h = dim
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 0
         x[dim-1] = val - 1
         x[h-1] += 1
-        for j in 0..dim-1:
+        for j in 0..<dim:
             result[i, j] = x[j]
         if val != 1:
             h = dim
@@ -81,7 +81,7 @@ proc simplex_internal_grid*(dim: int,
     for j in 0..dim-1:
         result[0, j] = x[j]
     var h = dim
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 1
@@ -149,7 +149,7 @@ proc simplex_graph_3C*(
 
     neighbors[0] = neighborsLink(0, x, ndiv)
 
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 0
@@ -200,19 +200,19 @@ proc simplex_graph*(
                     neighbors[i - temp].add(i)
 
     x[dim-1] = ndiv
-    for j in 0..dim-1:
+    for j in 0..<dim:
         nodes[0, j] = x[j]
     var h = dim
 
     neighborsLink(0, x, ndiv, dim, neighbors)
 
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 0
         x[dim-1] = val - 1
         x[h-1] += 1
-        for j in 0..dim-1:
+        for j in 0..<dim:
             nodes[i, j] = x[j]
         neighborsLink(i, x, ndiv, dim, neighbors)
         if val != 1:
