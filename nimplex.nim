@@ -20,17 +20,15 @@ import arraymancer/io
 when appType != "lib":
     import std/os
 
-import arraymancer/Tensor
-import arraymancer/io
+# Nimpy module for Python bindings when running in the library mode and not generating documentation (to avoid duplicate API entries)
+when appType == "lib" and not defined(nimdoc):
+    import nimpy
 
 when defined(nimdoc):
     # All of (comprehensive) introduction to the documentation lives in this included Nim file, while API is generated from docstrings in the code. It was moved there for cleaner code.
     include docs/docs
     # The plotting utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
     import utils/plotting
-
-# All documentation introduction lives in this included file, while API is generated from docstrings in the code.
-include docs/docs
 
 # GRID
 proc simplex_grid*(dim: int, 
@@ -268,9 +266,8 @@ proc pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
 
 
 # PYTHON BINDINGS
-when not defined(nimdoc):
+when appType == "lib" and not defined(nimdoc):
     # Direct translation of the Nim API to Python using Nimpy
-    import nimpy
     
     proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = 
         simplex_grid(dim, ndiv).toSeq2D()
