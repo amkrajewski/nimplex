@@ -1,24 +1,34 @@
 # Copyrigth (C) 2023 Adam M. Krajewski
+# License: MIT
+
+# Pragmas with compiler and linker options
 {.passC: "-flto -ffast-math".} 
 {.passL: "-flto".} 
 
+# Standard Nim library imports
 from std/math import binom, ln
 import std/sugar
 import std/times
 import std/strutils
 from std/algorithm import reverse
 
-when appType != "lib":
-    import std/os
-
+# Arraymancer library for tensor operations
 import arraymancer/Tensor
 import arraymancer/io
 
-when defined(nimdoc):
-    import utils/plotting
+# OS module can cause issues for Python bindings, so it's not imported in the library mode, when it is not needed.
+when appType != "lib":
+    import std/os
 
-# All documentation introduction lives in this included file, while API is generated from docstrings in the code.
-include docs/docs
+# Nimpy module for Python bindings when running in the library mode and not generating documentation (to avoid duplicate API entries)
+when appType == "lib" and not defined(nimdoc):
+    import nimpy
+
+when defined(nimdoc):
+    # All of (comprehensive) introduction to the documentation lives in this included Nim file, while API is generated from docstrings in the code. It was moved there for cleaner code.
+    include docs/docs
+    # The plotting utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
+    import utils/plotting
 
 # GRID
 proc simplex_grid*(dim: int, 
@@ -33,16 +43,16 @@ proc simplex_grid*(dim: int,
     # x is the current composition
     var x = zeros[int](dim)
     x[dim-1] = ndiv
-    for j in 0..dim-1:
+    for j in 0..<dim:
         result[0, j] = x[j]
     var h = dim
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 0
         x[dim-1] = val - 1
         x[h-1] += 1
-        for j in 0..dim-1:
+        for j in 0..<dim:
             result[i, j] = x[j]
         if val != 1:
             h = dim
@@ -71,7 +81,7 @@ proc simplex_internal_grid*(dim: int,
     for j in 0..dim-1:
         result[0, j] = x[j]
     var h = dim
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 1
@@ -118,7 +128,7 @@ proc simplex_graph_3C*(
     var x = zeros[int](3)
 
     func neighborsLink(i:int, x:Tensor, ndiv:int): seq[int] =
-        let jump0 = 1
+        const jump0 = 1
         let jump1 = 1+ndiv-x[0]
 
         if x[0] != 0:
@@ -139,7 +149,7 @@ proc simplex_graph_3C*(
 
     neighbors[0] = neighborsLink(0, x, ndiv)
 
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 0
@@ -190,19 +200,19 @@ proc simplex_graph*(
                     neighbors[i - temp].add(i)
 
     x[dim-1] = ndiv
-    for j in 0..dim-1:
+    for j in 0..<dim:
         nodes[0, j] = x[j]
     var h = dim
 
     neighborsLink(0, x, ndiv, dim, neighbors)
 
-    for i in 1..L-1:
+    for i in 1..<L:
         h -= 1
         let val = x[h]
         x[h] = 0
         x[dim-1] = val - 1
         x[h-1] += 1
-        for j in 0..dim-1:
+        for j in 0..<dim:
             nodes[i, j] = x[j]
         neighborsLink(i, x, ndiv, dim, neighbors)
         if val != 1:
@@ -225,7 +235,7 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
     ## compositions in the **elemental** space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, to allow for both types of inputs. 
     ## It then projects each point from the attainable space to the elemental space using matrix multiplication.
     runnableExamples:
-        let components = @[
+        const components = @[
             @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
             @[3.0, 1.0, 0.0],    # Fe3C
             @[0.2, 0.0, 0.8]     # Fe20 Mo80
@@ -256,9 +266,8 @@ proc pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
 
 
 # PYTHON BINDINGS
-when not defined(nimdoc):
+when appType == "lib" and not defined(nimdoc):
     # Direct translation of the Nim API to Python using Nimpy
-    import nimpy
     
     proc simplex_grid_py*(dim: int, ndiv: int): seq[seq[int]] {.exportpy.} = 
         simplex_grid(dim, ndiv).toSeq2D()
@@ -436,20 +445,20 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
 proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
     ## Routes the task to the appropriate calculation and output function based on the first 2 letters of the configuration string.
     case config[0..1]:
-        of "FF": outFunction(config, npyName, 
-                             simplex_grid_fractional(dim, ndiv))
-        of "FI": outFunction(config, npyName, 
-                             simplex_grid(dim, ndiv))
-        of "IF": outFunction(config, npyName, 
-                             simplex_internal_grid_fractional(dim, ndiv))
-        of "II": outFunction(config, npyName, 
-                             simplex_internal_grid(dim, ndiv))
-        of "RF": outFunction(config, npyName, 
-                             simplex_sampling_mc(dim, samples=ndiv))
-        of "GI": outFunction_graph(config, dim, ndiv, npyName, 
-                                   simplex_graph(dim, ndiv))
-        of "GF": outFunction_graph(config, dim, ndiv, npyName, 
-                                   simplex_graph_fractional(dim, ndiv))
+        of "FF": outFunction(
+            config, npyName, simplex_grid_fractional(dim, ndiv))
+        of "FI": outFunction(
+            config, npyName, simplex_grid(dim, ndiv))
+        of "IF": outFunction(
+            config, npyName, simplex_internal_grid_fractional(dim, ndiv))
+        of "II": outFunction(
+            config, npyName, simplex_internal_grid(dim, ndiv))
+        of "RF": outFunction(
+            config, npyName, simplex_sampling_mc(dim, samples=ndiv))
+        of "GI": outFunction_graph(
+            config, dim, ndiv, npyName, simplex_graph(dim, ndiv))
+        of "GF": outFunction_graph(
+            config, dim, ndiv, npyName, simplex_graph_fractional(dim, ndiv))
         else:
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)

@@ -4,7 +4,7 @@ import arraymancer/Tensor
 
 proc simplex2cartesian*(simplexPoints: Tensor[float]): Tensor[float] =
     ## Converts Arraymancer `Tensor[float]` of `simplexPoints` with fractional coordinates (e.g., from grid or random sampling) to points in a cartesian space (within unit n-sphere)
-    ## for purposes of plotting in the much more common cartesian space.
+    ## for purposes of plotting in the much more common cartesian space. Defined for 1, 2, 3, and 4-component simplexes corresponding to 0D, 1D, 2D, and 3D spaces respectively.
     let dim = simplexPoints.shape[1]
     assert dim > 0, "0-component simplex is not defined"
     
