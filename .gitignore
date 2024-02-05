@@ -1,9 +1,0 @@
-## My NIM gitignore
-*
-!LICENSE
-!Dockerfile
-!**/
-!*.*
-*.so
-*.pyd
-.DS_Store
