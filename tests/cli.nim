@@ -3,7 +3,6 @@ import system
 import std/unittest
 import std/strutils
 import std/sequtils
-import std/sugar
 import arraymancer/Tensor
 import arraymancer/io
 import std/hashes
@@ -152,7 +151,22 @@ suite "test if correct graph output is given when nimplex is run in command line
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"GIS\", \"3\", \"3\"]", 
-                "Nodes Shape: [10, 3]"]
+                "Nodes Shape: [10, 3]",
+                "Edges Count: 36"
+                ]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i] == reference[i]
+
+    test "generate medium size integer simplex graph (GIS 7 12) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c GIS 7 12")
+            outputLines = output.splitLines
+            reference = @[
+                "Running with configuration: @[\"GIS\", \"7\", \"12\"]", 
+                "Nodes Shape: [18564, 7]",
+                "Edges Count: 519792"
+                ]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -188,7 +202,9 @@ suite "test if correct graph output is given when nimplex is run in command line
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"GFS\", \"3\", \"3\"]", 
-                "Nodes Shape: [10, 3]"]
+                "Nodes Shape: [10, 3]",
+                "Edges Count: 36"
+                ]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -256,12 +272,12 @@ suite "Test NumPy exports corectness for grids":
             require fileExists("nimplex")
 
     test "generate auto-named a medium fractional internal simplex grid (IFP 7 11) and export it to NumPy (nimplex_IF_7_11.npy)":
-        let (output, exitCode) = execCmdEx("./nimplex -c IFN 7 11")
+        let (_, exitCode) = execCmdEx("./nimplex -c IFN 7 11")
         check exitCode == 0
         check fileExists("nimplex_IF_7_11.npy")
 
     test "generate a medium fractional internal simplex grid (IFP 7 11) named testExport.npy and export it to NumPy":
-        let (output, exitCode) = execCmdEx("./nimplex -c IFN 7 11 testExport.npy")
+        let (_, exitCode) = execCmdEx("./nimplex -c IFN 7 11 testExport.npy")
         check exitCode == 0
         check fileExists("testExport.npy")
 
@@ -289,13 +305,13 @@ suite "Test NumPy exports corectness for graphs":
             require fileExists("nimplex")
 
     test "generate auto-named a medium fractional simplex graph (GFP 7 11) and export it to NumPy (nimplex_GF_7_11_nodes.npy and nimplex_GF_7_11_neighbors.npy)":
-        let (output, exitCode) = execCmdEx("./nimplex -c GFN 7 11")
+        let (_, exitCode) = execCmdEx("./nimplex -c GFN 7 11")
         check exitCode == 0
         check fileExists("nimplex_GF_7_11_nodes.npy")
         check fileExists("nimplex_GF_7_11_neighbors.npy")
 
     test "generate a medium fractional simplex graph (GFP 7 11) named testExport.npy and testExport.npy and export it to NumPy":
-        let (output, exitCode) = execCmdEx("./nimplex -c GFN 7 11 testExport.npy")
+        let (_, exitCode) = execCmdEx("./nimplex -c GFN 7 11 testExport.npy")
         check exitCode == 0
         check fileExists("testExport_nodes.npy")
         check fileExists("testExport_neighbors.npy")
