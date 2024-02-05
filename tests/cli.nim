@@ -22,7 +22,9 @@ suite "test if correct grid output is given when nimplex is run in command line 
         let 
             (output, exitCode) = execCmdEx("./nimplex -c FIS 3 3")
             outputLines = output.splitLines
-            reference = @["Running with configuration:@[\"FIS\", \"3\", \"3\"]", "Shape:[10, 3]"]
+            reference = @[
+                "Running with configuration: @[\"FIS\", \"3\", \"3\"]", 
+                "Shape: [10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -31,7 +33,9 @@ suite "test if correct grid output is given when nimplex is run in command line 
         let 
             (output, exitCode) = execCmdEx("./nimplex -c FIS 9 12")
             outputLines = output.splitLines
-            reference = @["Running with configuration:@[\"FIS\", \"9\", \"12\"]", "Shape:[125970, 9]"]
+            reference = @[
+                "Running with configuration: @[\"FIS\", \"9\", \"12\"]", 
+                "Shape: [125970, 9]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -40,7 +44,9 @@ suite "test if correct grid output is given when nimplex is run in command line 
         let 
             (output, exitCode) = execCmdEx("./nimplex -c IIS 7 12")
             outputLines = output.splitLines
-            reference = @["Running with configuration:@[\"IIS\", \"7\", \"12\"]", "Shape:[462, 7]"]
+            reference = @[
+                "Running with configuration: @[\"IIS\", \"7\", \"12\"]",
+                "Shape: [462, 7]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -50,8 +56,8 @@ suite "test if correct grid output is given when nimplex is run in command line 
             (output, exitCode) = execCmdEx("./nimplex -c FIP 3 3")
             outputLines = output.splitLines
             reference = @[
-                "Running with configuration:@[\"FIP\", \"3\", \"3\"]", 
-                "Full Output:Tensor[system.int] of shape \"[10, 3]\" on backend \"Cpu\"", 
+                "Running with configuration: @[\"FIP\", \"3\", \"3\"]", 
+                "Full Output: Tensor[system.int] of shape \"[10, 3]\" on backend \"Cpu\"", 
                 "|0      0     3|", 
                 "|0      1     2|", 
                 "|0      2     1|", 
@@ -72,8 +78,8 @@ suite "test if correct grid output is given when nimplex is run in command line 
             (output, exitCode) = execCmdEx("./nimplex -c IIP 3 5")
             outputLines = output.splitLines
             reference = @[
-                "Running with configuration:@[\"IIP\", \"3\", \"5\"]", 
-                "Full Output:Tensor[system.int] of shape \"[6, 3]\" on backend \"Cpu\"", 
+                "Running with configuration: @[\"IIP\", \"3\", \"5\"]", 
+                "Full Output: Tensor[system.int] of shape \"[6, 3]\" on backend \"Cpu\"", 
                 "|1      1     3|", 
                 "|1      2     2|", 
                 "|1      3     1|", 
@@ -145,8 +151,8 @@ suite "test if correct graph output is given when nimplex is run in command line
             (output, exitCode) = execCmdEx("./nimplex -c GIS 3 3")
             outputLines = output.splitLines
             reference = @[
-                "Running with configuration:@[\"GIS\", \"3\", \"3\"]", 
-                "Nodes Shape:[10, 3]"]
+                "Running with configuration: @[\"GIS\", \"3\", \"3\"]", 
+                "Nodes Shape: [10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]
@@ -156,7 +162,7 @@ suite "test if correct graph output is given when nimplex is run in command line
             (output, exitCode) = execCmdEx("./nimplex -c GIP 3 3")
             outputLines = output.splitLines
             reference = @[
-                "Running with configuration:@[\"GIP\", \"3\", \"3\"]", 
+                "Running with configuration: @[\"GIP\", \"3\", \"3\"]", 
                 "Nodes:",
                 "Tensor[system.int] of shape \"[10, 3]\" on backend \"Cpu\"", 
                 "|0      0     3|", 
@@ -181,8 +187,8 @@ suite "test if correct graph output is given when nimplex is run in command line
             (output, exitCode) = execCmdEx("./nimplex -c GFS 3 3")
             outputLines = output.splitLines
             reference = @[
-                "Running with configuration:@[\"GFS\", \"3\", \"3\"]", 
-                "Nodes Shape:[10, 3]"]
+                "Running with configuration: @[\"GFS\", \"3\", \"3\"]", 
+                "Nodes Shape: [10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
             check outputLines[i] == reference[i]

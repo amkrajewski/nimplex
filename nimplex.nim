@@ -403,7 +403,7 @@ proc outFunction(config: string, npyName: string, outputData: Tensor) =
     ## and the destiantion filename `npyName`, which should include the extension.
     case config[2]:
         of 'P': 
-            echo "Full Output:", outputData
+            echo "Full Output: ", outputData
         of 'N': 
             outputData.write_npy(npyName)
             echo "Shape: ", outputData.shape
@@ -496,14 +496,14 @@ when appType != "lib":
                 let tempIn = readLine(stdin)
                 if tempIn.len > 0:
                     npyName = tempIn
-                echo "Persisting to NumPy array file:", npyName
+                echo "Persisting to NumPy array file: ", npyName
 
             taskRouter(config, dim, ndiv, npyName)
 
         # Configured
         elif args[0] == "-c" or args[0] == "--config":
             let config = args[1]
-            echo "Running with configuration:", args[1..<args.len]
+            echo "Running with configuration: ", args[1..<args.len]
             configValidation(config)
 
             let dim = args[2].parseInt()
@@ -521,7 +521,7 @@ when appType != "lib":
             if config[2] == 'N':
                 if args.len == 5:
                     npyName = args[4]
-                echo "Persisting to NumPy array file:", npyName
+                echo "Persisting to NumPy array file: ", npyName
 
             taskRouter(config, dim, ndiv, npyName)
 
