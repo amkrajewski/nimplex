@@ -123,9 +123,9 @@
 ## scientific computing community.
 ## 
 ## ## Usage in Nim
-## Usage within Nim is fairly straightforward. You can install it using Nimble as explained earlier, or install it directly from GitHub:
+## Usage within Nim is fairly straightforward. You can install it using Nimble as explained earlier, or install it directly from GitHub, making sure to use the slightly modified `@#nimble` branch:
 ## ```cmd
-## nimble install -y https://github.com/amkrajewski/nimplex
+## nimble install -y https://github.com/amkrajewski/nimplex@#nimble
 ## ```
 ## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
 ## **Then simply follow the API documentation below.**
