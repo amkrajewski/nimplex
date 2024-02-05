@@ -8,7 +8,7 @@ import std/times
 
 # SMALL GRAPHS
 let t0 = cpuTime()
-echo "*** SMALL GRAPHS ***"
+echo "***** SMALL GRAPHS *****"
 
 suite "small simplex integer 2-component (binary) graph":
     let 
@@ -174,7 +174,7 @@ suite "small simplex fractional 4-component (quaternary) graph":
 
 # LARGE GRAPHS 
 let t1 = cpuTime()
-echo "*** LARGE GRAPHS ***"
+echo "***** LARGE GRAPHS *****"
 
 suite "large simplex integer 3-component (ternary) graph":
     let 
@@ -273,6 +273,7 @@ suite "very large simplex fractional 12-component graph (1M+ nodes  / 93M+ edges
 
 # BENCHMARK RESULTS
 let t2 = cpuTime()
-echo "\n*** BENCHMARK RESULTS ***\n"
+echo "\n***** GRAPH BENCHMARK RESULTS *****\n"
 echo "Small Graphs:\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
 echo "Large Graphs:\n" & $initDuration(milliseconds = ((t2 - t1)*1e3).int) & "\n"
+echo "-------------------------------------\n"

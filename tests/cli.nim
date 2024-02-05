@@ -8,6 +8,10 @@ import arraymancer/io
 import std/hashes
 import ../nimplex
 import std/sets
+import std/times
+
+let t0 = cpuTime()
+echo "***** CLI Tests *****"
 
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
@@ -349,3 +353,7 @@ suite "Test NumPy exports corectness for graphs":
         for i in 0..<resultNeighbors.len:
             check resultNeighbors[i].toHashSet() == loadedNumpyNeighborsParsed[i].toHashSet()
     
+let t1 = cpuTime()
+echo "\n***** CLI BENCHMARK RESULTS *****\n"
+echo "Large Graphs:\n" & $initDuration(milliseconds = ((t1 - t0)*1e3).int) & "\n"
+echo "-----------------------------------\n"
