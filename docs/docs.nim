@@ -111,9 +111,9 @@
 ##     Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of
 ##     edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
 ## 
-##     As explored in the manuscript, such representations, even of different dimensions, can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from
-##     manuscript, inspired by problem of joining titanium with stainless steel in [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649) using 3-component
-##     spaces, one encode 3 separate paths where some components are shared in predetermined fashion. This to efficiently encode the problem space in form of a structure graph (left panel below) and then use it to construct a
+##     As explored in the manuscript, such representations, even of different dimensions, can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. Consider the problem of joining
+##     titanium with stainless steel using 3-component spaces as presented in Bobbio et. al, [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649). Example #2 from the manuscript handles this problem by encoding 3
+##     separate paths where some components are shared in a predetermined fashion. This is done to efficiently encode the problem space in the form of a structure graph (left panel below) and then use it to construct a
 ##     single **simplex graph complex** (right panel below) as a single consistent structure.
 ## 
 ##     .. figure:: ../assets/Fig4.png
