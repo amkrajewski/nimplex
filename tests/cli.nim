@@ -7,7 +7,7 @@ import std/sugar
 import arraymancer/Tensor
 import arraymancer/io
 import std/hashes
-import ../nimplex
+import ../src/nimplex
 import std/sets
 
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":

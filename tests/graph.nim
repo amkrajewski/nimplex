@@ -1,5 +1,5 @@
 import std/unittest
-import ../nimplex
+import ../src/nimplex
 import arraymancer/Tensor
 import std/sequtils
 import std/sugar
