@@ -25,7 +25,7 @@
 ##    ```cmd
 ##    ./nimplex -c IFP 3 10
 ##    ```
-## 2. An **compiled Python library**, which you can import and use in your Python code like so:
+## 2. A **compiled Python library**, which you can import and use in your Python code like so:
 ##    ```python
 ##    import nimplex
 ##    ```
