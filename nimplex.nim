@@ -11,6 +11,7 @@ import std/sugar
 import std/times
 import std/strutils
 from std/algorithm import reverse
+from std/sequtils import foldl, mapIt
 
 # Arraymancer library for tensor operations
 import arraymancer/Tensor
@@ -405,9 +406,9 @@ proc outFunction(config: string, npyName: string, outputData: Tensor) =
             echo "Full Output:", outputData
         of 'N': 
             outputData.write_npy(npyName)
-            echo "Shape:", outputData.shape
+            echo "Shape: ", outputData.shape
         of 'S': 
-            echo "Shape:", outputData.shape
+            echo "Shape: ", outputData.shape
         else: 
             echo "Invalid Config"
     
@@ -434,11 +435,11 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
                     else:
                         neighborsTensor[i, j] = -1
             neighborsTensor.write_npy(npyName.replace(".npy", "_neighbors.npy"))
-            echo "Nodes Shape:", outputData[0].shape
-            echo "Neighbors Lenght:", outputData[1].len
+            echo "Nodes Shape: ", outputData[0].shape
+            echo "Edges Count: ", outputData[1].mapIt(it.len).foldl(a + b, 0)
         of 'S': 
-            echo "Nodes Shape:", outputData[0].shape
-            echo "Neighbors Lenght:", outputData[1].len
+            echo "Nodes Shape: ", outputData[0].shape
+            echo "Edges Count: ", outputData[1].mapIt(it.len).foldl(a + b, 0)
         else: 
             echo "Invalid Congig"
 
