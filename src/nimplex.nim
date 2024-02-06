@@ -28,7 +28,7 @@
 ##    ```cmd
 ##    ./nimplex -c IFP 3 10
 ##    ```
-## 2. An **compiled Python library**, which you can import and use in your Python code like so:
+## 2. A **compiled Python library**, which you can import and use in your Python code like so:
 ##    ```python
 ##    import nimplex
 ##    ```
@@ -114,9 +114,9 @@
 ##     Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of
 ##     edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
 ## 
-##     As explored in the manuscript, such representations, even of different dimensions, can can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from
-##     manuscript, inspired by problem of joining titanium with stainless steel in [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649) using 3-component
-##     spaces, one encode 3 separate paths where some components are shared in predetermined fashion. This to efficiently encode the problem space in form of a structure graph (left panel below) and then use it to construct a
+##     As explored in the manuscript, such representations, even of different dimensions, can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. Consider the problem of joining
+##     titanium with stainless steel using 3-component spaces as presented in Bobbio et. al, [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649). Example #2 from the manuscript handles this problem by encoding 3
+##     separate paths where some components are shared in a predetermined fashion. This is done to efficiently encode the problem space in the form of a structure graph (left panel below) and then use it to construct a
 ##     single **simplex graph complex** (right panel below) as a single consistent structure.
 ## 
 ##     .. figure:: ../assets/Fig4.png
@@ -126,9 +126,9 @@
 ## scientific computing community.
 ## 
 ## ## Usage in Nim
-## Usage within Nim is fairly straightforward. You can install it using Nimble as explained earlier, or install it directly from GitHub:
+## Usage within Nim is fairly straightforward. You can install it using Nimble as explained earlier, or install it directly from GitHub, making sure to use the slightly modified `@#nimble` branch:
 ## ```cmd
-## nimble install -y https://github.com/amkrajewski/nimplex
+## nimble install -y https://github.com/amkrajewski/nimplex@#nimble
 ## ```
 ## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
 ## **Then simply follow the API documentation below.**
@@ -236,6 +236,7 @@
 ## 
 ## **The following sections cover the core API of the library.** Further documentation for auxiliary functions, defined in **utils** submodule, can be found by following links under [Imports](#6) below
 ## or by searching the API [Index](theindex.html) in the top left corner of this page.
+
 
 # Pragmas with compiler and linker options
 {.passC: "-flto -ffast-math".} 
