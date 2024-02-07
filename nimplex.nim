@@ -251,14 +251,14 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
     # Matrix multiplication to get the final grid
     result = simplexPoints * cmpTensor
 
-proc pure_component_indexes*(dim: int, ndiv: int): seq[int] =
+func pure_component_indexes*(dim: int, ndiv: int): seq[int] =
     ## This helper function returns a `seq[int]` of indexes of pure components in a simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_grid`_).
     for d in 1..dim:
         result.add(binom(ndiv+d-1, ndiv)-1)
     # Reverse the order as the last pure component is the first in the grid
     result.reverse()
 
-proc pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
+func pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
     ## This helper function returns a `seq[int]` of indexes of pure components in an **internal** simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_internal_grid`_).
     for d in 1..dim:
         result.add(binom(ndiv-1, dim-1)-1)
@@ -382,7 +382,7 @@ You can also utilize the following auxiliary flags:
                         with 12 divisions per dimension / 1M random samples).
 """
 
-proc configValidation(config: string) = 
+func configValidation(config: string) = 
     ## Validates the 3-letter configuration string provided by the user.
     assert config.len == 3, "\n--> Invalid configuration lenght. Must be 3 letters."
     assert config[0] in @['F', 'I', 'R', 'G'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, Monte Carlo sampling, or Graph respectively"
@@ -391,7 +391,7 @@ proc configValidation(config: string) =
         assert config[1] == 'F', "\n--> Integer positions not implemented for Random sampling. Must be F for Fractional positions."
     assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape, or persist Numpy output respectively"
 
-proc nDivValidation(config: string, nDiv: int, dim: int) = 
+func nDivValidation(config: string, nDiv: int, dim: int) = 
     ## Validates the number of divisions per each simplex dimension provided by the user for all tasks except Random sampling.
     if config[0] == 'I':
         assert ndiv >= dim, "\n--> Invalid number of divisions. Must be greater or equal to the simplex dimension to produce a non-empty internal grid."
