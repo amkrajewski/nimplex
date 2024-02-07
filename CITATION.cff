@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite our research article as:"
+authors:
+- family-names: "Krajewski"
+  given-names: "Adam M."
+  orcid: "https://orcid.org/0000-0002-2266-0099"
+- family-names: "Beese"
+  given-names: "Allison M."
+  orcid: "https://orcid.org/0000-0002-7022-3387"
+- family-names: "Reinhart"
+  given-names: "Wesley F."
+  orcid: "https://orcid.org/0000-0001-7256-2123"
+- family-names: "Liu"
+  given-names: "Zi-Kui"
+  orcid: "https://orcid.org/0000-0003-3346-3696"
+title: "Efficient Generation of Grids and Traversal Graphs in Compositional Spaces towards Exploration and Path Planning Exemplified in Materials"
+doi: 10.48550/arXiv.2402.03528
+date-released: 2024-02-06
+url: "https://github.com/amkrajewski/nimplex"
