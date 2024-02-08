@@ -91,10 +91,10 @@ The library provides a growing number of methods specific to compositional (simp
 
    One can, however, fairly easily sample from a special case of Dirichlet distribution, as explained in the manuscript, which leads to uniform sampling in the simplex space (right panel below). **Nimplex can sample around 10M points per second in 9-dimensional space** on a modern CPU.
 
-   <img src="assets/Fig1.png" alt="Monte Carlo Sampling" width="800"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig1.png" alt="Monte Carlo Sampling" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
 2. **Simplex / Compositional Grids** are a more structured approach to sampling, where all possible compositions quantized to a given resolution, like 1% for 100 divisions per dimension, are generated. This is useful for example when one wants to map a function over the simplex space. In total `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}` are generated, where `d` is the dimensionality of the simplex space and `n_d` is the number of divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **5M points per second in 9-dimensional space** on a modern CPU. A choice is given between generating the gird as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
-   <img src="assets/Fig2.png" alt="Integer and Fractional Simplex Grids in Ternary Space" width="800"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig2.png" alt="Integer and Fractional Simplex Grids in Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 3. **Internal Simplex / Compositional Grids** are a modification of the above method, where only points inside the simplex, i.e. all components are present, are generated. This is useful in cases where, one cannot discard any component entirely, for instance, because manufacturing setup has minimum feed rate (leakage). Nimplex introduces a new algorithm to generate these points procedurally (see manuscript for details) based on further modification of NEXCOM algorithm. 
 
@@ -102,13 +102,13 @@ The library provides a growing number of methods specific to compositional (simp
 
 4. **Simplex / Compositional Graphs** generation is ***the most critical capability***, first introduced in the nimplex manuscript. They are created by using combinatorics and disocvered patterns to assign edges between all neighboring nodes during the simplex grid (graph nodes) generation process. Effectively, a traversal graph is generated, spanning all possible compositions (given a resolution) creating an extremely efficient representation of the problem space, which allows deployment of numerous graph algorithms. 
 
-   <img src="assets/Fig3.png" alt="Simplex Graph for Ternary Space" width="800"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig3.png" alt="Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
    Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
    
    As explored in the manuscript, such representations, even of different dimensions, can can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from manuscript, inspired by problem of joining titanium with stainless steel in [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649) using 3-component spaces, one encode 3 separate paths where some components are shared in predetermined fashion. This to efficiently encode the problem space in form of a structure graph (left panel below and then use it to construct a single **simplex graph complex** (right panel below) as a single consistent structure.
 
-   <img src="assets/Fig4.png" alt="Simplex Graph Complex" width="800"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig4.png" alt="Simplex Graph Complex" width="1000" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 Several other methods are in testing and will likely be added in the future releases. If you have any suggestions, please open an issue on GitHub as we are always soliciting new ideas and use cases based on real-world problems in the 
 scientific computing community.
