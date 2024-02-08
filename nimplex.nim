@@ -30,6 +30,10 @@ when defined(nimdoc):
     include docs/docs
     # The plotting utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
     import utils/plotting
+    # Check if `docs/changelog.nim` file is present in the project directory and include it in the documentation if it is.
+    import std/os
+    when existsFile("docs/changelog.nim"):
+        import docs/changelog
 
 # GRID
 proc simplex_grid*(dim: int, 
