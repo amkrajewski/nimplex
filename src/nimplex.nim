@@ -27,13 +27,13 @@ when appType == "lib" and not defined(nimdoc):
 
 when defined(nimdoc):
     # All of (comprehensive) introduction to the documentation lives in this included Nim file, while API is generated from docstrings in the code. It was moved there for cleaner code.
-    include docs/docs
+    include ../docs/docs
     # The plotting utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
-    import utils/plotting
+    import nimplex/utils/plotting
     # Check if `docs/changelog.nim` file is present in the project directory and include it in the documentation if it is.
     import std/os
-    when existsFile("docs/changelog.nim"):
-        import docs/changelog
+    when existsFile("../docs/changelog.nim"):
+        import ../docs/changelog
 
 # GRID
 proc simplex_grid*(dim: int, 
