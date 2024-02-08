@@ -17,6 +17,11 @@ let
     response = newHttpClient().get(url)
     data = parseJson(response.body)
 
+if changelogType == "md":
+    targetFile.writeLine("**Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](changelog.html) | [utils/plotting](../utils/plotting.html)\n")
+elif changelogType == "nim":
+    targetFile.writeLine("## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](changelog.html) | [utils/plotting](../utils/plotting.html)\n")
+
 for d in data:
     let 
         tag = d["tag_name"].getStr()
