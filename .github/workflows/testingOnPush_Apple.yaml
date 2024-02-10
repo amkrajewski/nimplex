@@ -9,8 +9,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: macos-latest
+  test-Intel:
+    runs-on: macos-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Nim with Homebrew
+        run: brew install nim
+      - name: Install dependencies
+        run: nimble install -y arraymancer nimpy
+      - name: Compile nimplex
+        run: nim c -d:release nimplex.nim
+      - name: Run grid tests
+        run: nim c -r -d:release tests/grid.nim 
+      - name: Run graph tests
+        run: nim c -r -d:release tests/graph.nim
+      - name: Run CLI tests
+        run: nim c -r -d:release tests/cli.nim
+  test-M1:
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v3
