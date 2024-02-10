@@ -16,7 +16,8 @@ echo "***** CLI Tests *****"
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        echo "Detected host OS: " & hostOS
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
@@ -144,7 +145,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
@@ -270,7 +271,7 @@ suite "Test NumPy exports corectness for grids":
 
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
@@ -303,7 +304,7 @@ suite "Test NumPy exports corectness for graphs":
 
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
