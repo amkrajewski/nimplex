@@ -14,6 +14,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: '3.10'
+      - name: Install Nim
+        run: conda install -c conda-forge libopenblas mkl
       - uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: '2.0.0'
