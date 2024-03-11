@@ -65,7 +65,7 @@
 ## ```cmd
 ## git clone https://github.com/amkrajewski/nimplex
 ## cd nimplex
-## nim c -r -d:release nimplex.nim -benchmark
+## nim c -r -d:release nimplex.nim --benchmark
 ## ```
 ## which will compile the library and run a few benchmarks to make sure everything runs smoothly. You should then see a compiled binary file `nimplex` in the current directory which exposes the CLI tool.
 ## If you want to use the Python bindings, you can compile the library with slightly different flags (depending on your system configuration) like so for Linux/MacOS:
