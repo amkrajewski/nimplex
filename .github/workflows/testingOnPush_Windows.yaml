@@ -13,9 +13,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           python-version: '3.10'
@@ -23,7 +23,7 @@ jobs:
         run: conda install -c conda-forge libopenblas mkl
       - uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: '2.0.0'
+          nim-version: '2.0.2'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
