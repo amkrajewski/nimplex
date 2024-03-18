@@ -350,7 +350,7 @@ template benchmark(benchmarkName: string, code: untyped) =
         let t0 = cpuTime()
         code
         let t1 = cpuTime()
-        echo benchmarkName & "\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
+        styledEcho fgBlue, styleBright, benchmarkName, "\n", resetStyle, fgGreen, $initDuration(microseconds = ((t1 - t0)*1e6).int), resetStyle, "\n"
 
 proc echoHelp*() = 
     ## Prints the help message for the CLI, which is a concise version of one given in nimplex's documentation.
@@ -532,6 +532,7 @@ when appType != "lib":
 
         elif args[0] in @["-b", "--benchmark"]:
             # A few benchmarks for the library to compare across different systems, implementations, and languages.
+            echo "\nRunning several quick benchmarks for nimplex library...\n"
             benchmark "Simplex Grid Full (dim=9, ndiv=12):":
                 discard simplex_grid(9, 12)
             benchmark "Simplex Grid Full Fractional (dim=9, ndiv=12):":
