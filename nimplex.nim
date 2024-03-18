@@ -7,6 +7,7 @@
 
 # Standard Nim library imports
 from std/math import binom, ln
+import std/terminal
 import std/sugar
 import std/times
 import std/strutils
@@ -353,38 +354,28 @@ template benchmark(benchmarkName: string, code: untyped) =
 
 proc echoHelp*() = 
     ## Prints the help message for the CLI, which is a concise version of one given in nimplex's documentation.
-    echo """
-
-To run nimplex please either (1) provide no arguments and follow the prompts or 
-(2) use "-c" or "--config" to provide the configuration per instructions below:
-
-- Provide the 3-letter configuration for task type:
-    1. Grid type or uniform random sampling:
-        - F: Full grid (including the simplex boundary)
-        - I: Internal grid (only points inside the simplex)
-        - R: Random/Monte Carlo uniform sampling over simplex.
-        - G: Graph (list of grid nodes and list of their neighbors)
-    2. Fractional or Integer positions:
-        - F: Fractional grid/graph (points are normalized to fractions of 1)
-        - I: Integer grid/graph (points are integers)
-    3. Print full result, its shape, or persist in a file:
-        - P: Print (presents full result as a table)
-        - S: Shape (only the shape / size information)
-        - N: Persist to NumPy array file ("nimplex_<configFlags>.npy" or 
-             optionally a custom path as an additonal argument)
-
-- Followed by integers of (1) simplex dimension and (2) number of divisions or
-  samples depending on the task type. Optionally, custom output file path for 
-  NumPy array can be provided as the last argument. E.g.:
-    -c FFS [simplex dimension] [number of divisions]
-    -c RFP [simplex dimension] [number of samples]
-    -c FIN [simplex dimension] [number of divisions] [path/to/outfile.npy]
-
-You can also utilize the following auxiliary flags:
---help       | -h   --> Show help.
---benchmark  | -b   --> Run benchmark for all tasks (9-dimensional space
-                        with 12 divisions per dimension / 1M random samples).
-"""
+    styledEcho fgGreen, "\nWelcome to ", styleItalic, "nimplex", resetStyle, "!"
+    styledEcho "To run it, please either (1) provide no arguments and follow the prompts or (2) use ", fgBlue, "-c", resetStyle, " or ", fgBlue, "--config", resetStyle, " to provide the configuration per instructions below:\n"
+    echo "- Provide the 3-letter configuration for task type:"
+    echo "    1. Task type (grid/random/graph):"
+    styledEcho "      - ", styleBright, fgMagenta, "F", resetStyle, ": ", fgMagenta, "F", resetStyle, "ull grid", styleDim, "(including the simplex boundary)"
+    styledEcho "      - ", styleBright, fgMagenta, "I", resetStyle, ": ", fgMagenta, "I", resetStyle, "nternal grid ", styleDim, "(only points inside the simplex)"
+    styledEcho "      - ", styleBright, fgMagenta, "R", resetStyle, ": ", fgMagenta, "R", resetStyle, "andom/Monte Carlo uniform sampling over simplex"
+    styledEcho "      - ", styleBright, fgMagenta, "G", resetStyle, ": ", fgMagenta, "G", resetStyle, "raph ", styleDim, "(list of grid nodes and list of their neighbors)"
+    echo "    2. Fractional or Integer positions:"
+    styledEcho "      - ", styleBright, fgMagenta, "F", resetStyle, ": ", fgMagenta, "F", resetStyle, "ractional grid/graph ", styleDim, "(points are normalized to fractions of 1)"
+    styledEcho "      - ", styleBright, fgMagenta, "I", resetStyle, ": ", fgMagenta, "I", resetStyle, "nteger grid/graph ", styleDim, "(points are integers)"
+    echo "    3. Print full result, its shape, or persist in a file:"
+    styledEcho "      - ", styleBright, fgMagenta, "P", resetStyle, ": ", fgMagenta, "P", resetStyle, "rint ", styleDim, "(presents full result as a table. Not recommended for large grids)"
+    styledEcho "      - ", styleBright, fgMagenta, "S", resetStyle, ": ", fgMagenta, "S", resetStyle, "hape ", styleDim, "(only the shape / size information). Actual result is obtained but discarded"
+    styledEcho "      - ", styleBright, fgMagenta, "N", resetStyle, ": ", fgMagenta, "N", resetStyle, "umpPy array file ", styleDim, "(", fgMagenta, "nimplex_<configFlags>.npy", resetStyle, styleDim, " by default, or optionally a custom path as an additonal argument)"
+    echo "\n- Followed by integers of (1) simplex dimension and (2) number of divisions or samples depending on the task type. Optionally, custom output file path for NumPy array can be provided as the last argument. E.g.:"
+    styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "FFS", resetStyle, fgMagenta, " [simplex dimension] [number of divisions]", resetStyle
+    styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "RFP", resetStyle, fgMagenta, " [simplex dimension] [number of samples]", resetStyle
+    styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "FIN", resetStyle, fgMagenta, " [simplex dimension] [number of divisions] [path/to/outfile.npy]", resetStyle
+    echo "\nYou can also utilize the following auxiliary flags:"
+    styledEcho fgBlue, "    --help       | -h", resetStyle, "   --> Show help."
+    styledEcho fgBlue, "    --benchmark  | -b", resetStyle, "   --> Run benchmark for all tasks ", styleDim, "(including 9-dimensional space with 12 divisions per dimension and 1M random samples)."
 
 func configValidation(config: string) = 
     ## Validates the 3-letter configuration string provided by the user.
