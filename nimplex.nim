@@ -468,37 +468,43 @@ when appType != "lib":
         
         # Interactive
         if args.len == 0:
-            echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
+            styledEcho fgGreen, "\nWelcome to ", styleItalic, "nimplex", resetStyle, "!"
+            styledEcho "Please provide 3-letter configuration (", styleBright, fgMagenta, "F", resetStyle, fgMagenta, "ull/", styleBright, fgMagenta, "I", resetStyle, fgMagenta, 
+                "nternal/", styleBright, fgMagenta, "R", resetStyle, fgMagenta, "andom/", styleBright, fgMagenta, "G", resetStyle, fgMagenta, "raph)(", styleBright, fgMagenta, "F", 
+                resetStyle, fgMagenta, "ractional/", styleBright, fgMagenta, "I", resetStyle, fgMagenta, "nteger)(", styleBright, fgMagenta, "P", resetStyle, fgMagenta, "rint/",
+                styleBright, fgMagenta, "S", resetStyle, fgMagenta, "hape/", styleBright, fgMagenta, "N", resetStyle, fgMagenta, "umpPy)", resetStyle, " - e.g. ", styleBright, fgMagenta, 
+                "FFS/RFP/FIN", resetStyle, ":"
+            #echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
             let config = readLine(stdin)
             configValidation(config)
 
-            echo "Simplex Dimensions / N of Components:"
+            styledEcho "Simplex Dimensions (# of Components) - e.g. ", styleBright, fgMagenta, "3", resetStyle, ":"
             let dim = readLine(stdin).parseInt() 
 
             var nDiv: int
             if config[0]=='R':
-                echo "Number of Samples:"
+                styledEcho "Number of Samples - e.g. ", styleBright, fgMagenta, "1000", resetStyle, ":"
                 nDiv = readLine(stdin).parseInt()
                 assert nDiv > 0, "\n--> Invalid number of samples. Must be a positive integer"
             else:
-                echo "N Divisions per Dimension:"
+                styledEcho "# of Divisions per Dimension - e.g. ", styleBright, fgMagenta, "12", resetStyle, ":"
                 ndiv = readLine(stdin).parseInt() 
                 nDivValidation(config, ndiv, dim)
 
             var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
             if config[2] == 'N':
-                echo "NumPy Array Output Filename (skip for default: " & npyName & "):"
+                styledEcho "NumPy Array Output Filename (skip for default: ", fgBlue, npyName, resetStyle, "):"
                 let tempIn = readLine(stdin)
                 if tempIn.len > 0:
                     npyName = tempIn
-                echo "Persisting to NumPy array file: ", npyName
+                styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
             taskRouter(config, dim, ndiv, npyName)
 
         # Configured
         elif args[0] == "-c" or args[0] == "--config":
             let config = args[1]
-            echo "Running with configuration: ", args[1..<args.len]
+            styledEcho "Running with configuration: ", fgMagenta, styleBright, $(args[1..<args.len]), resetStyle
             configValidation(config)
 
             let dim = args[2].parseInt()
@@ -516,7 +522,7 @@ when appType != "lib":
             if config[2] == 'N':
                 if args.len == 5:
                     npyName = args[4]
-                echo "Persisting to NumPy array file: ", npyName
+                styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
             taskRouter(config, dim, ndiv, npyName)
 
