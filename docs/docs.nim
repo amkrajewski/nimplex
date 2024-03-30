@@ -5,14 +5,14 @@
 ## **Navigation:** [nimplex](nimplex.html) (core library) | [docs/changelog](docs/changelog.html) | [utils/plotting](utils/plotting.html)
 ## 
 ## ## Quick Start
-## If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can efortlessely modify/extend the source code and re-compile it if you wish.
+## If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can effortlessly modify/extend the source code and re-compile it if you wish.
 ## 
 ## .. figure:: https://github.com/codespaces/badge.svg
 ##   :alt: Open in GitHub Codespaces
 ##   :target: https://codespaces.new/amkrajewski/nimplex?quickstart=1
 ## 
 ## ## Installation
-## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preffered way of interacting with the library (CLI, Nim, or Python) and your system configuration.
+## There are several **easy** ways to quickly get *nimplex* up and running on your system. The choice depends primarily on your preferred way of interacting with the library (CLI, Nim, or Python) and your system configuration.
 ## 
 ## ### Pre-Compiled Binaries (quick but not recommended)
 ## 
@@ -54,7 +54,7 @@
 ##   conda install -c conda-forge nim
 ##   ```
 ##
-## Then, you can use the boundeled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two top-level dependencies: 
+## Then, you can use the bundled [Nimble](https://github.com/nim-lang/nimble) tool (pip-like package manager for Nim) to install two top-level dependencies: 
 ## [arraymancer](https://github.com/mratsim/Arraymancer), which is a powerful N-dimensional array library, and [nimpy](https://github.com/yglukhov/nimpy) which 
 ## helps with the Python bindings. You can do it with a single command:
 ## ```cmd
@@ -80,7 +80,7 @@
 ## ***Note:*** Full technical discussion of methods and motivations is provided in the manuscript. The sections below are meant to provide a concise overview of the library's capabilities.
 ## 
 ## The library provides a growing number of methods specific to compositional (simplex) spaces:
-## 1. **Monte Carlo sampling** is the simplest method conceptually, where points are rendomly sampled from a simplex. In low dimensional cases, this can be accomplished by sampling from a uniform distribution in 
+## 1. **Monte Carlo sampling** is the simplest method conceptually, where points are randomly sampled from a simplex. In low dimensional cases, this can be accomplished by sampling from a uniform distribution in 
 ##     (d-1)-Cartesian space and then rejecting points outside the simplex (left panel below). However, in this approach, the inefficiency growth is **factorial** with the dimensionality of the simplex space. 
 ##     Instead, some try to sample from a uniform distribution in (d)-Cartesian space and normalize the points to sum to 1, however, this leads to over-sampling in the center of each simplex dimension (middle panel below). 
 ##     One can, however, fairly easily sample from a special case of Dirichlet distribution, as explained in the manuscript, which leads to uniform sampling in the simplex space (right panel below). **Nimplex can sample 
@@ -92,7 +92,7 @@
 ## 2. **Simplex / Compositional Grids** are a more structured approach to sampling, where all possible compositions quantized to a given resolution, like 1% for 100 divisions per dimension, are generated. This is useful for example when
 ##     one wants to map a function over the simplex space. In total `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}` are generated, where `d` is the dimensionality of the simplex space and `n_d` is the number of
 ##     divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **5M points per second in 9-dimensional space** on a modern CPU. A choice is given 
-##     between generating the gird as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
+##     between generating the grid as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
 ## 
 ##     
 ##     .. figure:: ../assets/Fig2.png
@@ -101,9 +101,9 @@
 ## 3. **Internal Simplex / Compositional Grids** are a modification of the above method, where only points inside the simplex, i.e. all components are present, are generated. This is useful in cases where, one cannot discard any component
 ##     entirely, for instance, because manufacturing setup has minimum feed rate (leakage). Nimplex introduces a new algorithm to generate these points procedurally (see manuscript for details) based on further modification of NEXCOM algorithm.
 ##     In total `N_I(d, n_d) = \binom{n_d-1}{d-1}` are generated, critically without any performance penalty compared to the full grid, which can reach orders of magnitude when `d` approaches `n_d`. Similar to the full grid, a choice is given
-##    between generating the gird as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
+##    between generating the grid as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
 ## 
-## 4. **Simplex / Compositional Graphs** generation is ***the most critical capability***, first introduced in the nimplex manuscript. They are created by using combinatorics and disocvered patterns to assign edges between all neighboring nodes 
+## 4. **Simplex / Compositional Graphs** generation is ***the most critical capability***, first introduced in the nimplex manuscript. They are created by using combinatorics and discovered patterns to assign edges between all neighboring nodes 
 ##     during the simplex grid (graph nodes) generation process. Effectively, a traversal graph is generated, spanning all possible compositions (given a resolution) creating an extremely efficient representation of the problem space, which 
 ##     allows deployment of numerous graph algorithms. 
 ## 
@@ -113,7 +113,7 @@
 ##     Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of
 ##     edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
 ## 
-##     As explored in the manuscript, such representations, even of different dimensions, can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. Consider the problem of joining
+##     As explored in the manuscript, such representations, even of different dimensions, can then be used to efficiently encode complex problem spaces where some prior assumptions and knowledge are available. Consider the problem of joining
 ##     titanium with stainless steel using 3-component spaces as presented in Bobbio et. al, [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649). Example #2 from the manuscript handles this problem by encoding 3
 ##     separate paths where some components are shared in a predetermined fashion. This is done to efficiently encode the problem space in the form of a structure graph (left panel below) and then use it to construct a
 ##     single **simplex graph complex** (right panel below) as a single consistent structure.
