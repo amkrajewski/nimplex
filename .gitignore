@@ -5,6 +5,7 @@
 !**/
 !*.*
 **/*.npy
+**/*.pyc
 htmldocs/
 *.so
 *.pyd
