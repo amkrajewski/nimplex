@@ -18,7 +18,7 @@ expected_conds=[v.T]+[v.X(el) for el in comps[:-2]]
 default_conds={v.P: 101325, v.N: 1.0}
 
 # A neat callable for the equilibrium calculation that we will pass to the parallel graph exploration
-def quilibrium_callable(elP):
+def equilibrium_callable(elP):
     # Round to 6 decimal places, but make sure that 0.0 is not rounded to 0.0. pyCalphad will not like 
     # if the components are exactly 0 or sum to exactly 1 in the equilibrium calculation for reasons
     # that are beyond the scope of this tutorial.
