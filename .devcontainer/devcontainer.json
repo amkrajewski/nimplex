@@ -21,5 +21,6 @@
       "cpus": 4,
       "memory": "16gb",
       "storage": "16gb"
-  }
+  },
+  "onCreateCommand": "nim c --d:release --out:examples/nimplex nimplex && nim c --d:release --threads:on --app:lib --out:examples/nimplex.so nimplex && nim c --d:release --threads:on --app:lib --out:examples/utils/plotting.so utils/plotting"
 }
