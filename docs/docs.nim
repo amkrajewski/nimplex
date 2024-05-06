@@ -121,7 +121,16 @@
 ##     .. figure:: ../assets/Fig4.png
 ##        :alt: Simplex Graph Complex
 ## 
-## Several other methods are in testing and will likely be added in the future releases. If you have any suggestions, please open an issue on GitHub as we are always soliciting new ideas and use cases based on real-world problems in the 
+##     With such graph representation, one can very easily deploy any scientific library for graph exploration, constrained and biased by models operating in the elemental space mapping `nimplex` provides. A neat and concise 
+##     demonstration of this is provided in the [`02.AdditiveManufacturingPathPlanning.ipynb`](https://github.com/amkrajewski/nimplex/blob/main/examples/02.AdditiveManufacturingPathPlanning.ipynb) under `examples` directory, where thermodynamic phase stability models 
+##     constrain a 4-component (tetrahedral) design space existing in 7-component chemical space and property model related to yield strength (RMSAD) is used to bias designed paths towards objectives like property maximization 
+##     or gradient minimization with extremely concise code simply modifying the weights on unidirectional edges in the graph. For instance, the figure below (approximately) depicts the shortest path through a subset of 
+##     tetrahedron formed by solid solution phases, later stretched in space proportionally to RMDAS gradient magnitude.
+##
+##     .. figure:: ../assets/Fig5.png
+##        :alt: Gradient Magnitude Stretched Graph with Shortest Path
+##  
+## > Several other methods are in testing and will likely be added in the future releases. If you have any suggestions, please open an issue on GitHub as we are always soliciting new ideas and use cases based on real-world problems in the 
 ## scientific computing community.
 ## 
 ## ## Usage in Nim
