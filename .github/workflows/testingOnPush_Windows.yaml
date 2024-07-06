@@ -21,7 +21,7 @@ jobs:
           python-version: '3.10'
       - name: Install Nim
         run: conda install -c conda-forge libopenblas mkl
-      - uses: jiro4989/setup-nim-action@v1
+      - uses: jiro4989/setup-nim-action@v2
         with:
           nim-version: '2.0.2'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
