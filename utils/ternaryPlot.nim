@@ -15,7 +15,7 @@ const
     height: int = 4000
     scaleChroma: float = 2.0
     fontName: string = "MM" # "NASA", "IBM", "DM", "MM"
-    indexOverlay: bool = false
+    indexOverlay: bool = true
     compIsMain: bool = true
     feasibilityOverlay1: bool = true
     feasibilityOverlay2: bool = true
@@ -355,11 +355,11 @@ proc drawAxisLabels(image: Image) =
     var font: Font = readFont(fontMain)
     font.size = sideWidth*1.5
     font.paint.color = color(0.7, 0, 0.1)
-    # Top label is always top-center aligned and needs no tuning
+    # Top label is always top-center aligned and needs no horizontal tuning.
     image.fillText(
         font,
         labels[0], 
-        translate(vec2(pp1[0], pp1[1]-sideWidth*1.9)),
+        translate(vec2(pp1[0], pp1[1]-sideWidth*2)),
         halign = CenterAlign
         )
 
