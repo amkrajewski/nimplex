@@ -15,13 +15,13 @@ const
     height: int = 4000
     scaleChroma: float = 2.0
     fontName: string = "MM" # "NASA", "IBM", "DM", "MM"
-    indexOverlay: bool = true
+    indexOverlay: bool = false
     compIsMain: bool = true
     feasibilityOverlay1: bool = true
     feasibilityOverlay2: bool = true
     propertyOverlay: bool = false
     pathPointsOverlay: bool = true
-    pathType: string = "boldline" # "line" or "boldline"
+    pathType: string = "highvis" # "line" or "boldline" or "highvis"
     propetyColoringStyle: string = "hotcold"
     elementList: seq[string] = @["Fe", "Cr", "Ni", "Ti", "Cu"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
     labels: seq[string] = @["Ti64", "SS316L", "Monel400"]
@@ -257,8 +257,11 @@ proc drawDesignedPath(
         pathPoints: seq[int],
         ): void =
     let ctx = newContext(image)
-    if pathType == "boldline":
-        ctx.strokeStyle = rgba(0, 180, 0, 255)
+    if pathType == "boldline" or pathType == "highvis":
+        if pathType == "highvis":
+            ctx.strokeStyle = rgba(20, 0, 180, 255)
+        else:
+            ctx.strokeStyle = rgba(0, 180, 0, 255)
         for i in 0..<pathPoints.len-1:
             ctx.lineWidth = distance
             ctx.strokeSegment(segment(
