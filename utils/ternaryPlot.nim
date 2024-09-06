@@ -14,10 +14,10 @@ const
     filename: string = "output.png"
     height: int = 4000
     scaleChroma: float = 2.0
-    fontName: string = "NASA" # "NASA", "IBM", "DM"
-    indexOverlay: bool = true
+    fontName: string = "MM" # "NASA", "IBM", "DM", "MM"
+    indexOverlay: bool = false
     compIsMain: bool = true
-    feasibilityOverlay1: bool = false
+    feasibilityOverlay1: bool = true
     feasibilityOverlay2: bool = true
     propertyOverlay: bool = false
     pathPointsOverlay: bool = true
@@ -101,12 +101,14 @@ const
             of "NASA": "fonts/nasalization-rg.otf"
             of "IBM": "fonts/IBMPlexMono-Medium.ttf"
             of "DM": "fonts/DMMono-Medium.ttf"
+            of "MM": "fonts/MartianMonoSemiCondensed-Medium.otf"
             else: raise newException(ValueError, "Unknown font name")
     fontSupport: string = static:
         case fontName
             of "NASA": "fonts/nasalization-rg.otf"
             of "IBM": "fonts/IBMPlexMono-Regular.ttf"
             of "DM": "fonts/DMMono-Regular.ttf"
+            of "MM": "fonts/MartianMonoCondensed-Regular.otf"
             else: raise newException(ValueError, "Unknown font name")
 
 # *** Line Widths ***
