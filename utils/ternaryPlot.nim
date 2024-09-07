@@ -16,9 +16,11 @@ const
     scaleChroma: float = 2.0
     fontName: string = "MM" # "NASA", "IBM", "DM", "MM"
     indexOverlay: bool = false
-    compIsMain: bool = true
-    feasibilityOverlay1: bool = true
-    feasibilityOverlay2: bool = true
+    compIsMain: bool = false
+    marker1: string = "Undesirable" # Yellow
+    markerOverlay1: bool = true
+    marker2: string = "Infeasible"  # Red
+    markerOverlay2: bool = true
     propertyOverlay: bool = false
     pathPointsOverlay: bool = true
     pathType: string = "highvis" # "line" or "boldline" or "highvis"
@@ -282,37 +284,45 @@ proc drawDesignedPath(
             vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 
             vec2(gpl[pathPoints[i+1]][0], gpl[pathPoints[i+1]][1])))
 
-# Feasibility overlay 1
-proc drawFeasability(
+# Feasibility overlay 1 (Yellow)
+proc drawMarkers1(
         image: Image, 
-        feasibilityField1: Tensor[bool]
+        markerField1: Tensor[bool]
         ): void =
     let backgroundF1 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField1[i]:
+        if markerField1[i]:
             backgroundF1.circle(gpl[i][0], gpl[i][1], distance*1.05/2)
     image.fillPath(backgroundF1, rgba(0, 0, 0, 255))
     let pathF1 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField1[i]:
+        if markerField1[i]:
             pathF1.circle(gpl[i][0], gpl[i][1], distance*1/2)
     image.fillPath(pathF1, rgba(200, 200, 0, 255))
 
-# Feasibility overlay 2
-proc drawDesirability(
+# Feasibility overlay 2 (Red)
+proc drawMarkers2(
         image: Image, 
-        feasibilityField2: Tensor[bool]
+        markerField1: Tensor[bool],
+        markerField2: Tensor[bool]
         ): void =
     let backgroundF2 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField2[i] and not (feasibilityField1[i] and feasibilityOverlay1):
+        if markerField2[i] and not (markerField1[i] and markerOverlay1):
             backgroundF2.circle(gpl[i][0], gpl[i][1], distance*0.75/2)
     image.fillPath(backgroundF2, rgba(0, 0, 0, 255))
     let pathF2 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField2[i]:
+        if markerField2[i]:
             pathF2.circle(gpl[i][0], gpl[i][1], distance*0.7/2)
             image.fillPath(pathF2, rgba(255, 0, 0, 255))
+
+proc drawMarkers2(
+        image: Image,
+        markerField2: Tensor[bool]
+        ): void =
+    let markerField1 = newTensor[bool]([grid.shape[0]]) # Initialized as false by default
+    drawMarkers2(image, markerField1, markerField2)
 
 # *** FOREGROUND ***
 
@@ -555,14 +565,14 @@ proc drawElementalLegend(image: Image) =
         )
 
 
-# ********* Feasibility Legend *********
-proc drawFeasibilities(image: Image) = 
+# ********* Marker Legend *********
+proc drawMarkerLegend(image: Image) = 
     let ctx = newContext(image)
     ctx.strokeStyle = rgba(0, 100, 100, 220)
     ctx.font = fontMain
     ctx.fontsize = sideWidth*1.5
     ctx.textAlign = LeftAlign
-    if feasibilityOverlay1:
+    if markerOverlay1:
         let position: float = 6.5
         ctx.fillStyle = rgba(0, 0, 0, 255)
         ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*1.05/2, sides = 24)
@@ -570,11 +580,11 @@ proc drawFeasibilities(image: Image) =
         ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*1/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
-            "Undesirable",
+            marker1,
             vec2(400*scaling, (100*position+190).float*scaling),
         )
 
-    if feasibilityOverlay2:
+    if markerOverlay2:
         let position: float = 7.5
         ctx.fillStyle = rgba(0, 0, 0, 255)
         ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*0.75/2, sides = 24)
@@ -582,7 +592,7 @@ proc drawFeasibilities(image: Image) =
         ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*0.7/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
-            "Infeasible", 
+            marker2,
             vec2(400*scaling, (100*position+190).float*scaling),
         )
 
@@ -651,16 +661,16 @@ if propertyOverlay:
     image.drawPropertyHexes(propertyColoring)
 if pathPointsOverlay:
     image.drawDesignedPath(pathPoints)
-if feasibilityOverlay1: 
-    image.drawFeasability(feasibilityField1)
-if feasibilityOverlay2: 
-    image.drawDesirability(feasibilityField2)
+if markerOverlay1: 
+    image.drawMarkers1(feasibilityField1)
+if markerOverlay2: 
+    image.drawMarkers2(feasibilityField1, feasibilityField2)
 image.drawForeground()
 image.drawAxisLabels()
 image.drawAxisTicksMarkers()
 image.drawElementalLegend()
-if feasibilityOverlay1 or feasibilityOverlay2:
-    image.drawFeasibilities()
+if markerOverlay1 or markerOverlay2:
+    image.drawMarkerLegend()
 if propertyOverlay:
     image.drawPropertyLegend()
 if indexOverlay:
