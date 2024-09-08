@@ -317,12 +317,18 @@ proc drawMarkers2(
     let backgroundF2 = newPath()
     for i in 0..<gpl.len:
         if markerField2[i] and not (markerField1[i] and markerOverlay1):
-            backgroundF2.circle(gpl[i][0], gpl[i][1], distance*0.75/2)
+            if not markerOverlay1:
+                backgroundF2.circle(gpl[i][0], gpl[i][1], distance*1.05/2)
+            else:
+                backgroundF2.circle(gpl[i][0], gpl[i][1], distance*0.75/2)
     image.fillPath(backgroundF2, rgba(0, 0, 0, 255))
     let pathF2 = newPath()
     for i in 0..<gpl.len:
         if markerField2[i]:
-            pathF2.circle(gpl[i][0], gpl[i][1], distance*0.7/2)
+            if not markerOverlay1:
+                pathF2.circle(gpl[i][0], gpl[i][1], distance*1/2)
+            else:
+                pathF2.circle(gpl[i][0], gpl[i][1], distance*0.7/2)
             image.fillPath(pathF2, rgba(255, 0, 0, 255))
 
 proc drawMarkers2(
