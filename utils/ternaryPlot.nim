@@ -600,10 +600,15 @@ proc drawMarkerLegend(image: Image) =
 
     if markerOverlay2:
         let position: float = 7.5
+        var baseSize: float
+        if not markerOverlay1:
+            baseSize = 1
+        else:
+            baseSize = 0.7
         ctx.fillStyle = rgba(0, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*0.75/2, sides = 24)
+        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*(baseSize+0.05)/2, sides = 24)
         ctx.fillStyle = rgba(255, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*0.7/2, sides = 24)
+        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*baseSize/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
             marker2,
@@ -667,33 +672,35 @@ proc drawIndicies(image: Image): void =
 
 # ********* Final Processing *********
 
-let image = newImage(width, height)
-image.fillWhite()
-image.drawBackground()
-image.drawCompositonHexes(elementalColoring)
-if propertyOverlay: 
-    image.drawPropertyHexes(propertyColoring)
-if pathPointsOverlay:
-    image.drawDesignedPath(pathPoints)
-if markerOverlay1: 
-    image.drawMarkers1(feasibilityField1)
-if markerOverlay2: 
-    image.drawMarkers2(feasibilityField1, feasibilityField2)
-image.drawForeground()
-image.drawAxisLabels()
-image.drawAxisTicksMarkers()
-image.drawElementalLegend()
-if markerOverlay1 or markerOverlay2:
-    image.drawMarkerLegend()
-if propertyOverlay:
-    image.drawPropertyLegend()
-if indexOverlay:
-    image.drawIndicies()
+when appType != "lib":
+    when isMainModule:
+        var image = newImage(width, height)
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes(elementalColoring)
+        if propertyOverlay: 
+            image.drawPropertyHexes(propertyColoring)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
+        if markerOverlay1: 
+            image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField1, feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels()
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend()
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        if propertyOverlay:
+            image.drawPropertyLegend()
+        if indexOverlay:
+            image.drawIndicies()
 
-# ********* Save the image *********
-let t1 = cpuTime()
-image.writeFile(filename)
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        image.writeFile(filename)
 
-let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
-echo "Approximately ", nPrimitives, " primitives"
-echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
