@@ -5,6 +5,7 @@ import pixie
 import std/strutils
 import std/math
 import std/times
+import std/os
 
 let t0 = cpuTime()
 
@@ -99,19 +100,20 @@ const propertyColoringOKlab: seq[seq[float]] = static:
 
 # *** Fonts ***
 const 
+    csp: string = currentSourcePath.parentDir() & "/"
     fontMain: string = static:
         case fontName
-            of "NASA": "fonts/nasalization-rg.otf"
-            of "IBM": "fonts/IBMPlexMono-Medium.ttf"
-            of "DM": "fonts/DMMono-Medium.ttf"
-            of "MM": "fonts/MartianMonoSemiCondensed-Medium.otf"
+            of "NASA": csp & "fonts/nasalization-rg.otf"
+            of "IBM": csp & "fonts/IBMPlexMono-Medium.ttf"
+            of "DM": csp & "fonts/DMMono-Medium.ttf"
+            of "MM": csp & "fonts/MartianMonoSemiCondensed-Medium.otf"
             else: raise newException(ValueError, "Unknown font name")
     fontSupport: string = static:
         case fontName
-            of "NASA": "fonts/nasalization-rg.otf"
-            of "IBM": "fonts/IBMPlexMono-Regular.ttf"
-            of "DM": "fonts/DMMono-Regular.ttf"
-            of "MM": "fonts/MartianMonoCondensed-Regular.otf"
+            of "NASA": csp & "fonts/nasalization-rg.otf"
+            of "IBM": csp & "fonts/IBMPlexMono-Regular.ttf"
+            of "DM": csp & "fonts/DMMono-Regular.ttf"
+            of "MM": csp & "fonts/MartianMonoCondensed-Regular.otf"
             else: raise newException(ValueError, "Unknown font name")
 
 # *** Line Widths ***
