@@ -35,6 +35,7 @@ const
     scaling: float = height/2000
 
 # Nimplex Processing
+const gridLen: int = binom(ndiv+3-1, 3-1)
 let 
     grid: Tensor[float] = nimplex.simplex_grid_fractional(3, nDiv)
     elementalEmbedding: Tensor[float] = nimplex.attainable2elemental(grid, elementalCompositions) 
@@ -158,36 +159,11 @@ func oklabToRGB(c: tuple[L, a, b: float]): tuple[r, g, b: uint8] {.inline.} =
 
     return (r, g, b)
 
-# Dummy data (!!!) for plot design
-var 
-    propertyField: Tensor[float] = newTensor[float]([grid.shape[0]])
-    feasibilityField1: Tensor[bool] = newTensor[bool]([grid.shape[0]])
-    feasibilityField2: Tensor[bool] = newTensor[bool]([grid.shape[0]])
-    #propertyFieldNormalized: Tensor[float] = newTensor[float]([grid.shape[0]])
-    elementalColoring: seq[ColorRGBA]
-    propertyColoring: seq[ColorRGBA]
-
-for i in 0..<grid.shape[0]:
-    propertyField[i] = grid[i, 0] * 0.653 + grid[i, 1] * 0.587 + grid[i, 2] * 0.114 + 0.3 * (grid[i, 0] - grid[i, 1])^2 - 0.1 * (grid[i, 0] - grid[i, 1])^3
-
-    if (grid[i, 0] + grid[i, 1]) > 0.6 and propertyField[i]<0.6:
-        feasibilityField1[i] = true
-    else:
-        feasibilityField1[i] = false
-
-    if (grid[i, 1] > 0.2 and propertyField[i]<0.55) or (grid[i, 0] > 0.8):
-        feasibilityField2[i] = true
-    else:
-        feasibilityField2[i] = false
-
-let
-    minVal = propertyField.min
-    maxVal = propertyField.max
-    rangeVal = maxVal - minVal
-    propertyFieldNormalized: Tensor[float] = (propertyField -. minVal) /. rangeVal
-
 # Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
-for i in 0..<grid.shape[0]:
+var 
+    elementalColoring: seq[ColorRGBA]
+
+for i in 0..<gridLen:
     var oklSeq: seq[float] = newSeq[float](3)
     for j in 0..<elementalEmbeddingLen:
         for k in 0..<3:
@@ -202,10 +178,6 @@ func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
     let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
     return rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, 255.uint8)
 
-# Convert property field to color
-for i in 0..<grid.shape[0]:
-    propertyColoring.add(prop2rgb(propertyFieldNormalized[i], propertyColoringOKlab))
-        
 
 # **************** Drawing Functions ****************
     
@@ -240,8 +212,19 @@ proc drawCompositonHexes(
 # Property overlay
 proc drawPropertyHexes(
         image: Image, 
-        propertyColoring: seq[ColorRGBA]
+        propertyField: Tensor[float]
         ): void =
+    var propertyColoring: seq[ColorRGBA]
+    let
+        minVal = propertyField.min
+        maxVal = propertyField.max
+        rangeVal = maxVal - minVal
+        propertyFieldNormalized: Tensor[float] = (propertyField -. minVal) /. rangeVal
+
+    # Convert property field to color
+    for i in 0..<grid.shape[0]:
+        propertyColoring.add(prop2rgb(propertyFieldNormalized[i], propertyColoringOKlab))
+
     # Black rim
     let pathHex = newPath()
     for i in 0..<gpl.len:
@@ -617,8 +600,11 @@ proc drawMarkerLegend(image: Image) =
 
 
 # ********* Property Legend *********
-proc drawPropertyLegend(image: Image) =
-    let ctx = newContext(image)
+proc drawPropertyLegend(image: Image, propertyField: Tensor[float]) =
+    let 
+        ctx = newContext(image)
+        minVal = propertyField.min
+        maxVal = propertyField.max
     ctx.strokeStyle = rgba(0, 100, 100, 220)
     ctx.font = fontMain
     ctx.fontsize = sideWidth
@@ -674,12 +660,34 @@ proc drawIndicies(image: Image): void =
 
 when appType != "lib":
     when isMainModule:
+        # Dummy data (!!!) for plot design
+        var 
+            propertyField: Tensor[float] = newTensor[float]([grid.shape[0]])
+            feasibilityField1: Tensor[bool] = newTensor[bool]([grid.shape[0]])
+            feasibilityField2: Tensor[bool] = newTensor[bool]([grid.shape[0]])
+
+        for i in 0..<grid.shape[0]:
+            propertyField[i] = grid[i, 0] * 0.653 + grid[i, 1] * 0.587 + grid[i, 2] * 0.114 + 0.3 * (grid[i, 0] - grid[i, 1])^2 - 0.1 * (grid[i, 0] - grid[i, 1])^3
+
+            if (grid[i, 0] + grid[i, 1]) > 0.6 and propertyField[i]<0.6:
+                feasibilityField1[i] = true
+            else:
+                feasibilityField1[i] = false
+
+            if (grid[i, 1] > 0.2 and propertyField[i]<0.55) or (grid[i, 0] > 0.8):
+                feasibilityField2[i] = true
+            else:
+                feasibilityField2[i] = false
+
+        
+
+        # Plotting
         var image = newImage(width, height)
         image.fillWhite()
         image.drawBackground()
         image.drawCompositonHexes(elementalColoring)
         if propertyOverlay: 
-            image.drawPropertyHexes(propertyColoring)
+            image.drawPropertyHexes(propertyField)
         if pathPointsOverlay:
             image.drawDesignedPath(pathPoints)
         if markerOverlay1: 
@@ -693,7 +701,7 @@ when appType != "lib":
         if markerOverlay1 or markerOverlay2:
             image.drawMarkerLegend()
         if propertyOverlay:
-            image.drawPropertyLegend()
+            image.drawPropertyLegend(propertyField)
         if indexOverlay:
             image.drawIndicies()
 
