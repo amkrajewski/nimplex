@@ -159,18 +159,6 @@ func oklabToRGB(c: tuple[L, a, b: float]): tuple[r, g, b: uint8] {.inline.} =
 
     return (r, g, b)
 
-# Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
-var 
-    elementalColoring: seq[ColorRGBA]
-
-for i in 0..<gridLen:
-    var oklSeq: seq[float] = newSeq[float](3)
-    for j in 0..<elementalEmbeddingLen:
-        for k in 0..<3:
-            oklSeq[k] += elementalEmbedding[i, j] * colorSchemeOKlab[j][k].float
-    let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
-    elementalColoring.add(rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, alpha))
-
 func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
     var oklSeq: seq[float] = newSeq[float](3)
     for k in 0..<3:
@@ -178,6 +166,17 @@ func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
     let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
     return rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, 255.uint8)
 
+# Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
+let elementalColoring: seq[ColorRGBA] = block:
+    var elementalColoring: seq[ColorRGBA] = @[]
+    for i in 0..<gridLen:
+        var oklSeq: seq[float] = newSeq[float](3)
+        for j in 0..<elementalEmbeddingLen:
+            for k in 0..<3:
+                oklSeq[k] += elementalEmbedding[i, j] * colorSchemeOKlab[j][k].float
+        let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
+        elementalColoring.add(rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, alpha))
+    elementalColoring
 
 # **************** Drawing Functions ****************
     
@@ -201,7 +200,6 @@ proc drawBackground(image: Image) =
 # Main hexes and points for later steps
 proc drawCompositonHexes(
         image: Image, 
-        elementalColoring: seq[ColorRGBA]
         ): void =
     for i in 0..<gpl.len:
         # Main hexes filling the space with gaps
@@ -679,13 +677,11 @@ when appType != "lib":
             else:
                 feasibilityField2[i] = false
 
-        
-
         # Plotting
         var image = newImage(width, height)
         image.fillWhite()
         image.drawBackground()
-        image.drawCompositonHexes(elementalColoring)
+        image.drawCompositonHexes()
         if propertyOverlay: 
             image.drawPropertyHexes(propertyField)
         if pathPointsOverlay:
