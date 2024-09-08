@@ -11,7 +11,7 @@ let t0 = cpuTime()
 
 # User-set Constants
 const
-    nDiv: int = 24
+    nDiv: int = 36
     filename: string = "output.png"
     height: int = 4000
     scaleChroma: float = 2.0
@@ -19,15 +19,15 @@ const
     indexOverlay: bool = false
     compIsMain: bool = false
     marker1: string = "Undesirable" # Yellow
-    markerOverlay1: bool = true
+    markerOverlay1: bool = false
     marker2: string = "Infeasible"  # Red
     markerOverlay2: bool = true
     propertyOverlay: bool = false
     pathPointsOverlay: bool = true
     pathType: string = "highvis" # "line" or "boldline" or "highvis"
     propetyColoringStyle: string = "hotcold"
-    elementList: seq[string] = @["Fe", "Cr", "Ni", "Ti", "Cu"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
-    labels: seq[string] = @["Ti64", "SS316L", "Monel400"]
+    elementList: seq[string] = @["Zr", "Hf", "Nb", "Ta", "Mo"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
+    labels: seq[string] = @["Hf", "Mo33Nb33Ta33", "Mo80Nb10"] # @["Ti64", "SS316L", "Monel400"]
     elementalCompositions: seq[seq[float]] = @[@[0.0, 0.0, 0.0, 100.0, 0.0],  @[68.0, 18.0, 14.0, 0.0, 0.0],  @[2.0, 0.0, 66.0, 0.0, 32.0]]
     # elementalCompositions: seq[seq[float]] = @[@[1,0,0], @[0,1,0], @[0,0,1]]
     # @[@[20.0, 40.0, 0.0, 0.0, 0.0], @[0.5, 0.0, 0.0, 0.0, 0.5], @[0.1, 0.0, 0.5, 0.5, 0.1]])
@@ -714,6 +714,47 @@ when appType != "lib":
 
         # ********* Save the image *********
         let t1 = cpuTime()
+        image.writeFile(filename)
+
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+
+when appType=="lib":
+    import nimpy
+
+    proc plotTernary*(feasibilityList: seq[bool]): void {.exportpy.} =
+        let t0 = cpuTime()
+        let feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
+
+        echo "Constructing image..."
+        let image = newImage(width, height)
+        echo "Image constructed..."
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes()
+        #if propertyOverlay: 
+        #    image.drawPropertyHexes(propertyField)
+        #if pathPointsOverlay:
+        #    image.drawDesignedPath(pathPoints)
+        #if markerOverlay1: 
+        #    image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels()
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend()
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        #if propertyOverlay:
+        #    image.drawPropertyLegend(propertyField)
+        if indexOverlay:
+            image.drawIndicies()
+
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        echo "Saving image..."
         image.writeFile(filename)
 
         let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
