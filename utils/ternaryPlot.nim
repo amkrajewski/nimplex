@@ -272,14 +272,22 @@ proc drawDesignedPath(
             ctx.lineWidth = distance*0.866
             ctx.strokePolygon(vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 0.01, sides = 6)
     ctx.strokeStyle = rgba(0, 180, 0, 255)
-    ctx.lineWidth = thinLine*2
     for i in 0..<pathPoints.len-1:
+        if i<pathPoints.len:
+            if min(grid[pathPoints[i], _]) == 0 and min(grid[pathPoints[i+1], _]) == 0:
+                ctx.lineWidth = thinLine*4
+            else:
+                ctx.lineWidth = thinLine*2
         ctx.strokeSegment(segment(
             vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 
             vec2(gpl[pathPoints[i+1]][0], gpl[pathPoints[i+1]][1])))
     ctx.strokeStyle = rgba(0, 220, 0, 255)
-    ctx.lineWidth = thinLine
     for i in 0..<pathPoints.len-1:
+        if i<pathPoints.len:
+            if min(grid[pathPoints[i], _]) == 0 and min(grid[pathPoints[i+1], _]) == 0:
+                ctx.lineWidth = thinLine*2
+            else:
+                ctx.lineWidth = thinLine
         ctx.strokeSegment(segment(
             vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 
             vec2(gpl[pathPoints[i+1]][0], gpl[pathPoints[i+1]][1])))
