@@ -57,7 +57,7 @@ const
     sideWidth: float = (60*scaling)
     luminance: float = if compIsMain: 0.55 else: 0.45
     alpha: uint8 = if compIsMain: 255 else: 128
-    # Color schemes
+    # A couple of hard-coded color schemes (2-5 components) which look nice
     colorSchemeOKlab2c: seq[seq[float]] = @[
         @[luminance,  0.250*scaleChroma,  0.000],
         @[luminance, -0.250*scaleChroma,  0.000]]
@@ -83,14 +83,23 @@ const
         @[0.400, 0.217*scaleChroma, 0.125*scaleChroma],
         @[1.0, 0.0, 0.0]]
 
+
+
 # *** Color Schemes ***
 const colorSchemeOKlab: seq[seq[float]] = static:
+    func colorSchemeOKlabNc(n: int): seq[seq[float]] =
+        for i in 0..<n:
+            let 
+                angle = 2 * PI * i.float / n.float
+                a = 0.250 * scaleChroma * cos(angle)
+                b = 0.250 * scaleChroma * sin(angle)
+            result.add(@[luminance, a, b])
     case elementalEmbeddingLen:
         of 2: colorSchemeOKlab2c
         of 3: colorSchemeOKlab3c
         of 4: colorSchemeOKlab4c
         of 5: colorSchemeOKlab5c
-        else: raise newException(ValueError, "Unsupported number of components")
+        else: colorSchemeOKlabNc(elementalEmbeddingLen)
 
 const propertyColoringOKlab: seq[seq[float]] = static:
     case propetyColoringStyle:
