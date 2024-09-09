@@ -11,7 +11,7 @@ let t0 = cpuTime()
 
 # User-set Constants
 const
-    nDiv: int = 36
+    nDiv: int = 24
     filename: string = "output.png"
     height: int = 4000
     scaleChroma: float = 2.0
@@ -26,9 +26,9 @@ const
     pathPointsOverlay: bool = true
     pathType: string = "highvis" # "line" or "boldline" or "highvis"
     propetyColoringStyle: string = "hotcold"
-    elementList: seq[string] = @["Zr", "Hf", "Nb", "Ta", "Mo"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
+    elementList: seq[string] = @["Ti", "Zr", "Hf", "W", "Nb", "Ta", "Mo"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
     labels: seq[string] = @["Hf", "Mo33Nb33Ta33", "Mo80Nb10"] # @["Ti64", "SS316L", "Monel400"]
-    elementalCompositions: seq[seq[float]] = @[@[0.0, 0.0, 0.0, 100.0, 0.0],  @[68.0, 18.0, 14.0, 0.0, 0.0],  @[2.0, 0.0, 66.0, 0.0, 32.0]]
+    elementalCompositions: seq[seq[float]] = @[@[5, 0, 95, 0, 0, 0, 0], @[0, 0, 0, 33, 33, 33, 0], @[0, 0, 0, 10, 10, 0, 80]]
     # elementalCompositions: seq[seq[float]] = @[@[1,0,0], @[0,1,0], @[0,0,1]]
     # @[@[20.0, 40.0, 0.0, 0.0, 0.0], @[0.5, 0.0, 0.0, 0.0, 0.5], @[0.1, 0.0, 0.5, 0.5, 0.1]])
     axisType: string = "vulgarFractions" # "decimal" or "vulgarFractions" or "quanta"
@@ -369,8 +369,10 @@ proc drawForeground(image: Image): void =
             vec2(pp1[0]+80*scaling, pp1[1]-2*sideWidth-140*scaling)))
 
 # ********* Axis Labels *********
-
-proc drawAxisLabels(image: Image) =
+proc drawAxisLabels(
+        image: Image,
+        labels: seq[string],
+    ) =
     var font: Font = readFont(fontMain)
     font.size = sideWidth*1.5
     font.paint.color = color(0.7, 0, 0.1)
@@ -382,7 +384,7 @@ proc drawAxisLabels(image: Image) =
         halign = CenterAlign
         )
 
-    if longLabel:
+    if (len(labels[1]) > 2 or len(labels[2]) > 2):
         # Longer labels need to live under the axis
         image.fillText(font, labels[1], translate(vec2(pp2[0]+sideWidth*1.5, pp2[1]+sideWidth*0.35)), halign = RightAlign)
         image.fillText(font, labels[2], translate(vec2(pp3[0]-sideWidth*1.5, pp3[1]+sideWidth*0.35)), halign = LeftAlign)
@@ -391,6 +393,8 @@ proc drawAxisLabels(image: Image) =
         image.fillText(font, labels[1], translate(vec2(pp2[0]+sideWidth*0.2, pp2[1]-sideWidth*0.3)), halign = LeftAlign)
         image.fillText(font, labels[2], translate(vec2(pp3[0]-sideWidth*0.2, pp3[1]-sideWidth*0.3)), halign = RightAlign)
 
+proc drawAxisLabels(image: Image) =
+    drawAxisLabels(image, labels)
 
 # ********* Axis Ticks and Markers *********
 
@@ -723,7 +727,11 @@ when appType != "lib":
 when appType=="lib":
     import nimpy
 
-    proc plotTernary*(feasibilityList: seq[bool]): void {.exportpy.} =
+    proc plotTernaryFeasPath*(
+        feasibilityList: seq[bool],
+        labels: seq[string],
+        pathPoints: seq[int]
+            ): void {.exportpy.} =
         let t0 = cpuTime()
         let feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
 
@@ -735,14 +743,14 @@ when appType=="lib":
         image.drawCompositonHexes()
         #if propertyOverlay: 
         #    image.drawPropertyHexes(propertyField)
-        #if pathPointsOverlay:
-        #    image.drawDesignedPath(pathPoints)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
         #if markerOverlay1: 
         #    image.drawMarkers1(feasibilityField1)
         if markerOverlay2: 
             image.drawMarkers2(feasibilityField2)
         image.drawForeground()
-        image.drawAxisLabels()
+        image.drawAxisLabels(labels)
         image.drawAxisTicksMarkers()
         image.drawElementalLegend()
         if markerOverlay1 or markerOverlay2:
