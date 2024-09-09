@@ -9,14 +9,21 @@ import std/hashes
 import ../src/nimplex
 import std/sets
 import std/times
+import std/re
 
 let t0 = cpuTime()
+
+proc stripAnsiEscapeCodes(s: string): string =
+  let regex = re(r"\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]")
+  return s.replace(regex, "")
+
 echo "***** CLI Tests *****"
 
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        echo "Detected host OS: " & hostOS
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
@@ -30,7 +37,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 "Shape: [10, 3]"]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate large integer simplex grid (FIS 9 12) and print shape to stdout":
         let 
@@ -41,7 +48,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 "Shape: [125970, 9]"]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate large internal integer simplex grid (IIS 7 12) and print shape to stdout":
         let 
@@ -52,7 +59,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 "Shape: [462, 7]"]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate small integer simplex grid (FIP 3 3) and print values to stdout":
         let 
@@ -74,7 +81,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 ]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate small integer internal simplex grid (IIP 3 5) and print values to stdout":
         let 
@@ -92,7 +99,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
                 ]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "(significant if previous failes) values themself generated for small integer internal simplex grid (IIP 3 5) corectness":
         let 
@@ -144,7 +151,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
@@ -160,7 +167,7 @@ suite "test if correct graph output is given when nimplex is run in command line
                 ]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate medium size integer simplex graph (GIS 7 12) and print shape to stdout":
         let 
@@ -173,7 +180,7 @@ suite "test if correct graph output is given when nimplex is run in command line
                 ]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate small integer simplex graph (GIP 3 3), print values to stdout, and check them for corectness":
         let 
@@ -198,7 +205,7 @@ suite "test if correct graph output is given when nimplex is run in command line
                 ]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate small fractional simplex graph (GFS 3 3) and print shape to stdout":
         let 
@@ -211,7 +218,7 @@ suite "test if correct graph output is given when nimplex is run in command line
                 ]
         check exitCode == 0
         for i in 0..<reference.len:
-            check outputLines[i] == reference[i]
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
     test "generate small fractional simplex graph (GFP 3 3), print values to stdout, and check them for node corectness":
         let 
@@ -270,7 +277,7 @@ suite "Test NumPy exports corectness for grids":
 
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
@@ -303,7 +310,7 @@ suite "Test NumPy exports corectness for graphs":
 
     test "check if compiled nimplex is present in the current working directory":
         # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "Windows":
+        if hostOS == "windows":
             require fileExists("nimplex.exe")
         else:
             require fileExists("nimplex")
