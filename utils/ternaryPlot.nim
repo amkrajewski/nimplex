@@ -768,3 +768,49 @@ when appType=="lib":
         let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
         echo "Approximately ", nPrimitives, " primitives"
         echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+
+    proc plotPhases*(
+            feasibilityList: seq[bool],
+            labels: seq[string],
+            pathPoints: seq[int],
+            elementalEmbedding: seq[seq[float]],
+            elements: seq[string]
+        ): void {.exportpy.} =
+        let t0 = cpuTime()
+        let 
+            feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
+            elementalEmbedding: Tensor[float] = elementalEmbedding.toTensor()
+
+        echo "Constructing image..."
+        let image = newImage(width, height)
+        echo "Image constructed..."
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes(elementalEmbedding)
+        #if propertyOverlay: 
+        #    image.drawPropertyHexes(propertyField)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
+        #if markerOverlay1: 
+        #    image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels(labels)
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend(elements)
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        #if propertyOverlay:
+        #    image.drawPropertyLegend(propertyField)
+        if indexOverlay:
+            image.drawIndicies()
+
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        echo "Saving image..."
+        image.writeFile(filename)
+
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
