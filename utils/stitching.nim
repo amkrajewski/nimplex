@@ -44,7 +44,7 @@ func findSubspace[T](
         lst: seq[T],
         maxDim: int = 3
     ): seq[seq[T]] =
-    ## Finds all possible subspaces of the input list `lst` up to the dimension `maxDim`. The list can be of any type and macro
+    ## Finds all possible (unordered) subspaces of the input list `lst` up to the dimension `maxDim`. The list can be of any type and macro
     ## will handle it returning a list of lists of the same type. The default `maxDim` is set to 3 because for larger spaces, especially
     ## high dimensional ones, the number of subspaces grows rapidly (e.g. 1,956 for d=6) and computer memory can be exhausted quicker than
     ## anticipated when working on it in more intense steps; user can set it to any value they want though.
@@ -112,3 +112,61 @@ func permutations[T](s: seq[T]): seq[seq[T]] =
         xs = s[0..<i] & s[i+1..^1]
         for p in permutations(xs):
             result.add(@[x] & p)
+
+
+proc findStitchingPoints*(
+    dim: int, 
+    ndiv: int,
+    maxDim: int = 3,
+    components: seq[string] = generateAlphabetSequence(dim)
+        ): (Tensor[int], Table[string, seq[int]]) =
+    let L: int = binom(ndiv+dim-1, dim-1)
+    var 
+        x = zeros[int](dim)
+        stitchTableInt = initTable[seq[int], seq[int]]()
+        maxSys: seq[int] = @[]
+    result[0] = newTensor[int]([L, dim])
+
+    # Generate a space vector with all components present
+    for i in 0..<dim:
+        maxSys.add(i)
+
+    # Generate all (un-ordered) subspaces of the space up to the given dimension
+    for subSys in findSubspace(maxSys, maxDim):
+        stitchTableInt[subSys] = @[]
+
+    # Start the generation of compositional grid that will be used for sorting purposes
+    x[dim-1] = ndiv
+    for j in 0..<dim:
+        result[0][0, j] = x[j]
+
+    # Start the generation of the stitch table
+    for sys in stitchTableInt.keys:
+        if nonZeroComps(x).isSubspace(sys):
+            stitchTableInt[sys].add(0)
+
+    # Iterate over all possible compositions of the space using NEXCOM algorithm (see the nimplex paper for details)
+    # while building the stitching table through assigning current point to the appropriate subspace and its subspaces
+    var h = dim
+    for i in 1..<L:
+        h -= 1
+        let val = x[h]
+        x[h] = 0
+        x[dim-1] = val - 1
+        x[h-1] += 1
+        for j in 0..<dim:
+            result[0][i, j] = x[j]
+        if val != 1:
+            h = dim
+        for sys in stitchTableInt.keys:
+            if nonZeroComps(x).isSubspace(sys):
+                stitchTableInt[sys].add(i)
+    
+    # For every unordered subspace we found, find all of its permutations and sort the associated nodes based on the 
+    # order of elements in said permutations
+    for sys in stitchTableInt.keys:
+        var sortedSys: seq[int] = stitchTableInt[sys]
+        let permutations = sys.permutations
+        for p in permutations:
+            sortedSys.sortNodes(result[0], p)
+            result[1][space2name(p, components)] = sortedSys
