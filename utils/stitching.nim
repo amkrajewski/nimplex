@@ -14,6 +14,7 @@ import ../nimplex
 ## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html)
 ## 
 
+
 func generateAlphabetSequence(length: int): seq[string] =
     ## Generates a sequence of strings of length `length` containing all UPPER and lower case letters of the alphabet. 
     ## The primary purpose of this function is to generate unique names for system (A-B-C-D) and its ordered subsystems
@@ -23,8 +24,18 @@ func generateAlphabetSequence(length: int): seq[string] =
     for i in 0..<length:
         result.add($alphabet[i])
 
+
 func nonZeroComps(p: Tensor[int]): seq[int] =
     ## Finds the indices of non-zero components in the input tensor `p` to determine which (unordered) system/subsystem it belongs to.
     for i in 0..<p.shape[0]:
         if p[i] != 0:
             result.add(i)
+
+
+func sys2name(sys: seq[int], components: seq[string]): string =
+    ## Converts the system/subsystem represented by the indices in `sys` to a string representation using the names of the `components`.
+    ## It can be used in conjunction with `generateAlphabetSequence` too.
+    for i in sys:
+        result &= components[i]
+        if i != sys[sys.len-1]:
+            result &= "-"
