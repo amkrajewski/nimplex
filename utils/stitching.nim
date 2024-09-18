@@ -58,3 +58,11 @@ func findSubspace[T](
                 sublist.add(lst[j])
         if sublist.len <= maxDim:
             result.add(sublist)
+
+
+func isSubspace(subSpace: seq[int], space: seq[int]): bool =
+    ## Small helper function to check if the input `subSpace` is a subspace of the `space`.
+    for i in subspace:
+        if i notin space:
+            return false
+    return true
