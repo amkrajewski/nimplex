@@ -96,3 +96,19 @@ func sortNodes(
     ): void =
     ## Sorts a `var` `seq` of node numbers `nodes` using the `compareNodes` function.
     nodes.sort((x, y) => compareNodes(x, y, coordinateTensor, priorityList))
+
+
+func permutations[T](s: seq[T]): seq[seq[T]] =
+    ## Generates all possible permutations of the input sequence `s` using a recursive algorithm. Can accept any type of sequence thanks
+    ## to Nim's powerful type system and reurns a sequence of sequences of the same type.
+    if s.len == 0:
+        return @[]
+    if s.len == 1:
+        return @[s]
+    
+    var xs: seq[T]
+    for i in 0..<s.len:
+        let x = s[i]
+        xs = s[0..<i] & s[i+1..^1]
+        for p in permutations(xs):
+            result.add(@[x] & p)
