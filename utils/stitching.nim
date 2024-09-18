@@ -88,3 +88,11 @@ func compareNodes(
             return 1
     return 0
 
+
+func sortNodes(
+        nodes: var seq[int],
+        coordinateTensor: Tensor[int], 
+        priorityList: seq[int]
+    ): void =
+    ## Sorts a `var` `seq` of node numbers `nodes` using the `compareNodes` function.
+    nodes.sort((x, y) => compareNodes(x, y, coordinateTensor, priorityList))
