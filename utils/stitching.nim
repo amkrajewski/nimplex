@@ -66,3 +66,25 @@ func isSubspace(subSpace: seq[int], space: seq[int]): bool =
         if i notin space:
             return false
     return true
+
+
+func compareNodes(
+        a: int, 
+        b: int, 
+        nodeCoordinateTensor: Tensor[int], 
+        priorityList: seq[int]
+    ): int =
+    ## Comparator function to evaluate the order of two node numbers `a` and `b` based on their coordinates in the compositional space given in 
+    ## `nodeCoordinateTensor` of `int`s (e.g. `simplex_grid` output or the first element in the `simplex_graph` output tuple), ranked by
+    ## the `priorityList` establishing order of dimensions in the ordered subspace one may be interested in. 
+    let 
+        p1 = nodeCoordinateTensor[a, _].squeeze()
+        p2 = nodeCoordinateTensor[b, _].squeeze()
+
+    for p in priorityList:
+        if p1[p] > p2[p]:
+            return -1
+        if p1[p] < p2[p]:
+            return 1
+    return 0
+
