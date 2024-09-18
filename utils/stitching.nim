@@ -39,3 +39,22 @@ func space2name(space: seq[int], components: seq[string]): string =
         result &= components[i]
         if i != space[space.len-1]:
             result &= "-"
+
+func findSubspace[T](
+        lst: seq[T],
+        maxDim: int = 3
+    ): seq[seq[T]] =
+    ## Finds all possible subspaces of the input list `lst` up to the dimension `maxDim`. The list can be of any type and macro
+    ## will handle it returning a list of lists of the same type. The default `maxDim` is set to 3 because for larger spaces, especially
+    ## high dimensional ones, the number of subspaces grows rapidly (e.g. 1,956 for d=6) and computer memory can be exhausted quicker than
+    ## anticipated when working on it in more intense steps; user can set it to any value they want though.
+    let n = lst.len
+    var sublist = newSeq[T]()
+    
+    for i in 1 ..< (1 shl n):
+        sublist = @[]
+        for j in 0 ..< n:
+            if (i and (1 shl j)) != 0:
+                sublist.add(lst[j])
+        if sublist.len <= maxDim:
+            result.add(sublist)
