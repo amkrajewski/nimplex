@@ -13,3 +13,10 @@ import ../nimplex
 ## 
 ## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html)
 ## 
+
+func generateAlphabetSequence(length: int): seq[string] =
+    assert length <= 52, "The number of characters requested to name system components exceeds the number of available symbols (52) - uppercase and lowercase letters)."
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    for i in 0..<length:
+        result.add($alphabet[i])
+
