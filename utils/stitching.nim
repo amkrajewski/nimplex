@@ -2,6 +2,7 @@ import std/tables
 import std/math
 import std/algorithm
 import std/sugar
+import std/strformat
 import arraymancer/Tensor
 import ../nimplex
 
@@ -170,3 +171,14 @@ proc findStitchingPoints*(
         for p in permutations:
             sortedSys.sortNodes(result[0], p)
             result[1][space2name(p, components)] = sortedSys
+
+if isMainModule:
+    let stitch = findStitchingPoints(5, 5, 3)
+    for space in stitch[1].keys:
+        echo fmt"{space:<7} -> {stitch[1][space]}"
+    
+    echo "\n\n\n"
+
+    let stitch2 = findStitchingPoints(3, 4, 3, @["Ti", "V", "Cr"])
+    for space in stitch2[1].keys:
+        echo fmt"{space:<7} -> {stitch2[1][space]}"
