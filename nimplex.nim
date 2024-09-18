@@ -235,8 +235,8 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
 
 # CORE UTILS
 
-proc attainable2elemental*(simplexPoints: Tensor[float],
-                           components: seq[seq[float]]): Tensor[float] =
+proc attainable2elemental*(simplexPoints: Tensor[SomeNumber],
+                           components: seq[seq[SomeNumber]]): Tensor[float] =
     ## Accepts a `simplexPoints` Arraymancer `Tensor[float]` of shape corresponding to a simplex grid (e.g., from `simplex_grid_fractional`_) or random samples (e.g., from `simplex_sampling_mc`_) and a `components` list of lists of floats, which represents a list of
     ## compositions in the **elemental** space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, to allow for both types of inputs. 
     ## It then projects each point from the attainable space to the elemental space using matrix multiplication.
@@ -250,11 +250,12 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
         let elementalGrid = grid.attainable2elemental(components)
         echo elementalGrid
     # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
-    var cmpTensor: Tensor[float] = components.toTensor()
+    var cmpTensor: Tensor[float] = components.mapIt(it.mapIt(it.float)).toTensor()
     # Normalize components to sum to 1
     cmpTensor = cmpTensor /. cmpTensor.sum(axis=1)
     # Matrix multiplication to get the final grid
-    result = simplexPoints * cmpTensor
+    let simplexPointsFloat = simplexPoints.asType(float)
+    result = simplexPointsFloat * cmpTensor
 
 func pure_component_indexes*(dim: int, ndiv: int): seq[int] =
     ## This helper function returns a `seq[int]` of indexes of pure components in a simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_grid`_).
