@@ -2,6 +2,7 @@ import std/tables
 import std/math
 import std/algorithm
 import std/sugar
+import std/times
 import std/strformat
 import arraymancer/Tensor
 import ../nimplex
@@ -120,13 +121,13 @@ proc findStitchingPoints*(
     ndiv: int,
     maxDim: int = 3,
     components: seq[string] = generateAlphabetSequence(dim)
-        ): (Tensor[int], Table[string, seq[int]]) =
+        ): Table[string, seq[int]] =
     let L: int = binom(ndiv+dim-1, dim-1)
     var 
         x = zeros[int](dim)
         stitchTableInt = initTable[seq[int], seq[int]]()
         maxSys: seq[int] = @[]
-    result[0] = newTensor[int]([L, dim])
+        grid: Tensor[int] = newTensor[int]([L, dim])
 
     # Generate a space vector with all components present
     for i in 0..<dim:
@@ -139,7 +140,7 @@ proc findStitchingPoints*(
     # Start the generation of compositional grid that will be used for sorting purposes
     x[dim-1] = ndiv
     for j in 0..<dim:
-        result[0][0, j] = x[j]
+        grid[0, j] = x[j]
 
     # Start the generation of the stitch table
     for sys in stitchTableInt.keys:
@@ -156,7 +157,7 @@ proc findStitchingPoints*(
         x[dim-1] = val - 1
         x[h-1] += 1
         for j in 0..<dim:
-            result[0][i, j] = x[j]
+            grid[i, j] = x[j]
         if val != 1:
             h = dim
         for sys in stitchTableInt.keys:
@@ -169,16 +170,27 @@ proc findStitchingPoints*(
         var sortedSys: seq[int] = stitchTableInt[sys]
         let permutations = sys.permutations
         for p in permutations:
-            sortedSys.sortNodes(result[0], p)
-            result[1][space2name(p, components)] = sortedSys
+            sortedSys.sortNodes(grid, p)
+            result[space2name(p, components)] = sortedSys
 
 if isMainModule:
     let stitch = findStitchingPoints(5, 5, 3)
-    for space in stitch[1].keys:
-        echo fmt"{space:<7} -> {stitch[1][space]}"
+    for space in stitch.keys:
+        echo fmt"{space:<7} -> {stitch[space]}"
     
-    echo "\n\n\n"
+    echo "\n\n"
 
     let stitch2 = findStitchingPoints(3, 4, 3, @["Ti", "V", "Cr"])
-    for space in stitch2[1].keys:
-        echo fmt"{space:<7} -> {stitch2[1][space]}"
+    for space in stitch2.keys:
+        echo fmt"{space:<7} -> {stitch2[space]}"
+
+    let t0 = cpuTime()
+    let stitch3 = findStitchingPoints(6, 9, 4)
+    let t1 = cpuTime()
+    var 
+        stitchCount: int = 0
+        subspaceCount: int = 0
+    for space in stitch3.keys:
+        subspaceCount += 1
+        stitchCount += stitch3[space].len
+    echo "\n", fmt"Benchmark: Found {stitchCount} stitch points on all permutations of {subspaceCount} quaternary, ternary, binary, and unary subspaces of a 6-dimensional space with 9 divisions per dimension in {t1-t0} seconds."
