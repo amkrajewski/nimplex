@@ -2,7 +2,7 @@
 ## 
 ## Such spaces are considered when an entity can be split into a set of distinct components (a composition), and they play a critical role in many disciplines of science, engineering, and mathematics. For instance, in materials science, chemical composition refers to the way a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. And in economics, portfolio composition may refer to how finite capital is split across vehicles, such as cash, equity instruments, real estate, and commodities, based on their monetary value.
 ## 
-## **Navigation:** [nimplex](nimplex.html) (core library) | [docs/changelog](docs/changelog.html) | [utils/plotting](utils/plotting.html)
+## **Navigation:** [nimplex](nimplex.html) (core library) | [docs/changelog](docs/changelog.html) | [utils/plotting](utils/plotting.html) | [utils/stitching](utils/stitching.html)
 ## 
 ## ## Quick Start
 ## If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can effortlessly modify/extend the source code and re-compile it if you wish.

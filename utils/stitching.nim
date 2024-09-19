@@ -13,7 +13,7 @@ import ../nimplex
 ## on per-subgraph basis, which should be extremely useful for (a) combining the power of many specialized models and (b)
 ## creating stacked spaces for multi-step problems broken down into individual steps.
 ## 
-## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html)
+## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html) | [utils/stitching](stitching.html)
 ## 
 
 
