@@ -123,11 +123,29 @@ func permutations[T](s: seq[T]): seq[seq[T]] =
 # MAIN PROCEDURE
 
 proc findStitchingPoints*(
-    dim: int, 
-    ndiv: int,
-    maxDim: int = 3,
-    components: seq[string] = generateAlphabetSequence(dim)
-        ): Table[string, seq[int]] =
+        dim: int, 
+        ndiv: int,
+        maxDim: int = 3,
+        components: seq[string] = generateAlphabetSequence(dim)
+    ): Table[string, seq[int]] =
+    ## Main functionality of the module. It finds all ordered spaces and subspaces (up to the `maxDim` order) belonging to a simplex grid in 
+    ## `dim`-dimensional space with `ndiv` divisions per dimension, and identifies corresponding sequences of stitching points (simplex grid/graph nodes)
+    ## for each of them, so that they can be used to join graphs together or otherwise establish equivalence between points in different spaces (where 
+    ## they overlap). The `components` parameter is optional and can be used to provide custom names for the space components (e.g., `["Ti64", "V", "SS316L"]`).
+    ## The output is a Nim Table (translated into Python dict if you use bindings) with keys being the names of the spaces/subspaces and values being the
+    ## sequences of stitching points in the compositional grid. 
+    ## 
+    ## You will typically run this function for each space you want to stitch, changing the `dim` to match dimensionality of the given space and `components`
+    ## to match the order of components in the space. With the sets of points in hand, you can iterate over them creating edges to join the graphs together. As
+    ## you can see in the example below, you don't need to order components in any specific way and can mix-and-match different dimensionality spaces as well.
+    ## 
+    runnableExamples:
+        import std/tables
+        let stitch1Table = findStitchingPoints(3, 12, components = @["TiAlloy", "CrV", "VNi"])
+        let stitch2Table = findStitchingPoints(5, 12, components = @["AlCr", "VNi", "Hf90Zr10", "Ti5Zr95", "TiAlloy"])
+        echo "Subspace 1: ", stitch1Table["TiAlloy-VNi"]
+        echo "Subspace 2: ", stitch2Table["TiAlloy-VNi"]
+
     let L: int = binom(ndiv+dim-1, dim-1)
     var 
         x = zeros[int](dim)
@@ -191,6 +209,7 @@ when appType == "lib" and not defined(nimdoc):
             maxDim: int = 3,
             components: seq[string] = @[]
         ): Table[string, seq[int]] {.exportpy.} =
+        # Please see the Nim documentation for the `findStitchingPoints` function.
         if components.len == 0:
             return findStitchingPoints(dim, ndiv, maxDim, generateAlphabetSequence(dim))
         else:
