@@ -237,9 +237,11 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
 
 proc attainable2elemental*(simplexPoints: Tensor[SomeNumber],
                            components: seq[seq[SomeNumber]]): Tensor[float] =
-    ## Accepts a `simplexPoints` Arraymancer `Tensor[float]` of shape corresponding to a simplex grid (e.g., from `simplex_grid_fractional`_) or random samples (e.g., from `simplex_sampling_mc`_) and a `components` list of lists of floats, which represents a list of
-    ## compositions in the **elemental** space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, to allow for both types of inputs. 
-    ## It then projects each point from the attainable space to the elemental space using matrix multiplication.
+    ## Projects each point from the attainable space to the elemental space using matrix multiplication. Accepts a `simplexPoints` Arraymancer `Tensor[float]` or `Tensor[int]` of shape corresponding to a simplex grid 
+    ## (e.g., from `simplex_grid_fractional`_) or random samples (e.g., from `simplex_sampling_mc`_) and a `components` list of lists of `float`s or `int`s, which represents a list of compositions in the **elemental** 
+    ## space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, and will be normalized 
+    ## per-row to allow for both types of inputs. Please note that it will *not* automatically normalize the `simplexPoints` rows, so if you give it integer compositions, you will get float values summing to `ndiv`
+    ## rather than `1`.
     runnableExamples:
         const components = @[
             @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
