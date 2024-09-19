@@ -2,6 +2,8 @@ import std/tables
 import std/unittest
 import std/times
 import std/strformat
+import std/random
+import std/sequtils
 import arraymancer/Tensor
 
 import ../nimplex
@@ -57,3 +59,78 @@ suite "Set up two 3C simplex grids that happen to share a common 2C subspace and
 
     echo fmt"Finished test in {cpuTime()-t0} seconds."
     
+
+suite "Set up dissimilar 6C and 7C simplex grids in 9C elemental space that happen to share a common 4C subspace and verify correct stitching":
+    test "Don't try to visualize this, it's too big! :)":
+        check true
+
+    let t0 = cpuTime()
+
+    # Let's say A D H I are common between the two spaces
+
+    # Inside A B C D E F G H I set up A G D H I B (shared + G B)
+    let grid1: Tensor[float] = nimplex.simplex_grid(6, 9).attainable2elemental(@[
+            # A  B  C  D  E  F  G  H  I
+            @[1, 0, 0, 0, 0, 0, 0, 0, 0],
+            @[0, 0, 0, 0, 0, 0, 1, 0, 0],
+            @[0, 0, 0, 1, 0, 0, 0, 0, 0],
+            @[0, 0, 0, 0, 0, 0, 0, 1, 0],
+            @[0, 0, 0, 0, 0, 0, 0, 0, 1],
+            @[0, 1, 0, 0, 0, 0, 0, 0, 0]]
+            )
+
+    # Inside A B C D E F G H I set up H I E F A C D (shared + E F C)
+    let grid2: Tensor[float] = nimplex.simplex_grid(7, 9).attainable2elemental(@[
+            # A  B  C  D  E  F  G  H  I
+            @[0, 0, 0, 0, 0, 0, 0, 1, 0],
+            @[0, 0, 0, 0, 0, 0, 0, 0, 1],
+            @[0, 0, 0, 0, 1, 0, 0, 0, 0],
+            @[0, 0, 0, 0, 0, 1, 0, 0, 0],
+            @[1, 0, 0, 0, 0, 0, 0, 0, 0],
+            @[0, 0, 1, 0, 0, 0, 0, 0, 0],
+            @[0, 0, 0, 1, 0, 0, 0, 0, 0]]
+            )
+
+    test fmt"Generated spaces are of different sizes ({grid1.shape} != {grid2.shape})":
+        check grid1.shape != grid2.shape
+
+    test "Generated spaces are different":
+        check grid1 != grid2
+
+    let stitch1Table = findStitchingPoints(6, 9, maxDim=4, components = @["A", "G", "D", "H", "I", "B"])
+    let stitch2Table = findStitchingPoints(7, 9, maxDim=4, components = @["H", "I", "E", "F", "A", "C", "D"])
+
+    test "Stitching table 1 is of correct size 516 for <=4C in 6C space":
+        check stitch1Table.len == 516
+
+    test "Stitching table 2 is of correct size 1099 for <=4C in 7C space":
+        check stitch2Table.len == 1099
+
+    let stitch1 = stitch1Table["A-D-H-I"]
+    let stitch2 = stitch2Table["A-D-H-I"]
+
+    test "Binary stitching points were extracted from table and are of correct size: binom(ndiv+dim-1, dim-1) or in this case 220":
+        check stitch1.len == 220
+        check stitch2.len == 220
+
+    test "Binary stitching points are differently indexed (because they are in different spaces)":
+        check stitch1 != stitch2
+
+    test "The first 25 stitching points match expected reference values":
+        check stitch1[0..<25] == @[2001, 1999, 1998, 1997, 1990, 1989, 1988, 1986, 1985, 1983, 1965, 1964, 1963, 1961, 1960, 1958, 1955, 1954, 1952, 1949, 1910, 1909, 1908, 1906, 1905]
+        check stitch2[0..<25] == @[54, 52, 2046, 759, 49, 2044, 757, 3324, 2532, 1245, 45, 2041, 754, 3322, 2530, 1243, 4108, 3646, 2854, 1567, 40, 2037, 750, 3319, 2527]
+
+    # Check 15 random points in the stitching tables
+    let pointsToVerify: seq[int] = newSeq[int](15).mapIt(rand(220))
+
+    for i in 0..<15:
+        let p1 = grid1[stitch1[pointsToVerify[i]], _].squeeze().toSeq1D()
+        let p2 = grid2[stitch2[pointsToVerify[i]], _].squeeze().toSeq1D()
+        test fmt"Stitching Grid 1 point {pointsToVerify[i]:<4} ({p1}) matches Stitching Grid 2 point {pointsToVerify[i]:<4} in grid2 ({p2})":
+            check p1 == p2
+
+    echo fmt"Finished test in {cpuTime()-t0} seconds."
+
+
+
+   
