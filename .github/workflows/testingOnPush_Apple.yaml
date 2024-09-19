@@ -26,6 +26,8 @@ jobs:
         run: nim c -r -d:release tests/graph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
+      - name: Run stitching tests
+        run: nim c -r -d:release tests/stitching.nim 
   test-M1:
     runs-on: macos-14
     steps:
@@ -43,3 +45,5 @@ jobs:
         run: nim c -r -d:release tests/graph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
+      - name: Run stitching tests
+        run: nim c -r -d:release tests/stitching.nim
