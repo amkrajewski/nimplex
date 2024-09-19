@@ -58,7 +58,68 @@ suite "Set up two 3C simplex grids that happen to share a common 2C subspace and
             check p1 == p2
 
     echo fmt"Finished test in {cpuTime()-t0} seconds."
-    
+
+suite "Enhance the previous suite by (1) assigning higher order elemental space with chemical element names (Ti Al V Cr Ni) \nand (2) setting up the elemental space to be composed of alloys rather than pure elements":
+    let comps = @["Ti", "Al", "V", "Cr", "Ni"]
+    let t0 = cpuTime()
+    # A - (Ti0.8 Al0.15 V0.05) TiAlloy
+    # B - V0.25 Cr0.75 - CrV
+    # C - V0.75 Ni0.25 - VNi
+    # D - Al0.9 Cr0.1 - AlCr
+
+    # Set up A B C 
+    let grid1 = nimplex.simplex_grid_fractional(3, 5).attainable2elemental(@[
+        #   Ti    Al     V    Cr    Ni
+        @[ 0.8, 0.15, 0.05,  0.0,  0.0], # A
+        @[ 0.0,  0.0, 0.25, 0.75,  0.0], # B
+        @[ 0.0,  0.0, 0.75, 0.0,  0.25]] # C
+        )
+
+    # Set up D C A
+    let grid2 = nimplex.simplex_grid_fractional(3, 5).attainable2elemental(@[
+        #   Ti    Al     V    Cr    Ni
+        @[ 0.0,  0.9,  0.0,  0.1,  0.0], # D
+        @[ 0.0,  0.0, 0.75,  0.0, 0.25], # C
+        @[ 0.8, 0.15, 0.05,  0.0,  0.0]] # A
+        )
+
+    test "Points generated and are in different spaces":
+        check grid1 != grid2
+
+    let stitch1Table = findStitchingPoints(3, 5, components = @["TiAlloy", "CrV", "VNi"])
+    let stitch2Table = findStitchingPoints(3, 5, components = @["AlCr", "VNi", "TiAlloy"])
+
+    test "Stitching tables generated and of correct size (6 ternaries, 6 binaries, 3 unaries = 15)":
+        check stitch1Table.len == 15
+        check stitch2Table.len == 15
+
+    let stitch1 = stitch1Table["TiAlloy-VNi"]
+    let stitch2 = stitch2Table["TiAlloy-VNi"]
+
+    test "Binary stitching points were extracted from table and are of correct size (ndiv+1 = 5)":
+        check stitch1.len == 6
+        check stitch2.len == 6
+
+    test "Binary stitching points are differently indexed (because they are in different spaces)":
+        check stitch1 != stitch2
+
+    test "Stitching points match expected reference values":
+        check stitch1 == @[20, 18, 15, 11, 6, 0]
+        check stitch2 == @[0, 1, 2, 3, 4, 5]
+
+    func formula(fracs: seq[float], components: seq[string]): string = 
+        for (frac, comp) in zip(fracs, components):
+            if frac > 0:
+                result.add(fmt"{comp}{frac:.2f} ")
+
+    for i in 0..5:
+        let p1 = grid1[stitch1[i], _].squeeze().toSeq1D().mapIt(round(it, 3))
+        let p2 = grid2[stitch2[i], _].squeeze().toSeq1D().mapIt(round(it, 3))
+        test fmt"Stitching point {i} ({p1:<30}) in grid1 matches stitching point {i} in grid2 ({p2:<30}) -> {formula(p1, comps)}":
+            check p1 == p2
+
+    echo fmt"Finished test in {cpuTime()-t0} seconds."
+
 
 suite "Set up dissimilar 6C and 7C simplex grids in 9C elemental space that happen to share a common 4C subspace and verify correct stitching":
     test "Don't try to visualize this, it's too big! :)":
@@ -131,6 +192,3 @@ suite "Set up dissimilar 6C and 7C simplex grids in 9C elemental space that happ
 
     echo fmt"Finished test in {cpuTime()-t0} seconds."
 
-
-
-   
