@@ -34,7 +34,7 @@ when defined(nimdoc):
     import utils/stitching
     # Check if `docs/changelog.nim` file is present in the project directory and include it in the documentation if it is.
     import std/os
-    when existsFile("docs/changelog.nim"):
+    when fileExists("docs/changelog.nim"):
         import docs/changelog
 
 # GRID
@@ -243,15 +243,7 @@ proc attainable2elemental*(simplexPoints: Tensor[SomeNumber],
     ## space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, and will be normalized 
     ## per-row to allow for both types of inputs. Please note that it will *not* automatically normalize the `simplexPoints` rows, so if you give it integer compositions, you will get float values summing to `ndiv`
     ## rather than `1`.
-    runnableExamples:
-        const components = @[
-            @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
-            @[3.0, 1.0, 0.0],    # Fe3C
-            @[0.2, 0.0, 0.8]     # Fe20 Mo80
-        ]
-        let grid = simplex_grid_fractional(3, 4)
-        let elementalGrid = grid.attainable2elemental(components)
-        echo elementalGrid
+
     # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
     var cmpTensor: Tensor[float] = components.mapIt(it.mapIt(it.float)).toTensor()
     # Normalize components to sum to 1
