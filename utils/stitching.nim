@@ -141,10 +141,14 @@ proc findStitchingPoints*(
     ## 
     runnableExamples:
         import std/tables
-        let stitch1Table = findStitchingPoints(3, 12, components = @["TiAlloy", "CrV", "VNi"])
-        let stitch2Table = findStitchingPoints(5, 12, components = @["AlCr", "VNi", "Hf90Zr10", "Ti5Zr95", "TiAlloy"])
+        let stitch1Table = findStitchingPoints(
+            3, 12, components = @["TiAlloy", "CrV", "VNi"])
+        let stitch2Table = findStitchingPoints(
+            5, 12, components = @["AlCr", "VNi", "Hf90Zr10", "Ti5Zr95", "TiAlloy"])
         echo "Subspace 1: ", stitch1Table["TiAlloy-VNi"]
+            # Subspace 1: @[90, 88, 85, 81, 76, 70, 63, 55, 46, 36, 25, 13, 0]
         echo "Subspace 2: ", stitch2Table["TiAlloy-VNi"]
+            # Subspace 2: @[0, 91, 169, 235, 290, 335, 371, 399, 420, 435, 445, 451, 454]
 
     let L: int = binom(ndiv+dim-1, dim-1)
     var 
