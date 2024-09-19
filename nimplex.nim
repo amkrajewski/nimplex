@@ -181,11 +181,11 @@ proc simplex_graph*(
     ndiv: int): (Tensor[int], seq[seq[int]]) =
     ## .. image:: ../assets/small_GI.png
     ## Generates a simplex graph in a `dim`-component space based on (1) grid of nodes following `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`),
-    ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of 
-    ## (1) a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
-    ## just like in `simplex_grid`_, and (2) a `seq[seq[int]]` containing a list of neighbors for each node. The current implementation utilizes GC-allocated `seq` for neighbors
-    ## to reduce memory footprint in cases where `ndiv` is close to `dim` and not all nodes have the complete set of `dim(dim-1)` neighbors. This is a tradeoff between memory and performance, which can be
-    ## adjusted by switching to a (N_S(dim, ndiv), dim(dim-1)) `Tensor[int]` with `-1` padding for missing neighbors, just like done in `outFunction_graph`_ for NumPy output generation.
+    ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of (1) a deterministically allocated Arraymancer `Tensor[int]` 
+    ## of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space just like in `simplex_grid`_, and (2) a `seq[seq[int]]` containing a list of 
+    ## neighbors for each node. The current implementation utilizes GC-allocated `seq` for neighbors to reduce memory footprint in cases where `ndiv` is close to `dim` and not 
+    ## all nodes have the complete set of `dim(dim-1)` neighbors. This is a tradeoff between memory and performance, which can be adjusted by switching to a (N_S(dim, ndiv), 
+    ## dim(dim-1)) `Tensor[int]` with `-1` padding for missing neighbors, just like done in `outFunction_graph`_ for NumPy output generation.
     let L: int = binom(ndiv+dim-1, dim-1)
     var nodes = newTensor[int]([L, dim])
     var neighbors = newSeq[seq[int]](L)
@@ -243,7 +243,16 @@ proc attainable2elemental*(simplexPoints: Tensor[SomeNumber],
     ## space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, and will be normalized 
     ## per-row to allow for both types of inputs. Please note that it will *not* automatically normalize the `simplexPoints` rows, so if you give it integer compositions, you will get float values summing to `ndiv`
     ## rather than `1`.
-
+    runnableExamples:
+        import arraymancer/Tensor
+        const components = @[
+            @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
+            @[3.0, 1.0, 0.0],    # Fe3C
+            @[0.2, 0.0, 0.8]     # Fe20 Mo80
+        ]
+        let grid = simplex_grid_fractional(3, 4)
+        let elementalGrid = grid.attainable2elemental(components)
+        echo elementalGrid
     # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
     var cmpTensor: Tensor[float] = components.mapIt(it.mapIt(it.float)).toTensor()
     # Normalize components to sum to 1
