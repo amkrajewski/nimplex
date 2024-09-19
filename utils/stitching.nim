@@ -7,6 +7,10 @@ import std/strformat
 import arraymancer/Tensor
 import ../nimplex
 
+# Nimpy module for Python bindings when running in the library mode and not generating documentation (to avoid duplicate API entries)
+when appType == "lib" and not defined(nimdoc):
+    import nimpy
+
 ## This submodule contains utility functions related to stitching of the compositional graphs to form graph complexes, so that
 ## much more complex graphs can be built from simpler ones while retaining homogeneous structure of the space. Furthermore,
 ## one can keep track of provenance of the subgraphs and use this information to deploy computational (e.g., ML) models
@@ -116,6 +120,8 @@ func permutations[T](s: seq[T]): seq[seq[T]] =
             result.add(@[x] & p)
 
 
+# MAIN PROCEDURE
+
 proc findStitchingPoints*(
     dim: int, 
     ndiv: int,
@@ -173,24 +179,42 @@ proc findStitchingPoints*(
             sortedSys.sortNodes(grid, p)
             result[space2name(p, components)] = sortedSys
 
-if isMainModule:
-    let stitch = findStitchingPoints(5, 5, 3)
-    for space in stitch.keys:
-        echo fmt"{space:<7} -> {stitch[space]}"
-    
-    echo "\n\n"
 
-    let stitch2 = findStitchingPoints(3, 4, 3, @["Ti", "V", "Cr"])
-    for space in stitch2.keys:
-        echo fmt"{space:<7} -> {stitch2[space]}"
+# PYTHON BINDINGS
 
-    let t0 = cpuTime()
-    let stitch3 = findStitchingPoints(6, 9, 4)
-    let t1 = cpuTime()
-    var 
-        stitchCount: int = 0
-        subspaceCount: int = 0
-    for space in stitch3.keys:
-        subspaceCount += 1
-        stitchCount += stitch3[space].len
-    echo "\n", fmt"Benchmark: Found {stitchCount} stitch points on all permutations of {subspaceCount} quaternary, ternary, binary, and unary subspaces of a 6-dimensional space with 9 divisions per dimension in {t1-t0} seconds."
+when appType == "lib" and not defined(nimdoc):
+    # Direct translation of the Nim API to Python using Nimpy
+
+    proc findStitchingPoints_py(
+            dim: int, 
+            ndiv: int,
+            maxDim: int = 3,
+            components: seq[string] = @[]
+        ): Table[string, seq[int]] {.exportpy.} =
+        if components.len == 0:
+            return findStitchingPoints(dim, ndiv, maxDim, generateAlphabetSequence(dim))
+        else:
+            return findStitchingPoints(dim, ndiv, maxDim, components)
+
+when appType != "lib":
+    if isMainModule:
+        let stitch = findStitchingPoints(5, 5, 3)
+        for space in stitch.keys:
+            echo fmt"{space:<7} -> {stitch[space]}"
+        
+        echo "\n\n"
+
+        let stitch2 = findStitchingPoints(3, 4, 3, @["Ti", "V", "Cr"])
+        for space in stitch2.keys:
+            echo fmt"{space:<7} -> {stitch2[space]}"
+
+        let t0 = cpuTime()
+        let stitch3 = findStitchingPoints(6, 9, 4)
+        let t1 = cpuTime()
+        var 
+            stitchCount: int = 0
+            subspaceCount: int = 0
+        for space in stitch3.keys:
+            subspaceCount += 1
+            stitchCount += stitch3[space].len
+        echo "\n", fmt"Benchmark: Found {stitchCount} stitch points on all permutations of {subspaceCount} quaternary, ternary, binary, and unary subspaces of a 6-dimensional space with 9 divisions per dimension in {t1-t0} seconds."
