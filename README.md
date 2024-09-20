@@ -140,11 +140,11 @@ Usage within Nim is fairly straightforward. You can install it using Nimble as e
 nimble install -y https://github.com/amkrajewski/nimplex@#nimble
 ```
 or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
-**Then simply follow the API documentation below.**
+**Then simply follow the [API documentation (amkrajewski.github.io/nimplex)](https://amkrajewski.github.io/nimplex/) which goes over all core functions and extra utilities like [nimplex/utils/plotting](https://amkrajewski.github.io/nimplex/utils/plotting.html) and [nimplex/utils/stitching](https://amkrajewski.github.io/nimplex/utils/stitching.html).**
 
 ## Usage in Python
-To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary. Once you have the library installed and imported,
-**simply follow the API documentation below, with an exception that you need to add `_py` to the function names.** If you happen to forget adding `_py`, the Python interpreter will throw an error with a suggestion to do so.
+To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary!. Once you have the library installed and imported,
+**simply follow the [API documentation](https://amkrajewski.github.io/nimplex/), with an exception that you need to add `_py` to the function names.** If you happen to forget adding `_py`, the Python interpreter will throw an error with a suggestion to do so. A couple of additional conveninece functions are listed under [nimplex/#usage-in-python](https://amkrajewski.github.io/nimplex/#usage-in-python). 
 
 ## CLI
 

@@ -139,7 +139,7 @@
 ## nimble install -y https://github.com/amkrajewski/nimplex@#nimble
 ## ```
 ## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
-## **Then simply follow the API documentation below.**
+## **Then simply follow the API documentation below** (please note that it corresponds to the development version, i.e. the current state of the `main` branch), so some functions may not yet be available in the latest release version.
 ## 
 ## ## Usage in Python
 ## To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary. Once you have the library installed and imported,
