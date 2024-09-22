@@ -126,7 +126,8 @@ proc findStitchingPoints*(
         dim: int, 
         ndiv: int,
         maxDim: int = 3,
-        components: seq[string] = generateAlphabetSequence(dim)
+        components: seq[string] = generateAlphabetSequence(dim),
+        offset: int = 0
     ): Table[string, seq[int]] =
     ## Main functionality of the module. It finds all ordered spaces and subspaces (up to the `maxDim` order) belonging to a simplex grid in 
     ## `dim`-dimensional space with `ndiv` divisions per dimension, and identifies corresponding sequences of stitching points (simplex grid/graph nodes)
@@ -201,6 +202,11 @@ proc findStitchingPoints*(
             sortedSys.sortNodes(grid, p)
             result[space2name(p, components)] = sortedSys
 
+    if offset != 0:
+        for sys in result.keys:
+            for i in 0..<result[sys].len:
+                result[sys][i] += offset
+
 
 # PYTHON BINDINGS
 
@@ -211,13 +217,14 @@ when appType == "lib" and not defined(nimdoc):
             dim: int, 
             ndiv: int,
             maxDim: int = 3,
-            components: seq[string] = @[]
+            components: seq[string] = @[],
+            offset: int = 0
         ): Table[string, seq[int]] {.exportpy.} =
         # Please see the Nim documentation for the `findStitchingPoints` function.
         if components.len == 0:
-            return findStitchingPoints(dim, ndiv, maxDim, generateAlphabetSequence(dim))
+            return findStitchingPoints(dim, ndiv, maxDim, generateAlphabetSequence(dim), offset)
         else:
-            return findStitchingPoints(dim, ndiv, maxDim, components)
+            return findStitchingPoints(dim, ndiv, maxDim, components, offset)
 
 when appType != "lib":
     if isMainModule:
