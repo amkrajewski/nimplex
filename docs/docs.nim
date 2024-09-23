@@ -1,9 +1,29 @@
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
-## 
+##
 ## Such spaces are considered when an entity can be split into a set of distinct components (a composition), and they play a critical role in many disciplines of science, engineering, and mathematics. For instance, in materials science, chemical composition refers to the way a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. And in economics, portfolio composition may refer to how finite capital is split across vehicles, such as cash, equity instruments, real estate, and commodities, based on their monetary value.
 ## 
-## **Navigation:** [nimplex](nimplex.html) (core library) | [docs/changelog](docs/changelog.html) | [utils/plotting](utils/plotting.html) | [utils/stitching](utils/stitching.html)
+## **Navigation:** [**nimplex**](nimplex.html) (core library) | [docs/**changelog**](docs/changelog.html) | [utils/**plotting**](utils/plotting.html) | [utils/**stitching**](utils/stitching.html) |
 ## 
+## .. figure:: https://img.shields.io/badge/License-MIT-yellow.svg
+##   :alt: MIT License
+##   :target: https://opensource.org/licenses/MIT
+##
+## .. figure:: https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red
+##   :alt: arXiv
+##   :target: https://doi.org/10.48550/arXiv.2402.03528 
+## 
+## **(In-Press at npj Unconventional Computing)**
+##
+## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg
+##   :alt: macOS Testing
+## 
+## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml/badge.svg
+##   :alt: Linux Testing
+## 
+## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Windows.yaml/badge.svg
+##   :alt: Windows Testing
+##
+##
 ## ## Quick Start
 ## If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can effortlessly modify/extend the source code and re-compile it if you wish.
 ## 
