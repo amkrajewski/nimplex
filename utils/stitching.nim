@@ -16,6 +16,10 @@ when appType == "lib" and not defined(nimdoc):
 ## one can keep track of provenance of the subgraphs and use this information to deploy computational (e.g., ML) models
 ## on per-subgraph basis, which should be extremely useful for (a) combining the power of many specialized models and (b)
 ## creating stacked spaces for multi-step problems broken down into individual steps.
+##
+## For typical use, please consult the `findStitchingPoints`_ function. As usual, if you compile `stitching.nim` as a Python library 
+## (`.so` file on Unix or `.pyd` on Windows), the `findStitchingPoints_py` will be available, taking the same arguments as `findStitchingPoints`_
+## in `nim` and returning a native Python `dict`.
 ## 
 ## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html) | [utils/stitching](stitching.html)
 ## 
@@ -131,7 +135,7 @@ proc findStitchingPoints*(
         components: seq[string] = generateAlphabetSequence(dim),
         offset: int = 0
     ): Table[string, seq[int]] =
-    ## Main functionality of the module. It finds all ordered spaces and subspaces (up to the `maxDim` order) belonging to a simplex grid in 
+    ## **Main functionality of the module.** It finds all ordered spaces and subspaces (up to the `maxDim` order) belonging to a simplex grid in 
     ## `dim`-dimensional space with `ndiv` divisions per dimension, and identifies corresponding sequences of stitching points (simplex grid/graph nodes)
     ## for each of them, so that they can be used to join graphs together or otherwise establish equivalence between points in different spaces (where 
     ## they overlap). The `components` parameter is optional and can be used to provide custom names for the space components (e.g., `["Ti64", "V", "SS316L"]`).
