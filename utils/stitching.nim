@@ -19,6 +19,8 @@ when appType == "lib" and not defined(nimdoc):
 ## 
 ## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html) | [utils/stitching](stitching.html)
 ## 
+## .. figure:: ../assets/Fig4.png
+##    :alt: Simplex Graph Complex
 
 
 func generateAlphabetSequence(length: int): seq[string] =

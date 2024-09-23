@@ -18,9 +18,9 @@ let
     data = parseJson(response.body)
 
 if changelogType == "md":
-    targetFile.writeLine("**Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](changelog.html) | [utils/plotting](../utils/plotting.html)\n")
+    targetFile.writeLine("**Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](changelog.html) | [utils/plotting](../utils/plotting.html) | [utils/stitching](../utils/stitching.html)\n")
 elif changelogType == "nim":
-    targetFile.writeLine("## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](changelog.html) | [utils/plotting](../utils/plotting.html)\n")
+    targetFile.writeLine("## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](changelog.html) | [utils/plotting](../utils/plotting.html) | [utils/stitching](../utils/stitching.html)\n")
 
 for d in data:
     let 
