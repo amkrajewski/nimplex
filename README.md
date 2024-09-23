@@ -3,7 +3,7 @@
 [![Static Badge](https://img.shields.io/badge/API-Documentation-e?logo=bookstack&logoColor=white&link=https%3A%2F%2Famkrajewski.github.io%2Fnimplex%2F)](https://nimplex.phaseslab.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <a href="https://nimble.directory/pkg/nimplex"><img src="https://raw.githubusercontent.com/amkrajewski/nimble-badge/master/badges/nimplex.svg" alt="Nimble Package" height="20"></a>
-[![Arxiv](https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red)](https://doi.org/10.48550/arXiv.2402.03528)
+[![Arxiv](https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red)](https://doi.org/10.48550/arXiv.2402.03528) (In Press at npj Unconventional Computing journal)
 
 [![(Linux) Grid, Graph, and CLI Tests](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml)
 [![(MaxOS) Grid, Graph, and CLI Tests](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml)
