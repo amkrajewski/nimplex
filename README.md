@@ -3,7 +3,9 @@
 [![Static Badge](https://img.shields.io/badge/API-Documentation-e?logo=bookstack&logoColor=white&link=https%3A%2F%2Famkrajewski.github.io%2Fnimplex%2F)](https://nimplex.phaseslab.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <a href="https://nimble.directory/pkg/nimplex"><img src="https://raw.githubusercontent.com/amkrajewski/nimble-badge/master/badges/nimplex.svg" alt="Nimble Package" height="20"></a>
-[![Arxiv](https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red)](https://doi.org/10.48550/arXiv.2402.03528)
+[![Arxiv](https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red)](https://doi.org/10.48550/arXiv.2402.03528) 
+
+**(In-Press at npj Unconventional Computing)**
 
 [![(Linux) Grid, Graph, and CLI Tests](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml)
 [![(MaxOS) Grid, Graph, and CLI Tests](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml)
@@ -140,11 +142,11 @@ Usage within Nim is fairly straightforward. You can install it using Nimble as e
 nimble install -y https://github.com/amkrajewski/nimplex@#nimble
 ```
 or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
-**Then simply follow the API documentation below.**
+**Then simply follow the [API documentation (amkrajewski.github.io/nimplex)](https://amkrajewski.github.io/nimplex/) which goes over all core functions and extra utilities like [nimplex/utils/plotting](https://amkrajewski.github.io/nimplex/utils/plotting.html) and [nimplex/utils/stitching](https://amkrajewski.github.io/nimplex/utils/stitching.html).**
 
 ## Usage in Python
-To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary. Once you have the library installed and imported,
-**simply follow the API documentation below, with an exception that you need to add `_py` to the function names.** If you happen to forget adding `_py`, the Python interpreter will throw an error with a suggestion to do so.
+To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary!. Once you have the library installed and imported,
+**simply follow the [API documentation](https://amkrajewski.github.io/nimplex/), with an exception that you need to add `_py` to the function names.** If you happen to forget adding `_py`, the Python interpreter will throw an error with a suggestion to do so. A couple of additional conveninece functions are listed under [nimplex/#usage-in-python](https://amkrajewski.github.io/nimplex/#usage-in-python). 
 
 ## CLI
 

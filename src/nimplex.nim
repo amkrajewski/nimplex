@@ -29,11 +29,12 @@ when appType == "lib" and not defined(nimdoc):
 when defined(nimdoc):
     # All of (comprehensive) introduction to the documentation lives in this included Nim file, while API is generated from docstrings in the code. It was moved there for cleaner code.
     include ../docs/docs
-    # The plotting utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
+    # The plotting and stitching utils are not part of the core library, but are imported during documentation generation to index them as part of the library.
     import nimplex/utils/plotting
+    import nimplex/utils/stitching
     # Check if `docs/changelog.nim` file is present in the project directory and include it in the documentation if it is.
     import std/os
-    when existsFile("../docs/changelog.nim"):
+    when fileExists("../docs/changelog.nim"):
         import ../docs/changelog
 
 # GRID
@@ -180,11 +181,34 @@ proc simplex_graph*(
     ndiv: int): (Tensor[int], seq[seq[int]]) =
     ## .. image:: ../assets/small_GI.png
     ## Generates a simplex graph in a `dim`-component space based on (1) grid of nodes following `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`),
-    ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of 
-    ## (1) a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
-    ## just like in `simplex_grid`_, and (2) a `seq[seq[int]]` containing a list of neighbors for each node. The current implementation utilizes GC-allocated `seq` for neighbors
-    ## to reduce memory footprint in cases where `ndiv` is close to `dim` and not all nodes have the complete set of `dim(dim-1)` neighbors. This is a tradeoff between memory and performance, which can be
-    ## adjusted by switching to a (N_S(dim, ndiv), dim(dim-1)) `Tensor[int]` with `-1` padding for missing neighbors, just like done in `outFunction_graph`_ for NumPy output generation.
+    ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of (1) a deterministically allocated Arraymancer `Tensor[int]` 
+    ## of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space just like in `simplex_grid`_, and (2) a `seq[seq[int]]` containing a list of 
+    ## neighbors for each node. The current implementation utilizes GC-allocated `seq` for neighbors to reduce memory footprint in cases where `ndiv` is close to `dim` and not 
+    ## all nodes have the complete set of `dim(dim-1)` neighbors. This is a tradeoff between memory and performance, which can be adjusted by switching to a (N_S(dim, ndiv), 
+    ## dim(dim-1)) `Tensor[int]` with `-1` padding for missing neighbors, just like done in `outFunction_graph`_ for NumPy output generation.
+    
+    runnableExamples:
+        import arraymancer/Tensor
+        let (nodes, neighbors) = simplex_graph(3, 4)
+        let nodeSequence = nodes.toSeq2D()
+        for i in 0..<nodeSequence.len:
+            echo i, ":  ", nodeSequence[i], " -> ", neighbors[i]
+        # 0:  @[0, 0, 4] -> @[1, 5]
+        # 1:  @[0, 1, 3] -> @[0, 2, 5, 6]
+        # 2:  @[0, 2, 2] -> @[1, 3, 6, 7]
+        # 3:  @[0, 3, 1] -> @[2, 4, 7, 8]
+        # 4:  @[0, 4, 0] -> @[3, 8]
+        # 5:  @[1, 0, 3] -> @[1, 0, 6, 9]
+        # 6:  @[1, 1, 2] -> @[2, 1, 5, 7, 9, 10]
+        # 7:  @[1, 2, 1] -> @[3, 2, 6, 8, 10, 11]
+        # 8:  @[1, 3, 0] -> @[4, 3, 7, 11]
+        # 9:  @[2, 0, 2] -> @[6, 5, 10, 12]
+        # 10:  @[2, 1, 1] -> @[7, 6, 9, 11, 12, 13]
+        # 11:  @[2, 2, 0] -> @[8, 7, 10, 13]
+        # 12:  @[3, 0, 1] -> @[10, 9, 13, 14]
+        # 13:  @[3, 1, 0] -> @[11, 10, 12, 14]
+        # 14:  @[4, 0, 0] -> @[13, 12]
+
     let L: int = binom(ndiv+dim-1, dim-1)
     var nodes = newTensor[int]([L, dim])
     var neighbors = newSeq[seq[int]](L)
@@ -235,12 +259,15 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
 
 # CORE UTILS
 
-proc attainable2elemental*(simplexPoints: Tensor[float],
-                           components: seq[seq[float]]): Tensor[float] =
-    ## Accepts a `simplexPoints` Arraymancer `Tensor[float]` of shape corresponding to a simplex grid (e.g., from `simplex_grid_fractional`_) or random samples (e.g., from `simplex_sampling_mc`_) and a `components` list of lists of floats, which represents a list of
-    ## compositions in the **elemental** space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, to allow for both types of inputs. 
-    ## It then projects each point from the attainable space to the elemental space using matrix multiplication.
+proc attainable2elemental*(simplexPoints: Tensor[SomeNumber],
+                           components: seq[seq[SomeNumber]]): Tensor[float] =
+    ## Projects each point from the attainable space to the elemental space using matrix multiplication. Accepts a `simplexPoints` Arraymancer `Tensor[float]` or `Tensor[int]` of shape corresponding to a simplex grid 
+    ## (e.g., from `simplex_grid_fractional`_) or random samples (e.g., from `simplex_sampling_mc`_) and a `components` list of lists of `float`s or `int`s, which represents a list of compositions in the **elemental** 
+    ## space serving as base components of the **attainable** space given in `simplexPoints`. The `components` can be a row-consistnet mixed list list of integer and fractional compositions, and will be normalized 
+    ## per-row to allow for both types of inputs. Please note that it will *not* automatically normalize the `simplexPoints` rows, so if you give it integer compositions, you will get float values summing to `ndiv`
+    ## rather than `1`.
     runnableExamples:
+        import arraymancer/Tensor
         const components = @[
             @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
             @[3.0, 1.0, 0.0],    # Fe3C
@@ -249,24 +276,50 @@ proc attainable2elemental*(simplexPoints: Tensor[float],
         let grid = simplex_grid_fractional(3, 4)
         let elementalGrid = grid.attainable2elemental(components)
         echo elementalGrid
+        # Tensor[system.float] of shape "[15, 3]" on backend "Cpu"
+        # |0.2            0       0.8|
+        # |0.3375    0.0625       0.6|
+        # |0.475      0.125       0.4|
+        # |0.6125    0.1875       0.2|
+        # |0.75        0.25         0|
+        # |0.385     0.0125    0.6025|
+        # |0.5225     0.075    0.4025|
+        # |0.66      0.1375    0.2025|
+        # |0.7975       0.2    0.0025|
+        # |0.57       0.025     0.405|
+        # |0.7075    0.0875     0.205|
+        # |0.845       0.15     0.005|
+        # |0.755     0.0375    0.2075|
+        # |0.8925       0.1    0.0075|
+        # |0.94        0.05      0.01|
+
     # Tensor of components which can be "integer" ([2,2,1]) or "fractional" ([0.4,0.4,0.2]) compositions
-    var cmpTensor: Tensor[float] = components.toTensor()
+    var cmpTensor: Tensor[float] = components.mapIt(it.mapIt(it.float)).toTensor()
     # Normalize components to sum to 1
     cmpTensor = cmpTensor /. cmpTensor.sum(axis=1)
     # Matrix multiplication to get the final grid
-    result = simplexPoints * cmpTensor
+    let simplexPointsFloat = simplexPoints.asType(float)
+    result = simplexPointsFloat * cmpTensor
 
 func pure_component_indexes*(dim: int, ndiv: int): seq[int] =
     ## This helper function returns a `seq[int]` of indexes of pure components in a simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_grid`_).
+    runnableExamples:
+        echo "A B C pure components at indices: ", pure_component_indexes(3, 12)
+        # A B C pure components at indices: @[90, 12, 0]
     for d in 1..dim:
         result.add(binom(ndiv+d-1, ndiv)-1)
     # Reverse the order as the last pure component is the first in the grid
     result.reverse()
 
 func pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
-    ## This helper function returns a `seq[int]` of indexes of pure components in an **internal** simplex grid of `dim` dimensions and `ndiv` divisions per dimension (e.g., from `simplex_internal_grid`_).
+    ## This helper function returns a `seq[int]` of indexes of pure components in an **internal** simplex grid of `dim` dimensions and `ndiv` divisions per dimension 
+    ## (e.g., from `simplex_internal_grid`_). In this context, by pure components we mean corners of the simplex, corresponding to the points where one component is
+    ## at its maximum and all others are at exactly one quanta (e.g., 1/ndiv).
+    runnableExamples:
+        echo "A+B1C1 B+A1C1 C+A1B1 pure components at indices: ", pure_component_indexes_internal(3, 12)
+        # A+B1C1 B+A1C1 C+A1B1 pure components at indices: @[54, 10, 0]
     for d in 1..dim:
-        result.add(binom(ndiv-1, dim-1)-1)
+        result.add(binom(ndiv-1, d-1)-1)
     # Reverse the order as the last pure component is the first in the grid
     result.reverse()
 

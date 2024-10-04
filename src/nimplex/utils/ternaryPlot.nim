@@ -11,7 +11,7 @@ let t0 = cpuTime()
 
 # User-set Constants
 const
-    nDiv: int = 36
+    nDiv: int = 24
     filename: string = "output.png"
     height: int = 4000
     scaleChroma: float = 2.0
@@ -26,9 +26,9 @@ const
     pathPointsOverlay: bool = true
     pathType: string = "highvis" # "line" or "boldline" or "highvis"
     propetyColoringStyle: string = "hotcold"
-    elementList: seq[string] = @["Zr", "Hf", "Nb", "Ta", "Mo"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
+    elementList: seq[string] = @["Ti", "Zr", "Hf", "W", "Nb", "Ta", "Mo"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
     labels: seq[string] = @["Hf", "Mo33Nb33Ta33", "Mo80Nb10"] # @["Ti64", "SS316L", "Monel400"]
-    elementalCompositions: seq[seq[float]] = @[@[0.0, 0.0, 0.0, 100.0, 0.0],  @[68.0, 18.0, 14.0, 0.0, 0.0],  @[2.0, 0.0, 66.0, 0.0, 32.0]]
+    elementalCompositions: seq[seq[float]] = @[@[5, 0, 95, 0, 0, 0, 0], @[0, 0, 0, 33, 33, 33, 0], @[0, 0, 0, 10, 10, 0, 80]]
     # elementalCompositions: seq[seq[float]] = @[@[1,0,0], @[0,1,0], @[0,0,1]]
     # @[@[20.0, 40.0, 0.0, 0.0, 0.0], @[0.5, 0.0, 0.0, 0.0, 0.5], @[0.1, 0.0, 0.5, 0.5, 0.1]])
     axisType: string = "vulgarFractions" # "decimal" or "vulgarFractions" or "quanta"
@@ -57,7 +57,9 @@ const
     sideWidth: float = (60*scaling)
     luminance: float = if compIsMain: 0.55 else: 0.45
     alpha: uint8 = if compIsMain: 255 else: 128
-    # A couple of hard-coded color schemes (2-5 components) which look nice
+    # A couple of hard-coded color schemes (2-5 components) which look nice.
+    # You can add modify or extend these as needed. If you need more than 5 
+    # components, you can use the colorSchemeOKlabNc function.
     colorSchemeOKlab2c: seq[seq[float]] = @[
         @[luminance,  0.250*scaleChroma,  0.000],
         @[luminance, -0.250*scaleChroma,  0.000]]
@@ -83,17 +85,17 @@ const
         @[0.400, 0.217*scaleChroma, 0.125*scaleChroma],
         @[1.0, 0.0, 0.0]]
 
+# *** Color-related functions and constants ***
 
+func colorSchemeOKlabNc(n: int): seq[seq[float]] =
+    for i in 0..<n:
+        let 
+            angle = 2 * PI * i.float / n.float
+            a = 0.250 * scaleChroma * cos(angle)
+            b = 0.250 * scaleChroma * sin(angle)
+        result.add(@[luminance, a, b])
 
-# *** Color Schemes ***
-const colorSchemeOKlab: seq[seq[float]] = static:
-    func colorSchemeOKlabNc(n: int): seq[seq[float]] =
-        for i in 0..<n:
-            let 
-                angle = 2 * PI * i.float / n.float
-                a = 0.250 * scaleChroma * cos(angle)
-                b = 0.250 * scaleChroma * sin(angle)
-            result.add(@[luminance, a, b])
+proc findColorSchemeOKlab(elementalEmbeddingLen: int): seq[seq[float]] =
     case elementalEmbeddingLen:
         of 2: colorSchemeOKlab2c
         of 3: colorSchemeOKlab3c
@@ -101,11 +103,62 @@ const colorSchemeOKlab: seq[seq[float]] = static:
         of 5: colorSchemeOKlab5c
         else: colorSchemeOKlabNc(elementalEmbeddingLen)
 
+const colorSchemeOKlab: seq[seq[float]] = static:
+    findColorSchemeOKlab(elementalEmbeddingLen)
+
 const propertyColoringOKlab: seq[seq[float]] = static:
     case propetyColoringStyle:
         of "hotcold": propertyColoringOKlabHotCold
         of "01": propertyColoringOKlab01
         else: raise newException(ValueError, "Unsupported property coloring style")
+
+func clamp(x: float, minVal: float, maxVal: float): float {.inline.} =
+        return max(minVal, min(maxVal, x))
+
+func oklabToRGB(c: tuple[L, a, b: float]): tuple[r, g, b: uint8] {.inline.} =
+
+    func linearToGamma(c: float): float {.inline.} =
+        if c >= 0.0031308: 
+            return 1.055 * pow(c, 1 / 2.4) - 0.055
+        return 12.92 * c
+
+    let
+        l = (c.L + c.a * +0.3963377774 + c.b * +0.2158037573) ^ 3
+        m = (c.L + c.a * -0.1055613458 + c.b * -0.0638541728) ^ 3
+        s = (c.L + c.a * -0.0894841775 + c.b * -1.2914855480) ^ 3
+        r = (255 * linearToGamma(
+            l * +4.0767416621 + m * -3.3077115913 + s * +0.2309699292)
+            ).clamp(0, 255).round.uint8
+        g = (255 * linearToGamma(
+            l * -1.2684380046 + m * +2.6097574011 + s * -0.3413193965)
+            ).clamp(0, 255).round.uint8
+        b = (255 * linearToGamma(
+            l * -0.0041960863 + m * -0.7034186147 + s * +1.7076147010)
+            ).clamp(0, 255).round.uint8
+
+    return (r, g, b)
+
+func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
+    var oklSeq: seq[float] = newSeq[float](3)
+    for k in 0..<3:
+        oklSeq[k] = prop * propertyColoringOKlab[0][k] + (1 - prop) * propertyColoringOKlab[1][k]
+    let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
+    return rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, 255.uint8)
+
+# Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
+proc findElementalColoring(
+        elementalEmbedding: Tensor[float] = elementalEmbedding,
+        colorSchemeOKlab: seq[seq[float]] = colorSchemeOKlab,
+        ): seq[ColorRGBA] =
+    for i in 0..<gridLen:
+        var oklSeq: seq[float] = newSeq[float](3)
+        for j in 0..<elementalEmbedding.shape[1]:
+            for k in 0..<3:
+                oklSeq[k] += elementalEmbedding[i, j] * colorSchemeOKlab[j][k].float
+        let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
+        result.add(rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, alpha))
+
+let elementalColoring: seq[ColorRGBA] = findElementalColoring()
 
 # *** Fonts ***
 const 
@@ -142,53 +195,6 @@ const (thinLine, thickLine): (float, float) = static:
     else:
         (scaling * 0.5, scaling * 2) 
 
-
-# *** Helper Functions ***
-func clamp(x: float, minVal: float, maxVal: float): float {.inline.} =
-        return max(minVal, min(maxVal, x))
-
-func oklabToRGB(c: tuple[L, a, b: float]): tuple[r, g, b: uint8] {.inline.} =
-
-    func linearToGamma(c: float): float {.inline.} =
-        if c >= 0.0031308: 
-            return 1.055 * pow(c, 1 / 2.4) - 0.055
-        return 12.92 * c
-
-    let
-        l = (c.L + c.a * +0.3963377774 + c.b * +0.2158037573) ^ 3
-        m = (c.L + c.a * -0.1055613458 + c.b * -0.0638541728) ^ 3
-        s = (c.L + c.a * -0.0894841775 + c.b * -1.2914855480) ^ 3
-        r = (255 * linearToGamma(
-            l * +4.0767416621 + m * -3.3077115913 + s * +0.2309699292)
-            ).clamp(0, 255).round.uint8
-        g = (255 * linearToGamma(
-            l * -1.2684380046 + m * +2.6097574011 + s * -0.3413193965)
-            ).clamp(0, 255).round.uint8
-        b = (255 * linearToGamma(
-            l * -0.0041960863 + m * -0.7034186147 + s * +1.7076147010)
-            ).clamp(0, 255).round.uint8
-
-    return (r, g, b)
-
-func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
-    var oklSeq: seq[float] = newSeq[float](3)
-    for k in 0..<3:
-        oklSeq[k] = prop * propertyColoringOKlab[0][k] + (1 - prop) * propertyColoringOKlab[1][k]
-    let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
-    return rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, 255.uint8)
-
-# Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
-let elementalColoring: seq[ColorRGBA] = block:
-    var elementalColoring: seq[ColorRGBA] = @[]
-    for i in 0..<gridLen:
-        var oklSeq: seq[float] = newSeq[float](3)
-        for j in 0..<elementalEmbeddingLen:
-            for k in 0..<3:
-                oklSeq[k] += elementalEmbedding[i, j] * colorSchemeOKlab[j][k].float
-        let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
-        elementalColoring.add(rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, alpha))
-    elementalColoring
-
 # **************** Drawing Functions ****************
     
 proc fillWhite(image: Image) =
@@ -212,6 +218,20 @@ proc drawBackground(image: Image) =
 proc drawCompositonHexes(
         image: Image, 
         ): void =
+    for i in 0..<gpl.len:
+        # Main hexes filling the space with gaps
+        let pathHex = newPath()
+        pathHex.polygon(vec2(gpl[i][0], gpl[i][1]), distance, sides = 6)
+        image.fillPath(pathHex, elementalColoring[i])
+
+proc drawCompositonHexes(
+        image: Image, 
+        elementalEmbedding: Tensor[float]
+        ): void =
+    let 
+        colorSchemeOKlab = findColorSchemeOKlab(elementalEmbedding.shape[1])
+        elementalColoring = findElementalColoring(elementalEmbedding, colorSchemeOKlab)
+
     for i in 0..<gpl.len:
         # Main hexes filling the space with gaps
         let pathHex = newPath()
@@ -369,8 +389,10 @@ proc drawForeground(image: Image): void =
             vec2(pp1[0]+80*scaling, pp1[1]-2*sideWidth-140*scaling)))
 
 # ********* Axis Labels *********
-
-proc drawAxisLabels(image: Image) =
+proc drawAxisLabels(
+        image: Image,
+        labels: seq[string],
+    ) =
     var font: Font = readFont(fontMain)
     font.size = sideWidth*1.5
     font.paint.color = color(0.7, 0, 0.1)
@@ -382,7 +404,7 @@ proc drawAxisLabels(image: Image) =
         halign = CenterAlign
         )
 
-    if longLabel:
+    if (len(labels[1]) > 2 or len(labels[2]) > 2):
         # Longer labels need to live under the axis
         image.fillText(font, labels[1], translate(vec2(pp2[0]+sideWidth*1.5, pp2[1]+sideWidth*0.35)), halign = RightAlign)
         image.fillText(font, labels[2], translate(vec2(pp3[0]-sideWidth*1.5, pp3[1]+sideWidth*0.35)), halign = LeftAlign)
@@ -391,6 +413,8 @@ proc drawAxisLabels(image: Image) =
         image.fillText(font, labels[1], translate(vec2(pp2[0]+sideWidth*0.2, pp2[1]-sideWidth*0.3)), halign = LeftAlign)
         image.fillText(font, labels[2], translate(vec2(pp3[0]-sideWidth*0.2, pp3[1]-sideWidth*0.3)), halign = RightAlign)
 
+proc drawAxisLabels(image: Image) =
+    drawAxisLabels(image, labels)
 
 # ********* Axis Ticks and Markers *********
 
@@ -550,7 +574,10 @@ proc drawAxisTicksMarkers(image: Image) =
 
 
 # ********* Elemental Legend *********
-proc drawElementalLegend(image: Image) =
+proc drawElementalLegend(
+        image: Image,
+        elementList: seq[string],
+    ): void =
     let ctx = newContext(image)
     ctx.strokeStyle = rgba(0, 100, 100, 220)
     ctx.font = fontMain
@@ -558,6 +585,7 @@ proc drawElementalLegend(image: Image) =
     ctx.textAlign = LeftAlign
 
     const legendHexSize: float = (990/(nDiv+1)-1).clamp(15, 50) * scaling
+    let colorSchemeOKlab = findColorSchemeOKlab(len(elementList))
 
     for (i, el) in elementList.pairs:
         let rgbMap = oklabToRGB((colorSchemeOKlab[i][0].float, colorSchemeOKlab[i][1].float, colorSchemeOKlab[i][2].float))
@@ -569,6 +597,9 @@ proc drawElementalLegend(image: Image) =
             el, 
             vec2(400*scaling, (100*i+200).float*scaling),
         )
+
+proc drawElementalLegend(image: Image): void =
+    drawElementalLegend(image, elementList)
 
 
 # ********* Marker Legend *********
@@ -723,7 +754,11 @@ when appType != "lib":
 when appType=="lib":
     import nimpy
 
-    proc plotTernary*(feasibilityList: seq[bool]): void {.exportpy.} =
+    proc plotTernaryFeasPath*(
+        feasibilityList: seq[bool],
+        labels: seq[string],
+        pathPoints: seq[int]
+            ): void {.exportpy.} =
         let t0 = cpuTime()
         let feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
 
@@ -735,16 +770,62 @@ when appType=="lib":
         image.drawCompositonHexes()
         #if propertyOverlay: 
         #    image.drawPropertyHexes(propertyField)
-        #if pathPointsOverlay:
-        #    image.drawDesignedPath(pathPoints)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
         #if markerOverlay1: 
         #    image.drawMarkers1(feasibilityField1)
         if markerOverlay2: 
             image.drawMarkers2(feasibilityField2)
         image.drawForeground()
-        image.drawAxisLabels()
+        image.drawAxisLabels(labels)
         image.drawAxisTicksMarkers()
         image.drawElementalLegend()
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        #if propertyOverlay:
+        #    image.drawPropertyLegend(propertyField)
+        if indexOverlay:
+            image.drawIndicies()
+
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        echo "Saving image..."
+        image.writeFile(filename)
+
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+
+    proc plotPhases*(
+            feasibilityList: seq[bool],
+            labels: seq[string],
+            pathPoints: seq[int],
+            elementalEmbedding: seq[seq[float]],
+            elements: seq[string]
+        ): void {.exportpy.} =
+        let t0 = cpuTime()
+        let 
+            feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
+            elementalEmbedding: Tensor[float] = elementalEmbedding.toTensor()
+
+        echo "Constructing image..."
+        let image = newImage(width, height)
+        echo "Image constructed..."
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes(elementalEmbedding)
+        #if propertyOverlay: 
+        #    image.drawPropertyHexes(propertyField)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
+        #if markerOverlay1: 
+        #    image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels(labels)
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend(elements)
         if markerOverlay1 or markerOverlay2:
             image.drawMarkerLegend()
         #if propertyOverlay:
