@@ -1,3 +1,5 @@
+import ../src/nimplex
+
 import std/[os, osproc]
 import system
 import std/unittest
@@ -6,7 +8,6 @@ import std/sequtils
 import arraymancer/Tensor
 import arraymancer/io
 import std/hashes
-import ../src/nimplex
 import std/sets
 import std/times
 import std/re
@@ -20,17 +21,12 @@ proc stripAnsiEscapeCodes(s: string): string =
 echo "***** CLI Tests *****"
 
 suite "test if correct grid output is given when nimplex is run in command line with some selected configurations":
-    test "check if compiled nimplex is present in the current working directory":
-        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        echo "Detected host OS: " & hostOS
-        if hostOS == "windows":
-            require fileExists("nimplex.exe")
-        else:
-            require fileExists("nimplex")
+    test "check if compiled nimplex executable is available in PATH":
+        require execCmdEx("nimplex --help").exitCode == 0
 
     test "generate small integer simplex grid (FIS 3 3) and print shape to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c FIS 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c FIS 3 3")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"FIS\", \"3\", \"3\"]", 
@@ -41,7 +37,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
     test "generate large integer simplex grid (FIS 9 12) and print shape to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c FIS 9 12")
+            (output, exitCode) = execCmdEx("nimplex -c FIS 9 12")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"FIS\", \"9\", \"12\"]", 
@@ -52,7 +48,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
     test "generate large internal integer simplex grid (IIS 7 12) and print shape to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c IIS 7 12")
+            (output, exitCode) = execCmdEx("nimplex -c IIS 7 12")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"IIS\", \"7\", \"12\"]",
@@ -63,7 +59,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
     test "generate small integer simplex grid (FIP 3 3) and print values to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c FIP 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c FIP 3 3")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"FIP\", \"3\", \"3\"]", 
@@ -85,7 +81,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
     test "generate small integer internal simplex grid (IIP 3 5) and print values to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c IIP 3 5")
+            (output, exitCode) = execCmdEx("nimplex -c IIP 3 5")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"IIP\", \"3\", \"5\"]", 
@@ -103,7 +99,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
     test "(significant if previous failes) values themself generated for small integer internal simplex grid (IIP 3 5) corectness":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c IIP 3 5")
+            (output, exitCode) = execCmdEx("nimplex -c IIP 3 5")
             outputLines = output.splitLines
             reference = @[
                 @[1, 1, 3],
@@ -123,7 +119,7 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
     test "(independent of numerical precision of a given machine) fractional internal simplex grid (IFP 3 6) correctness":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c IFP 3 6")
+            (output, exitCode) = execCmdEx("nimplex -c IFP 3 6")
             outputLines = output.splitLines
             reference = @[
                 @[0.166667, 0.166667, 0.666667],
@@ -149,16 +145,9 @@ suite "test if correct grid output is given when nimplex is run in command line 
 
 suite "test if correct graph output is given when nimplex is run in command line with some selected configurations":
 
-    test "check if compiled nimplex is present in the current working directory":
-        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "windows":
-            require fileExists("nimplex.exe")
-        else:
-            require fileExists("nimplex")
-
     test "generate small integer simplex graph (GIS 3 3) and print shape to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c GIS 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c GIS 3 3")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"GIS\", \"3\", \"3\"]", 
@@ -171,7 +160,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "generate medium size integer simplex graph (GIS 7 12) and print shape to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c GIS 7 12")
+            (output, exitCode) = execCmdEx("nimplex -c GIS 7 12")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"GIS\", \"7\", \"12\"]", 
@@ -184,7 +173,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "generate small integer simplex graph (GIP 3 3), print values to stdout, and check them for corectness":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c GIP 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c GIP 3 3")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"GIP\", \"3\", \"3\"]", 
@@ -209,7 +198,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "generate small fractional simplex graph (GFS 3 3) and print shape to stdout":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c GFS 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c GFS 3 3")
             outputLines = output.splitLines
             reference = @[
                 "Running with configuration: @[\"GFS\", \"3\", \"3\"]", 
@@ -222,7 +211,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "generate small fractional simplex graph (GFP 3 3), print values to stdout, and check them for node corectness":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c GFP 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c GFP 3 3")
             outputLines = output.splitLines
             referenceNodes = @[
                 @[0.0, 0.0, 1.0],
@@ -250,7 +239,7 @@ suite "test if correct graph output is given when nimplex is run in command line
 
     test "generate small fractional simplex graph (GFP 3 3), print values to stdout, and check them for neighbor corectness":
         let 
-            (output, exitCode) = execCmdEx("./nimplex -c GFP 3 3")
+            (output, exitCode) = execCmdEx("nimplex -c GFP 3 3")
             outputLines = output.splitLines
             referenceNeighbors = @[
                 @[1, 4], 
@@ -275,20 +264,13 @@ suite "test if correct graph output is given when nimplex is run in command line
 
 suite "Test NumPy exports corectness for grids":
 
-    test "check if compiled nimplex is present in the current working directory":
-        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "windows":
-            require fileExists("nimplex.exe")
-        else:
-            require fileExists("nimplex")
-
     test "generate auto-named a medium fractional internal simplex grid (IFP 7 11) and export it to NumPy (nimplex_IF_7_11.npy)":
-        let (_, exitCode) = execCmdEx("./nimplex -c IFN 7 11")
+        let (_, exitCode) = execCmdEx("nimplex -c IFN 7 11")
         check exitCode == 0
         check fileExists("nimplex_IF_7_11.npy")
 
     test "generate a medium fractional internal simplex grid (IFP 7 11) named testExport.npy and export it to NumPy":
-        let (_, exitCode) = execCmdEx("./nimplex -c IFN 7 11 testExport.npy")
+        let (_, exitCode) = execCmdEx("nimplex -c IFN 7 11 testExport.npy")
         check exitCode == 0
         check fileExists("testExport.npy")
 
@@ -308,21 +290,14 @@ suite "Test NumPy exports corectness for grids":
 
 suite "Test NumPy exports corectness for graphs":
 
-    test "check if compiled nimplex is present in the current working directory":
-        # For Unix systems, the executable is named nimplex, but for Windows it is nimplex.exe
-        if hostOS == "windows":
-            require fileExists("nimplex.exe")
-        else:
-            require fileExists("nimplex")
-
     test "generate auto-named a medium fractional simplex graph (GFP 7 11) and export it to NumPy (nimplex_GF_7_11_nodes.npy and nimplex_GF_7_11_neighbors.npy)":
-        let (_, exitCode) = execCmdEx("./nimplex -c GFN 7 11")
+        let (_, exitCode) = execCmdEx("nimplex -c GFN 7 11")
         check exitCode == 0
         check fileExists("nimplex_GF_7_11_nodes.npy")
         check fileExists("nimplex_GF_7_11_neighbors.npy")
 
     test "generate a medium fractional simplex graph (GFP 7 11) named testExport.npy and testExport.npy and export it to NumPy":
-        let (_, exitCode) = execCmdEx("./nimplex -c GFN 7 11 testExport.npy")
+        let (_, exitCode) = execCmdEx("nimplex -c GFN 7 11 testExport.npy")
         check exitCode == 0
         check fileExists("testExport_nodes.npy")
         check fileExists("testExport_neighbors.npy")
