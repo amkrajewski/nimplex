@@ -6,6 +6,8 @@ description   = "NIM simPLEX: A concise scientific Nim library (with CLI and Pyt
 license       = "MIT"
 srcDir        = "src"
 skipDirs      = @["tests", "assets", "docs", "examples"]
+bin           = @["nimplex"]
+installExt    = @["nim"]
 
 # Dependencies
 requires "nim >= 2.0.0"
