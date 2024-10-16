@@ -2,3 +2,4 @@
 import grid
 import graph
 import cli
+import stitching

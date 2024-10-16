@@ -1,3 +1,6 @@
+import ../src/nimplex
+import ../src/nimplex/utils/stitching
+
 import std/tables
 import std/unittest
 import std/times
@@ -5,9 +8,6 @@ import std/strformat
 import std/random
 import std/sequtils
 import arraymancer/Tensor
-
-import ../nimplex
-import ../utils/stitching
 
 echo "***** Stitching (Graph Complex Construction) Tests *****"
 

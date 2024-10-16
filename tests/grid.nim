@@ -1,5 +1,6 @@
-import std/unittest
 import ../src/nimplex
+
+import std/unittest
 import arraymancer/Tensor
 import std/times
 
