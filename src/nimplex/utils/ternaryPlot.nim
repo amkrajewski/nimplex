@@ -1,4 +1,4 @@
-import nimplex
+import ../../nimplex
 import plotting
 import arraymancer/Tensor
 import pixie

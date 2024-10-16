@@ -5,7 +5,7 @@ import std/sugar
 import std/times
 import std/strformat
 import arraymancer/Tensor
-import ../nimplex
+import ../../nimplex
 
 # Nimpy module for Python bindings when running in the library mode and not generating documentation (to avoid duplicate API entries)
 when appType == "lib" and not defined(nimdoc):
