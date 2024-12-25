@@ -10,7 +10,7 @@ on:
 
 jobs:
   test-Intel:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
       - name: Run stitching tests
         run: nim c -r -d:release tests/stitching.nim 
   test-M1:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
