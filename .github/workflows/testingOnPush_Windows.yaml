@@ -16,7 +16,6 @@ jobs:
         nim:
           - '2.0.x'
           - 'stable'
-          - 'devel'
     name: Nim ${{ matrix.nim }} Test
     steps:
       - name: Checkout
