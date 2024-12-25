@@ -21,8 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install BLAS
-        run: sudo apt-get install libopenblas-dev
+      - name: Install BLAS and PCRE
+        run: sudo apt-get install -y libopenblas-dev libpcre3-dev
       - uses: jiro4989/setup-nim-action@v2
         with:
           nim-version: ${{ matrix.nim }}
