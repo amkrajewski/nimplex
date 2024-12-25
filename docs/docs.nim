@@ -11,8 +11,10 @@
 ## .. figure:: https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red
 ##   :alt: arXiv
 ##   :target: https://doi.org/10.48550/arXiv.2402.03528 
-## 
-## **(In-Press at npj Unconventional Computing)**
+##
+## .. figure:: https://img.shields.io/badge/npj_Unconventional_Computing-10.1038%2Fs44335--024--00012--2-blue
+##   :alt: npj Unconventional Computing
+##   :target: https://doi.org/10.1038/s44335-024-00012-2
 ##
 ## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg
 ##   :alt: macOS Testing

@@ -4,8 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <a href="https://nimble.directory/pkg/nimplex"><img src="https://raw.githubusercontent.com/amkrajewski/nimble-badge/master/badges/nimplex.svg" alt="Nimble Package" height="20"></a>
 [![Arxiv](https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red)](https://doi.org/10.48550/arXiv.2402.03528) 
-
-**(In-Press at npj Unconventional Computing)**
+[![npj Unconventional Computing](https://img.shields.io/badge/npj_Unconventional_Computing-10.1038%2Fs44335--024--00012--2-blue)](https://doi.org/10.1038/s44335-024-00012-2)
 
 [![(Linux) Grid, Graph, and CLI Tests](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml)
 [![(MaxOS) Grid, Graph, and CLI Tests](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg)](https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml)
