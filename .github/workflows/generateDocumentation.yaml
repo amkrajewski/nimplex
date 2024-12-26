@@ -28,8 +28,10 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: | 
-          nimble install nimcuda@0.1.9 
-          nimble install arraymancer@0.7.30
+          nimble refresh
+          nimble install -y nimcuda@0.1.9 
+          nimble install -y arraymancer@0.7.30
+          nimble install -y nimpy
       - name: Build documentation
         run: |
           cd docs
