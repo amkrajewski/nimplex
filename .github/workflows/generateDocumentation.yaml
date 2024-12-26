@@ -13,52 +13,41 @@ permissions:
 
 jobs:
   generateDocumentation:
-    runs-on: macos-15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Nim with Homebrew
-        run: brew install nim
-      - name: Install nimplex and dependencies
-        run: nimble install
-      - name: Build documentation
-        run: |
-          cd docs
-          nim c -r -d:ssl -d:changelogType=nim -d:user=amkrajewski -d:repo=nimplex getChangelog                  
-          cd ..
-          sed -i '' 's/assets/nimplex\/assets/g' docs/docs.nim
-          sed -i '' 's/assets/nimplex\/assets/g' nimplex.nim
-          nim doc --outdir:docs --index:on --git.url:https://github.com/amkrajewski/nimplex --git.commit:main --docInternal --project nimplex.nim
-          sed -i '' '26i\
-          <img src="../nimplex/assets/logo.png" alt="Logo" style="width:200px;height:170px;margin:20px 0px 20px 20px;"/>' docs/nimplex.html
-          sed -i '' '12d' docs/nimplex.html
-          sed -i '' '12d' docs/nimplex.html
-          sed -i '' '12i\
-          <link rel="icon" href="favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="favicon.ico" type="image/x-icon">' docs/nimplex.html
-          cp docs/nimplex.html docs/index.html
-      - name: Copy assets to docs
-        run: cp -r assets docs/assets
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation
-          path: docs/
-
-  deploy:
-    needs: generateDocumentation
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install BLAS and PCRE
+        run: sudo apt-get install -y libopenblas-dev libpcre3-dev
+      - uses: jiro4989/setup-nim-action@v2
         with:
-          name: documentation
-          path: docs/
+          nim-version: '2.0.2'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: nimble refresh
+      - run: nimble install
+      - run: nimble install arraymancer@0.7.30
+      - run: nimble install nimcuda@0.1.9 
+      - name: Build documentation
+        run: |
+          cd docs
+          nim c -r -d:ssl -d:changelogType=nim -d:user=amkrajewski -d:repo=nimplex getChangelog                  
+          cd ..
+          sed -i 's/assets/nimplex\/assets/g' docs/docs.nim
+          sed -i 's/assets/nimplex\/assets/g' nimplex.nim
+          nim doc --outdir:docs --index:on --git.url:https://github.com/amkrajewski/nimplex --git.commit:main --docInternal --project nimplex.nim
+          sed -i '26i<img src="../nimplex/assets/logo.png" alt="Logo" style="width:200px;height:170px;margin:20px 0px 20px 20px;"/>' docs/nimplex.html
+          sed -i '12d' docs/nimplex.html
+          sed -i '12d' docs/nimplex.html
+          sed -i '12i<link rel="icon" href="favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="favicon.ico" type="image/x-icon">' docs/nimplex.html
+          cp docs/nimplex.html docs/index.html
+      - name: Copy assets to docs
+        run: cp -r assets docs/assets
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Upload pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs'
