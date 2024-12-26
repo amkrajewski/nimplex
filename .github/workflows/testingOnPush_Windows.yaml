@@ -5,6 +5,7 @@ on:
     paths:
       - 'tests/**'
       - 'nimplex.nim'
+      - 'nimplex.nimble'
       - '.github/workflows/testingOnPush_Windows.yaml'
   workflow_dispatch:
 
