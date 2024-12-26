@@ -26,10 +26,10 @@ jobs:
         with:
           nim-version: '2.0.2'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: nimble refresh
-      - run: nimble install
-      - run: nimble install arraymancer@0.7.30
-      - run: nimble install nimcuda@0.1.9 
+      - name: Install dependencies
+        run: | 
+          nimble install nimcuda@0.1.9 
+          nimble install arraymancer@0.7.30
       - name: Build documentation
         run: |
           cd docs
