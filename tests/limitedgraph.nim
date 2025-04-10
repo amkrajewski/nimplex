@@ -299,3 +299,43 @@ suite "medium (12-divisions) simplex integer 3-component (ternary) graph with li
                 @[34, 33, 41], @[35, 34, 40, 42], @[36, 35, 41, 43], @[37, 36, 42, 44], @[38, 37, 43, 45], @[39, 38, 44]
             ]
 
+suite "medium (12-divisions) simplex integer 4-component (quaternary) graph with limits with limits of [[0, 7], [0, 7], [0, 7], [0, 7]] for an asymmetrical limit around center":
+    let 
+        nDiv:int = 12
+        limit:seq[seq[int]] = @[@[0, 7], @[0, 7], @[0, 7], @[0, 7]]
+        (nodes, neighbors) = nimplex.simplex_graph_limited(4, nDiv, limit)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+        
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 4
+
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 315
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 3048
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 4*(4-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == 5
+
+    test "correct positions in the simplex of a cherry-picked node at index 0":
+        check nodes[0, _].toSeq2D()[0] == @[0, 0, 5, 7]
+
+    test "correct positions in the simplex of a random-picked node at index 123":
+        check nodes[123, _].toSeq2D()[0] == @[2, 4, 3, 3]
+
+    test "correct neighbors list for a cherry-picked node at index 0":
+        check neighbors[0] == @[1, 3, 4, 46, 47]
+
+    test "correct neighbors list for a random-picked node at index 123":
+        check neighbors[123] == @[79, 72, 71, 116, 115, 122, 124, 129, 130, 166, 172, 173]
+
+
+let t1 = cpuTime()
+
+echo "\n***** LIMITED GRAPH BENCHMARK RESULTS *****\n"
+echo "Small Graphs:\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
