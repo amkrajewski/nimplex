@@ -299,6 +299,53 @@ suite "medium (12-divisions) simplex integer 3-component (ternary) graph with li
                 @[34, 33, 41], @[35, 34, 40, 42], @[36, 35, 41, 43], @[37, 36, 42, 44], @[38, 37, 43, 45], @[39, 38, 44]
             ]
 
+suite "medium (12-divisions) simplex integer 3-component (ternary) graph with limits with limits of [[1, 8], [1, 8], [1, 8]] for an asymmetrical limit around center":
+    let 
+        nDiv:int = 12
+        limit:seq[seq[int]] = @[@[1, 8], @[1, 8], @[1, 8]]
+        (nodes, neighbors) = nimplex.simplex_graph_limited(3, nDiv, limit)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+    
+    echo "Neighbors:\n", neighbors
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 3
+
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 46
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 228
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 3*(3-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == 3
+
+    test "correct node/vertex positions in the simplex":
+        check nodes.toSeq2D() == 
+            @[
+                @[1, 3, 8], @[1, 4, 7], @[1, 5, 6], @[1, 6, 5], @[1, 7, 4], @[1, 8, 3], @[2, 2, 8], @[2, 3, 7], @[2, 4, 6], @[2, 5, 5], @[2, 6, 4], @[2, 7, 3], @[2, 8, 2], @[3, 1, 8], 
+                @[3, 2, 7], @[3, 3, 6], @[3, 4, 5], @[3, 5, 4], @[3, 6, 3], @[3, 7, 2], @[3, 8, 1], @[4, 1, 7], @[4, 2, 6], @[4, 3, 5], @[4, 4, 4], @[4, 5, 3], @[4, 6, 2], @[4, 7, 1], 
+                @[5, 1, 6], @[5, 2, 5], @[5, 3, 4], @[5, 4, 3], @[5, 5, 2], @[5, 6, 1], @[6, 1, 5], @[6, 2, 4], @[6, 3, 3], @[6, 4, 2], @[6, 5, 1], @[7, 1, 4], @[7, 2, 3], @[7, 3, 2], 
+                @[7, 4, 1], @[8, 1, 3], @[8, 2, 2], @[8, 3, 1]
+            ]
+
+    test "correct neighbors list for each node/vertex":
+        check neighbors == 
+            @[
+                @[1, 6, 7], @[0, 2, 7, 8], @[1, 3, 8, 9], @[2, 4, 9, 10], @[3, 5, 10, 11], @[4, 11, 12], @[0, 7, 13, 14], @[1, 0, 6, 8, 14, 15], @[2, 1, 7, 9, 15, 16], 
+                @[3, 2, 8, 10, 16, 17], @[4, 3, 9, 11, 17, 18], @[5, 4, 10, 12, 18, 19], @[5, 11, 19, 20], @[6, 14, 21], @[7, 6, 13, 15, 21, 22], @[8, 7, 14, 16, 22, 23], 
+                @[9, 8, 15, 17, 23, 24], @[10, 9, 16, 18, 24, 25], @[11, 10, 17, 19, 25, 26], @[12, 11, 18, 20, 26, 27], @[12, 19, 27], @[14, 13, 22, 28], @[15, 14, 21, 23, 28, 29], 
+                @[16, 15, 22, 24, 29, 30], @[17, 16, 23, 25, 30, 31], @[18, 17, 24, 26, 31, 32], @[19, 18, 25, 27, 32, 33], @[20, 19, 26, 33], @[22, 21, 29, 34], 
+                @[23, 22, 28, 30, 34, 35], @[24, 23, 29, 31, 35, 36], @[25, 24, 30, 32, 36, 37], @[26, 25, 31, 33, 37, 38], @[27, 26, 32, 38], @[29, 28, 35, 39], 
+                @[30, 29, 34, 36, 39, 40], @[31, 30, 35, 37, 40, 41], @[32, 31, 36, 38, 41, 42], @[33, 32, 37, 42], @[35, 34, 40, 43], @[36, 35, 39, 41, 43, 44],
+                @[37, 36, 40, 42, 44, 45], @[38, 37, 41, 45], @[40, 39, 44], @[41, 40, 43, 45], @[42, 41, 44]
+            ]
+
+
 suite "medium (12-divisions) simplex integer 4-component (quaternary) graph with limits with limits of [[0, 7], [0, 7], [0, 7], [0, 7]] for an asymmetrical limit around center":
     let 
         nDiv:int = 12
