@@ -253,3 +253,49 @@ suite "medium (12-divisions) simplex integer 3-component (ternary) graph with li
                 @[31, 30, 34, 36], @[32, 31, 35]
             ]
 
+suite "medium (12-divisions) simplex integer 3-component (ternary) graph with limits with limits of [[0, 7], [0, 7], [0, 7]] for an asymmetrical limit around center":
+    let 
+        nDiv:int = 12
+        limit:seq[seq[int]] = @[@[0, 7], @[0, 7], @[0, 7]]
+        (nodes, neighbors) = nimplex.simplex_graph_limited(3, nDiv, limit)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+    
+    echo "Neighbors:\n", neighbors
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 3
+
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 46
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 228
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 3*(3-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == 3
+
+    test "correct node/vertex positions in the simplex":
+        check nodes.toSeq2D() == 
+            @[
+                @[0, 5, 7], @[0, 6, 6], @[0, 7, 5], @[1, 4, 7], @[1, 5, 6], @[1, 6, 5], @[1, 7, 4], @[2, 3, 7], @[2, 4, 6], @[2, 5, 5], @[2, 6, 4], @[2, 7, 3], @[3, 2, 7], 
+                @[3, 3, 6], @[3, 4, 5], @[3, 5, 4], @[3, 6, 3], @[3, 7, 2], @[4, 1, 7], @[4, 2, 6], @[4, 3, 5], @[4, 4, 4], @[4, 5, 3], @[4, 6, 2], @[4, 7, 1], @[5, 0, 7], 
+                @[5, 1, 6], @[5, 2, 5], @[5, 3, 4], @[5, 4, 3], @[5, 5, 2], @[5, 6, 1], @[5, 7, 0], @[6, 0, 6], @[6, 1, 5], @[6, 2, 4], @[6, 3, 3], @[6, 4, 2], @[6, 5, 1], 
+                @[6, 6, 0], @[7, 0, 5], @[7, 1, 4], @[7, 2, 3], @[7, 3, 2], @[7, 4, 1], @[7, 5, 0]
+            ]
+
+    test "correct neighbors list for each node/vertex":
+        check neighbors == 
+            @[
+                @[1, 3, 4], @[0, 2, 4, 5], @[1, 5, 6], @[0, 4, 7, 8], @[1, 0, 3, 5, 8, 9], @[2, 1, 4, 6, 9, 10], @[2, 5, 10, 11], @[3, 8, 12, 13], @[4, 3, 7, 9, 13, 14], 
+                @[5, 4, 8, 10, 14, 15], @[6, 5, 9, 11, 15, 16], @[6, 10, 16, 17], @[7, 13, 18, 19], @[8, 7, 12, 14, 19, 20], @[9, 8, 13, 15, 20, 21], @[10, 9, 14, 16, 21, 22], 
+                @[11, 10, 15, 17, 22, 23], @[11, 16, 23, 24], @[12, 19, 25, 26], @[13, 12, 18, 20, 26, 27], @[14, 13, 19, 21, 27, 28], @[15, 14, 20, 22, 28, 29], 
+                @[16, 15, 21, 23, 29, 30], @[17, 16, 22, 24, 30, 31], @[17, 23, 31, 32], @[18, 26, 33], @[19, 18, 25, 27, 33, 34], @[20, 19, 26, 28, 34, 35], 
+                @[21, 20, 27, 29, 35, 36], @[22, 21, 28, 30, 36, 37], @[23, 22, 29, 31, 37, 38], @[24, 23, 30, 32, 38, 39], @[24, 31, 39], @[26, 25, 34, 40], 
+                @[27, 26, 33, 35, 40, 41], @[28, 27, 34, 36, 41, 42], @[29, 28, 35, 37, 42, 43], @[30, 29, 36, 38, 43, 44], @[31, 30, 37, 39, 44, 45], @[32, 31, 38, 45], 
+                @[34, 33, 41], @[35, 34, 40, 42], @[36, 35, 41, 43], @[37, 36, 42, 44], @[38, 37, 43, 45], @[39, 38, 44]
+            ]
+
