@@ -40,6 +40,8 @@ jobs:
         run: nim c -r -d:release tests/grid.nim 
       - name: Run graph tests
         run: nim c -r -d:release tests/graph.nim
+      - name: Run limited graph tests
+        run: nim c -r -d:release tests/limitedgraph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
       - name: Run stitching tests
