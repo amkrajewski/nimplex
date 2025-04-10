@@ -337,5 +337,53 @@ suite "medium (12-divisions) simplex integer 4-component (quaternary) graph with
 
 let t1 = cpuTime()
 
+suite "very large simplex fractional 12-component graph (1M+ nodes  / 93M+ edges) with limits of [0, 4] (i.e. up to 33%) in each component":
+    let 
+        ndiv: int = 12
+        limit: seq[seq[int]] = collect: 
+            for i in 0..<ndiv: 
+                @[0, 4]
+        (nodes, neighbors) = nimplex.simplex_graph_limited(12, ndiv, limit)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 12
+
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 975_338
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 68_704_416
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 12*(12-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == 27
+
+    test "correct positions in the simplex of a cherry-picked node at index 0":
+        check nodes[0, _].toSeq2D()[0] == @[0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4]
+
+    test "correct positions in the simplex of a random-picked node at index 123_456":
+        check nodes[123_456, _].toSeq2D()[0] == @[0, 0, 2, 0, 1, 0, 0, 1, 1, 3, 3, 1]
+
+    test "correct neighbors list for a cherry-picked node at index 0":
+        check neighbors[0] == 
+            @[1, 2, 3, 35, 36, 37, 320, 321, 322, 1751, 1752, 1753, 7140, 7141, 7142, 23940, 23941, 23942, 69675, 69676, 69677, 182005, 182006, 182007, 436348, 436349, 436350]
+
+    test "correct neighbors list for a random-picked node at index 123_456":
+        check neighbors[123_456] == 
+            @[
+                92897, 80632, 77343, 76218, 75905, 75835, 75821, 75817, 75816, 120167, 119042, 118729, 118659, 118645, 118641, 118640, 123386, 123372, 123368, 123367, 123442, 
+                123438, 123437, 123452, 123451, 123455, 123457, 123460, 123461, 123472, 123476, 123477, 123526, 123542, 123546, 123547, 123741, 123811, 123827, 123831, 123832, 
+                124622, 124692, 124708, 124712, 124713, 126911, 126981, 126997, 127001, 127002, 131801, 135256, 135326, 135342, 135346, 135347, 150872, 154327, 154397, 154413, 
+                154417, 154418, 235786, 263202, 266657, 266727, 266743, 266747, 266748, 490129, 517545, 521000, 521070, 521086, 521090, 521091
+            ]
+
+let t2 = cpuTime()
+
 echo "\n***** LIMITED GRAPH BENCHMARK RESULTS *****\n"
 echo "Small Graphs:\n" & $initDuration(microseconds = ((t1 - t0)*1e6).int) & "\n"
+echo "Large Graphs:\n" & $initDuration(milliseconds = ((t2 - t1)*1e3).int) & "\n"
+echo "-------------------------------------\n"
