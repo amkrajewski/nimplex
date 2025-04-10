@@ -197,3 +197,59 @@ suite "medium (12-divisions) simplex integer 3-component (ternary) graph with li
                 @[43, 42, 46, 47], @[44, 43, 45, 47], @[46, 45]
             ]
 
+suite "medium (12-divisions) simplex integer 3-component (ternary) graph with limits with limits of [[1, 7], [1, 7], [1, 7]] for a symmetrical limit around center":
+    let 
+        nDiv:int = 12
+        limit:seq[seq[int]] = @[@[1, nDiv-5], @[1, nDiv-5], @[1, nDiv-5]]
+        (nodes, neighbors) = nimplex.simplex_graph_limited(3, nDiv, limit)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+    
+    echo "Neighbors:\n", neighbors
+
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 3
+
+    test "correct number of nodes/vertices":
+        let tempNodes = nimplex.simplex_grid(3, nDiv)
+        # Here, let's manually count the number of nodes in the grid that are within the limits, as visual inspection is less reliable.
+        var count = 0
+        for i in 0..<tempNodes.shape[0]:
+            var withinLimits = true
+            for j in 0..<tempNodes.shape[1]:
+                if tempNodes[i, j] < limit[j][0] or tempNodes[i, j] > limit[j][1]:
+                    withinLimits = false
+                    break
+            if withinLimits:
+                count += 1
+        check nodes.shape[0] == count
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 180
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 3*(3-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == 3
+
+    test "correct node/vertex positions in the simplex":
+        check nodes.toSeq2D() == 
+            @[
+                @[1, 4, 7], 
+                @[1, 5, 6], @[1, 6, 5], @[1, 7, 4], @[2, 3, 7], @[2, 4, 6], @[2, 5, 5], @[2, 6, 4], @[2, 7, 3], @[3, 2, 7], @[3, 3, 6], @[3, 4, 5], @[3, 5, 4], @[3, 6, 3], 
+                @[3, 7, 2], @[4, 1, 7], @[4, 2, 6], @[4, 3, 5], @[4, 4, 4], @[4, 5, 3], @[4, 6, 2], @[4, 7, 1], @[5, 1, 6], @[5, 2, 5], @[5, 3, 4], @[5, 4, 3], @[5, 5, 2], 
+                @[5, 6, 1], @[6, 1, 5], @[6, 2, 4], @[6, 3, 3], @[6, 4, 2], @[6, 5, 1], @[7, 1, 4], @[7, 2, 3], @[7, 3, 2], @[7, 4, 1]
+            ]
+
+    test "correct neighbors list for each node/vertex":
+        check neighbors == 
+            @[
+                @[1, 4, 5], @[0, 2, 5, 6], @[1, 3, 6, 7], @[2, 7, 8], @[0, 5, 9, 10], @[1, 0, 4, 6, 10, 11], @[2, 1, 5, 7, 11, 12], @[3, 2, 6, 8, 12, 13], @[3, 7, 13, 14], 
+                @[4, 10, 15, 16], @[5, 4, 9, 11, 16, 17], @[6, 5, 10, 12, 17, 18], @[7, 6, 11, 13, 18, 19], @[8, 7, 12, 14, 19, 20], @[8, 13, 20, 21], @[9, 16, 22], 
+                @[10, 9, 15, 17, 22, 23], @[11, 10, 16, 18, 23, 24], @[12, 11, 17, 19, 24, 25], @[13, 12, 18, 20, 25, 26], @[14, 13, 19, 21, 26, 27], @[14, 20, 27], 
+                @[16, 15, 23, 28], @[17, 16, 22, 24, 28, 29], @[18, 17, 23, 25, 29, 30], @[19, 18, 24, 26, 30, 31], @[20, 19, 25, 27, 31, 32], @[21, 20, 26, 32], 
+                @[23, 22, 29, 33], @[24, 23, 28, 30, 33, 34], @[25, 24, 29, 31, 34, 35], @[26, 25, 30, 32, 35, 36], @[27, 26, 31, 36], @[29, 28, 34], @[30, 29, 33, 35], 
+                @[31, 30, 34, 36], @[32, 31, 35]
+            ]
+
