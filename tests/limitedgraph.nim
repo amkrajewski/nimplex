@@ -337,7 +337,7 @@ suite "medium (12-divisions) simplex integer 4-component (quaternary) graph with
 
 let t1 = cpuTime()
 
-suite "very large simplex fractional 12-component graph (1M+ nodes  / 93M+ edges) with limits of [0, 4] (i.e. up to 33%) in each component":
+suite "very large simplex fractional 12-component graph (1M nodes  / 67M edges) with limits of [0, 4] (i.e. up to 33%) in each component":
     let 
         ndiv: int = 12
         limit: seq[seq[int]] = collect: 
