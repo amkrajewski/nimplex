@@ -11,6 +11,7 @@ import std/terminal
 import std/sugar
 import std/times
 import std/strutils
+import std/tables
 from std/algorithm import reverse
 from std/sequtils import foldl, mapIt
 
@@ -232,6 +233,100 @@ proc simplex_graph_fractional*(dim: int, ndiv: int): (Tensor[float], seq[seq[int
     var nodes = graph[0].asType(float)
     nodes = nodes.map(x => x / float(ndiv))
     return (nodes, graph[1])
+
+proc simplex_graph_limited*(
+        dim: int, 
+        ndiv: int,
+        limit: seq[seq[int]]
+    ): (Tensor[int], seq[seq[int]]) =
+    ## .. image:: ../assets/small_GI.png
+    ## Generates a simplex graph in a `dim`-component space based on (1) grid of nodes following `ndiv` divisions per dimension (i.e., quantized to `1/ndiv`),
+    ## similar to `simplex_grid`_, and (2) a list of neighbor lists corresponding to edges. The result is a tuple of 
+    ## (1) a deterministically allocated Arraymancer `Tensor[int]` of shape `(N_S(dim, ndiv), dim)` containing all possible compositions in the simplex space
+    ## just like in `simplex_grid`_, and (2) a `seq[seq[int]]` containing a list of neighbors for each node. The current implementation utilizes GC-allocated `seq` for neighbors
+    ## to reduce memory footprint in cases where `ndiv` is close to `dim` and not all nodes have the complete set of `dim(dim-1)` neighbors. This is a tradeoff between memory and performance, which can be
+    ## adjusted by switching to a (N_S(dim, ndiv), dim(dim-1)) `Tensor[int]` with `-1` padding for missing neighbors, just like done in `outFunction_graph`_ for NumPy output generation.
+    
+    assert len(limit) == dim, "The size of limit sequence put on the simplex grid must match the dimensionality"
+    for l in limit:
+        assert len(l) == 2, "The limit on each dimension must be a pair of integers denoting maximum and minimum values."
+        for v in l:
+            if v<0: echo "Limit value below 0 detected for one of the dimensions. This will pass without setting any bottom limit."
+            if v > ndiv: echo "Limit value above the number of divisions detected for one of the dimensions. This will pass without setting any top limit."
+    
+    let L: int = binom(ndiv+dim-1, dim-1)
+    var 
+        neighbors = newSeq[seq[int]](L)
+        x = zeros[int](dim)
+        ip: int = 0
+        projectionDict = newTable[int, int]()
+        projectedNodes: seq[seq[int]]
+        projectedNeighbors: seq[seq[int]]
+
+    proc checkAgainstLimit(x:Tensor, dim:int, limit:seq[seq[int]]): bool {.inline.} =
+        ## Check if the current composition `x` is within the specified limits.
+        for i in 0..<dim:
+            if x[i] > limit[i][1]:
+                return false
+            if x[i] < limit[i][0]:
+                return false
+        return true
+
+    proc neighborsLink(i:int, x:Tensor, ndiv:int, dim:int, 
+                       neighbors: var seq[seq[int]]): void =
+        var jumps = newSeq[int](dim-1)
+        jumps[0] = 1  #binom(x,0)=1
+        for j in 1..<(dim-1):
+            jumps[j] = binom(j+ndiv-sum(x[0..(dim-2-j)]), j)
+        var temp: int
+        for order in 0..(dim-2): 
+            temp = 0
+            if x[order] != 0:
+                for dir in 0..(dim-2-order): 
+                    temp += jumps[dim-2-order-dir]
+                    neighbors[i].add(i - temp)
+                    neighbors[i - temp].add(i)
+
+    x[dim-1] = ndiv
+
+    if checkAgainstLimit(x, dim, limit):
+        projectedNodes &= x.toSeq1D()
+        projectionDict[0] = ip
+        ip += 1
+        neighborsLink(0, x, ndiv, dim, neighbors)
+
+    var h = dim
+
+    for i in 1..<L:
+        h -= 1
+        let val = x[h]
+        x[h] = 0
+        x[dim-1] = val - 1
+        x[h-1] += 1
+    
+        if checkAgainstLimit(x, dim, limit):
+            projectedNodes &= x.toSeq1D()
+            projectionDict[i] = ip
+            ip += 1
+            neighborsLink(i, x, ndiv, dim, neighbors)
+        if val != 1:
+            h = dim
+   
+    for i in 0..<L:
+        if i notin projectionDict:
+            # If the node is not in the projection dictionary, it means it's outside the limits
+            continue
+        var tempNbs: seq[int] = @[]
+        for j in neighbors[i]:
+            try:
+                tempNbs.add(projectionDict[j])
+            except KeyError:
+                # If the node is not in the projection dictionary, it means it's outside the limits
+                discard
+        if tempNbs.len > 0:
+            projectedNeighbors.add(tempNbs)
+
+    return (projectedNodes.toTensor(), projectedNeighbors)
 
 # CORE UTILS
 
