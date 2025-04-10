@@ -1,12 +1,12 @@
 # Package
 
-version       = "0.5.1"
+version       = "0.7.1"
 author        = "Adam M. Krajewski"
-description   = "NIM simPLEX: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces."
+description   = "NIM simPLEX: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, traversal graphs, and their complexes in compositional (simplex) spaces."
 license       = "MIT"
 skipDirs      = @["tests", "assets", "docs", "examples"]
 
 # Dependencies
 requires "nim >= 2.0.0"
-requires "arraymancer >= 0.7.3"
+requires "arraymancer >= 0.7.33"
 requires "nimpy"

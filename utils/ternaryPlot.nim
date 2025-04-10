@@ -5,6 +5,7 @@ import pixie
 import std/strutils
 import std/math
 import std/times
+import std/os
 
 let t0 = cpuTime()
 
@@ -14,18 +15,20 @@ const
     filename: string = "output.png"
     height: int = 4000
     scaleChroma: float = 2.0
-    fontName: string = "NASA" # "NASA", "IBM", "DM"
-    indexOverlay: bool = true
-    compIsMain: bool = true
-    feasibilityOverlay1: bool = false
-    feasibilityOverlay2: bool = true
+    fontName: string = "MM" # "NASA", "IBM", "DM", "MM"
+    indexOverlay: bool = false
+    compIsMain: bool = false
+    marker1: string = "Undesirable" # Yellow
+    markerOverlay1: bool = false
+    marker2: string = "Infeasible"  # Red
+    markerOverlay2: bool = true
     propertyOverlay: bool = false
     pathPointsOverlay: bool = true
-    pathType: string = "boldline" # "line" or "boldline"
+    pathType: string = "highvis" # "line" or "boldline" or "highvis"
     propetyColoringStyle: string = "hotcold"
-    elementList: seq[string] = @["Fe", "Cr", "Ni", "Ti", "Cu"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
-    labels: seq[string] = @["Ti64", "SS316L", "Monel400"]
-    elementalCompositions: seq[seq[float]] = @[@[0.0, 0.0, 0.0, 100.0, 0.0],  @[68.0, 18.0, 14.0, 0.0, 0.0],  @[2.0, 0.0, 66.0, 0.0, 32.0]]
+    elementList: seq[string] = @["Ti", "Zr", "Hf", "W", "Nb", "Ta", "Mo"] # e.g., @["Fe", "Cr", "Ni", "Ti", "Cu"] or @["Ti", "Mo", "Cu"]
+    labels: seq[string] = @["Hf", "Mo33Nb33Ta33", "Mo80Nb10"] # @["Ti64", "SS316L", "Monel400"]
+    elementalCompositions: seq[seq[float]] = @[@[5, 0, 95, 0, 0, 0, 0], @[0, 0, 0, 33, 33, 33, 0], @[0, 0, 0, 10, 10, 0, 80]]
     # elementalCompositions: seq[seq[float]] = @[@[1,0,0], @[0,1,0], @[0,0,1]]
     # @[@[20.0, 40.0, 0.0, 0.0, 0.0], @[0.5, 0.0, 0.0, 0.0, 0.5], @[0.1, 0.0, 0.5, 0.5, 0.1]])
     axisType: string = "vulgarFractions" # "decimal" or "vulgarFractions" or "quanta"
@@ -33,6 +36,7 @@ const
     scaling: float = height/2000
 
 # Nimplex Processing
+const gridLen: int = binom(ndiv+3-1, 3-1)
 let 
     grid: Tensor[float] = nimplex.simplex_grid_fractional(3, nDiv)
     elementalEmbedding: Tensor[float] = nimplex.attainable2elemental(grid, elementalCompositions) 
@@ -53,7 +57,9 @@ const
     sideWidth: float = (60*scaling)
     luminance: float = if compIsMain: 0.55 else: 0.45
     alpha: uint8 = if compIsMain: 255 else: 128
-    # Color schemes
+    # A couple of hard-coded color schemes (2-5 components) which look nice.
+    # You can add modify or extend these as needed. If you need more than 5 
+    # components, you can use the colorSchemeOKlabNc function.
     colorSchemeOKlab2c: seq[seq[float]] = @[
         @[luminance,  0.250*scaleChroma,  0.000],
         @[luminance, -0.250*scaleChroma,  0.000]]
@@ -79,14 +85,26 @@ const
         @[0.400, 0.217*scaleChroma, 0.125*scaleChroma],
         @[1.0, 0.0, 0.0]]
 
-# *** Color Schemes ***
-const colorSchemeOKlab: seq[seq[float]] = static:
+# *** Color-related functions and constants ***
+
+func colorSchemeOKlabNc(n: int): seq[seq[float]] =
+    for i in 0..<n:
+        let 
+            angle = 2 * PI * i.float / n.float
+            a = 0.250 * scaleChroma * cos(angle)
+            b = 0.250 * scaleChroma * sin(angle)
+        result.add(@[luminance, a, b])
+
+proc findColorSchemeOKlab(elementalEmbeddingLen: int): seq[seq[float]] =
     case elementalEmbeddingLen:
         of 2: colorSchemeOKlab2c
         of 3: colorSchemeOKlab3c
         of 4: colorSchemeOKlab4c
         of 5: colorSchemeOKlab5c
-        else: raise newException(ValueError, "Unsupported number of components")
+        else: colorSchemeOKlabNc(elementalEmbeddingLen)
+
+const colorSchemeOKlab: seq[seq[float]] = static:
+    findColorSchemeOKlab(elementalEmbeddingLen)
 
 const propertyColoringOKlab: seq[seq[float]] = static:
     case propetyColoringStyle:
@@ -94,40 +112,6 @@ const propertyColoringOKlab: seq[seq[float]] = static:
         of "01": propertyColoringOKlab01
         else: raise newException(ValueError, "Unsupported property coloring style")
 
-# *** Fonts ***
-const 
-    fontMain: string = static:
-        case fontName
-            of "NASA": "fonts/nasalization-rg.otf"
-            of "IBM": "fonts/IBMPlexMono-Medium.ttf"
-            of "DM": "fonts/DMMono-Medium.ttf"
-            else: raise newException(ValueError, "Unknown font name")
-    fontSupport: string = static:
-        case fontName
-            of "NASA": "fonts/nasalization-rg.otf"
-            of "IBM": "fonts/IBMPlexMono-Regular.ttf"
-            of "DM": "fonts/DMMono-Regular.ttf"
-            else: raise newException(ValueError, "Unknown font name")
-
-# *** Line Widths ***
-const distance: float = static:
-    if nDiv < 200:
-        (990/(nDiv+1)-1)*scaling
-    else:
-        (990/(nDiv+1)-0.7)*scaling
-
-const (thinLine, thickLine): (float, float) = static:
-    if nDiv <= 36:
-        (scaling * 10 / (nDiv/12), scaling * 20 / (nDiv/12))
-    elif nDiv <= 48:
-        (scaling * 3, scaling * 5)
-    elif nDiv < 200:
-        (scaling * 1, scaling * 3) 
-    else:
-        (scaling * 0.5, scaling * 2) 
-
-
-# *** Helper Functions ***
 func clamp(x: float, minVal: float, maxVal: float): float {.inline.} =
         return max(minVal, min(maxVal, x))
 
@@ -154,43 +138,6 @@ func oklabToRGB(c: tuple[L, a, b: float]): tuple[r, g, b: uint8] {.inline.} =
 
     return (r, g, b)
 
-# Dummy data (!!!) for plot design
-var 
-    propertyField: Tensor[float] = newTensor[float]([grid.shape[0]])
-    feasibilityField1: Tensor[bool] = newTensor[bool]([grid.shape[0]])
-    feasibilityField2: Tensor[bool] = newTensor[bool]([grid.shape[0]])
-    #propertyFieldNormalized: Tensor[float] = newTensor[float]([grid.shape[0]])
-    elementalColoring: seq[ColorRGBA]
-    propertyColoring: seq[ColorRGBA]
-
-for i in 0..<grid.shape[0]:
-    propertyField[i] = grid[i, 0] * 0.653 + grid[i, 1] * 0.587 + grid[i, 2] * 0.114 + 0.3 * (grid[i, 0] - grid[i, 1])^2 - 0.1 * (grid[i, 0] - grid[i, 1])^3
-
-    if (grid[i, 0] + grid[i, 1]) > 0.6 and propertyField[i]<0.6:
-        feasibilityField1[i] = true
-    else:
-        feasibilityField1[i] = false
-
-    if (grid[i, 1] > 0.2 and propertyField[i]<0.55) or (grid[i, 0] > 0.8):
-        feasibilityField2[i] = true
-    else:
-        feasibilityField2[i] = false
-
-let
-    minVal = propertyField.min
-    maxVal = propertyField.max
-    rangeVal = maxVal - minVal
-    propertyFieldNormalized: Tensor[float] = (propertyField -. minVal) /. rangeVal
-
-# Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
-for i in 0..<grid.shape[0]:
-    var oklSeq: seq[float] = newSeq[float](3)
-    for j in 0..<elementalEmbeddingLen:
-        for k in 0..<3:
-            oklSeq[k] += elementalEmbedding[i, j] * colorSchemeOKlab[j][k].float
-    let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
-    elementalColoring.add(rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, alpha))
-
 func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
     var oklSeq: seq[float] = newSeq[float](3)
     for k in 0..<3:
@@ -198,10 +145,55 @@ func prop2rgb(prop: float, propertyColoringOKlab: seq[seq[float]]): ColorRGBA =
     let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
     return rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, 255.uint8)
 
-# Convert property field to color
-for i in 0..<grid.shape[0]:
-    propertyColoring.add(prop2rgb(propertyFieldNormalized[i], propertyColoringOKlab))
-        
+# Color mixing in the OKlab space for continuous coloring. Convert to RGB for display.
+proc findElementalColoring(
+        elementalEmbedding: Tensor[float] = elementalEmbedding,
+        colorSchemeOKlab: seq[seq[float]] = colorSchemeOKlab,
+        ): seq[ColorRGBA] =
+    for i in 0..<gridLen:
+        var oklSeq: seq[float] = newSeq[float](3)
+        for j in 0..<elementalEmbedding.shape[1]:
+            for k in 0..<3:
+                oklSeq[k] += elementalEmbedding[i, j] * colorSchemeOKlab[j][k].float
+        let rgbSeq = oklabToRGB((oklSeq[0], oklSeq[1], oklSeq[2]))
+        result.add(rgba(rgbSeq[0].uint8, rgbSeq[1].uint8, rgbSeq[2].uint8, alpha))
+
+let elementalColoring: seq[ColorRGBA] = findElementalColoring()
+
+# *** Fonts ***
+const 
+    csp: string = currentSourcePath.parentDir() & "/"
+    fontMain: string = static:
+        case fontName
+            of "NASA": csp & "fonts/nasalization-rg.otf"
+            of "IBM": csp & "fonts/IBMPlexMono-Medium.ttf"
+            of "DM": csp & "fonts/DMMono-Medium.ttf"
+            of "MM": csp & "fonts/MartianMonoSemiCondensed-Medium.otf"
+            else: raise newException(ValueError, "Unknown font name")
+    fontSupport: string = static:
+        case fontName
+            of "NASA": csp & "fonts/nasalization-rg.otf"
+            of "IBM": csp & "fonts/IBMPlexMono-Regular.ttf"
+            of "DM": csp & "fonts/DMMono-Regular.ttf"
+            of "MM": csp & "fonts/MartianMonoCondensed-Regular.otf"
+            else: raise newException(ValueError, "Unknown font name")
+
+# *** Line Widths ***
+const distance: float = static:
+    if nDiv < 200:
+        (990/(nDiv+1)-1)*scaling
+    else:
+        (990/(nDiv+1)-0.7)*scaling
+
+const (thinLine, thickLine): (float, float) = static:
+    if nDiv <= 36:
+        (scaling * 10 / (nDiv/12), scaling * 20 / (nDiv/12))
+    elif nDiv <= 48:
+        (scaling * 3, scaling * 5)
+    elif nDiv < 200:
+        (scaling * 1, scaling * 3) 
+    else:
+        (scaling * 0.5, scaling * 2) 
 
 # **************** Drawing Functions ****************
     
@@ -225,8 +217,21 @@ proc drawBackground(image: Image) =
 # Main hexes and points for later steps
 proc drawCompositonHexes(
         image: Image, 
-        elementalColoring: seq[ColorRGBA]
         ): void =
+    for i in 0..<gpl.len:
+        # Main hexes filling the space with gaps
+        let pathHex = newPath()
+        pathHex.polygon(vec2(gpl[i][0], gpl[i][1]), distance, sides = 6)
+        image.fillPath(pathHex, elementalColoring[i])
+
+proc drawCompositonHexes(
+        image: Image, 
+        elementalEmbedding: Tensor[float]
+        ): void =
+    let 
+        colorSchemeOKlab = findColorSchemeOKlab(elementalEmbedding.shape[1])
+        elementalColoring = findElementalColoring(elementalEmbedding, colorSchemeOKlab)
+
     for i in 0..<gpl.len:
         # Main hexes filling the space with gaps
         let pathHex = newPath()
@@ -236,8 +241,19 @@ proc drawCompositonHexes(
 # Property overlay
 proc drawPropertyHexes(
         image: Image, 
-        propertyColoring: seq[ColorRGBA]
+        propertyField: Tensor[float]
         ): void =
+    var propertyColoring: seq[ColorRGBA]
+    let
+        minVal = propertyField.min
+        maxVal = propertyField.max
+        rangeVal = maxVal - minVal
+        propertyFieldNormalized: Tensor[float] = (propertyField -. minVal) /. rangeVal
+
+    # Convert property field to color
+    for i in 0..<grid.shape[0]:
+        propertyColoring.add(prop2rgb(propertyFieldNormalized[i], propertyColoringOKlab))
+
     # Black rim
     let pathHex = newPath()
     for i in 0..<gpl.len:
@@ -255,8 +271,11 @@ proc drawDesignedPath(
         pathPoints: seq[int],
         ): void =
     let ctx = newContext(image)
-    if pathType == "boldline":
-        ctx.strokeStyle = rgba(0, 180, 0, 255)
+    if pathType == "boldline" or pathType == "highvis":
+        if pathType == "highvis":
+            ctx.strokeStyle = rgba(20, 0, 180, 255)
+        else:
+            ctx.strokeStyle = rgba(0, 180, 0, 255)
         for i in 0..<pathPoints.len-1:
             ctx.lineWidth = distance
             ctx.strokeSegment(segment(
@@ -265,49 +284,71 @@ proc drawDesignedPath(
             ctx.lineWidth = distance*0.866
             ctx.strokePolygon(vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 0.01, sides = 6)
     ctx.strokeStyle = rgba(0, 180, 0, 255)
-    ctx.lineWidth = thinLine*2
     for i in 0..<pathPoints.len-1:
+        if i<pathPoints.len:
+            if min(grid[pathPoints[i], _]) == 0 and min(grid[pathPoints[i+1], _]) == 0:
+                ctx.lineWidth = thinLine*4
+            else:
+                ctx.lineWidth = thinLine*2
         ctx.strokeSegment(segment(
             vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 
             vec2(gpl[pathPoints[i+1]][0], gpl[pathPoints[i+1]][1])))
     ctx.strokeStyle = rgba(0, 220, 0, 255)
-    ctx.lineWidth = thinLine
     for i in 0..<pathPoints.len-1:
+        if i<pathPoints.len:
+            if min(grid[pathPoints[i], _]) == 0 and min(grid[pathPoints[i+1], _]) == 0:
+                ctx.lineWidth = thinLine*2
+            else:
+                ctx.lineWidth = thinLine
         ctx.strokeSegment(segment(
             vec2(gpl[pathPoints[i]][0], gpl[pathPoints[i]][1]), 
             vec2(gpl[pathPoints[i+1]][0], gpl[pathPoints[i+1]][1])))
 
-# Feasibility overlay 1
-proc drawFeasability(
+# Feasibility overlay 1 (Yellow)
+proc drawMarkers1(
         image: Image, 
-        feasibilityField1: Tensor[bool]
+        markerField1: Tensor[bool]
         ): void =
     let backgroundF1 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField1[i]:
+        if markerField1[i]:
             backgroundF1.circle(gpl[i][0], gpl[i][1], distance*1.05/2)
     image.fillPath(backgroundF1, rgba(0, 0, 0, 255))
     let pathF1 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField1[i]:
+        if markerField1[i]:
             pathF1.circle(gpl[i][0], gpl[i][1], distance*1/2)
     image.fillPath(pathF1, rgba(200, 200, 0, 255))
 
-# Feasibility overlay 2
-proc drawDesirability(
+# Feasibility overlay 2 (Red)
+proc drawMarkers2(
         image: Image, 
-        feasibilityField2: Tensor[bool]
+        markerField1: Tensor[bool],
+        markerField2: Tensor[bool]
         ): void =
     let backgroundF2 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField2[i] and not (feasibilityField1[i] and feasibilityOverlay1):
-            backgroundF2.circle(gpl[i][0], gpl[i][1], distance*0.75/2)
+        if markerField2[i] and not (markerField1[i] and markerOverlay1):
+            if not markerOverlay1:
+                backgroundF2.circle(gpl[i][0], gpl[i][1], distance*1.05/2)
+            else:
+                backgroundF2.circle(gpl[i][0], gpl[i][1], distance*0.75/2)
     image.fillPath(backgroundF2, rgba(0, 0, 0, 255))
     let pathF2 = newPath()
     for i in 0..<gpl.len:
-        if feasibilityField2[i]:
-            pathF2.circle(gpl[i][0], gpl[i][1], distance*0.7/2)
+        if markerField2[i]:
+            if not markerOverlay1:
+                pathF2.circle(gpl[i][0], gpl[i][1], distance*1/2)
+            else:
+                pathF2.circle(gpl[i][0], gpl[i][1], distance*0.7/2)
             image.fillPath(pathF2, rgba(255, 0, 0, 255))
+
+proc drawMarkers2(
+        image: Image,
+        markerField2: Tensor[bool]
+        ): void =
+    let markerField1 = newTensor[bool]([grid.shape[0]]) # Initialized as false by default
+    drawMarkers2(image, markerField1, markerField2)
 
 # *** FOREGROUND ***
 
@@ -348,20 +389,22 @@ proc drawForeground(image: Image): void =
             vec2(pp1[0]+80*scaling, pp1[1]-2*sideWidth-140*scaling)))
 
 # ********* Axis Labels *********
-
-proc drawAxisLabels(image: Image) =
+proc drawAxisLabels(
+        image: Image,
+        labels: seq[string],
+    ) =
     var font: Font = readFont(fontMain)
     font.size = sideWidth*1.5
     font.paint.color = color(0.7, 0, 0.1)
-    # Top label is always top-center aligned and needs no tuning
+    # Top label is always top-center aligned and needs no horizontal tuning.
     image.fillText(
         font,
         labels[0], 
-        translate(vec2(pp1[0], pp1[1]-sideWidth*1.9)),
+        translate(vec2(pp1[0], pp1[1]-sideWidth*2)),
         halign = CenterAlign
         )
 
-    if longLabel:
+    if (len(labels[1]) > 2 or len(labels[2]) > 2):
         # Longer labels need to live under the axis
         image.fillText(font, labels[1], translate(vec2(pp2[0]+sideWidth*1.5, pp2[1]+sideWidth*0.35)), halign = RightAlign)
         image.fillText(font, labels[2], translate(vec2(pp3[0]-sideWidth*1.5, pp3[1]+sideWidth*0.35)), halign = LeftAlign)
@@ -370,6 +413,8 @@ proc drawAxisLabels(image: Image) =
         image.fillText(font, labels[1], translate(vec2(pp2[0]+sideWidth*0.2, pp2[1]-sideWidth*0.3)), halign = LeftAlign)
         image.fillText(font, labels[2], translate(vec2(pp3[0]-sideWidth*0.2, pp3[1]-sideWidth*0.3)), halign = RightAlign)
 
+proc drawAxisLabels(image: Image) =
+    drawAxisLabels(image, labels)
 
 # ********* Axis Ticks and Markers *********
 
@@ -529,7 +574,10 @@ proc drawAxisTicksMarkers(image: Image) =
 
 
 # ********* Elemental Legend *********
-proc drawElementalLegend(image: Image) =
+proc drawElementalLegend(
+        image: Image,
+        elementList: seq[string],
+    ): void =
     let ctx = newContext(image)
     ctx.strokeStyle = rgba(0, 100, 100, 220)
     ctx.font = fontMain
@@ -537,6 +585,7 @@ proc drawElementalLegend(image: Image) =
     ctx.textAlign = LeftAlign
 
     const legendHexSize: float = (990/(nDiv+1)-1).clamp(15, 50) * scaling
+    let colorSchemeOKlab = findColorSchemeOKlab(len(elementList))
 
     for (i, el) in elementList.pairs:
         let rgbMap = oklabToRGB((colorSchemeOKlab[i][0].float, colorSchemeOKlab[i][1].float, colorSchemeOKlab[i][2].float))
@@ -549,15 +598,18 @@ proc drawElementalLegend(image: Image) =
             vec2(400*scaling, (100*i+200).float*scaling),
         )
 
+proc drawElementalLegend(image: Image): void =
+    drawElementalLegend(image, elementList)
 
-# ********* Feasibility Legend *********
-proc drawFeasibilities(image: Image) = 
+
+# ********* Marker Legend *********
+proc drawMarkerLegend(image: Image) = 
     let ctx = newContext(image)
     ctx.strokeStyle = rgba(0, 100, 100, 220)
     ctx.font = fontMain
     ctx.fontsize = sideWidth*1.5
     ctx.textAlign = LeftAlign
-    if feasibilityOverlay1:
+    if markerOverlay1:
         let position: float = 6.5
         ctx.fillStyle = rgba(0, 0, 0, 255)
         ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*1.05/2, sides = 24)
@@ -565,26 +617,34 @@ proc drawFeasibilities(image: Image) =
         ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*1/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
-            "Undesirable",
+            marker1,
             vec2(400*scaling, (100*position+190).float*scaling),
         )
 
-    if feasibilityOverlay2:
+    if markerOverlay2:
         let position: float = 7.5
+        var baseSize: float
+        if not markerOverlay1:
+            baseSize = 1
+        else:
+            baseSize = 0.7
         ctx.fillStyle = rgba(0, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*0.75/2, sides = 24)
+        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*(baseSize+0.05)/2, sides = 24)
         ctx.fillStyle = rgba(255, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*0.7/2, sides = 24)
+        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*baseSize/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
-            "Infeasible", 
+            marker2,
             vec2(400*scaling, (100*position+190).float*scaling),
         )
 
 
 # ********* Property Legend *********
-proc drawPropertyLegend(image: Image) =
-    let ctx = newContext(image)
+proc drawPropertyLegend(image: Image, propertyField: Tensor[float]) =
+    let 
+        ctx = newContext(image)
+        minVal = propertyField.min
+        maxVal = propertyField.max
     ctx.strokeStyle = rgba(0, 100, 100, 220)
     ctx.font = fontMain
     ctx.fontsize = sideWidth
@@ -638,33 +698,146 @@ proc drawIndicies(image: Image): void =
 
 # ********* Final Processing *********
 
-let image = newImage(width, height)
-image.fillWhite()
-image.drawBackground()
-image.drawCompositonHexes(elementalColoring)
-if propertyOverlay: 
-    image.drawPropertyHexes(propertyColoring)
-if pathPointsOverlay:
-    image.drawDesignedPath(pathPoints)
-if feasibilityOverlay1: 
-    image.drawFeasability(feasibilityField1)
-if feasibilityOverlay2: 
-    image.drawDesirability(feasibilityField2)
-image.drawForeground()
-image.drawAxisLabels()
-image.drawAxisTicksMarkers()
-image.drawElementalLegend()
-if feasibilityOverlay1 or feasibilityOverlay2:
-    image.drawFeasibilities()
-if propertyOverlay:
-    image.drawPropertyLegend()
-if indexOverlay:
-    image.drawIndicies()
+when appType != "lib":
+    when isMainModule:
+        # Dummy data (!!!) for plot design
+        var 
+            propertyField: Tensor[float] = newTensor[float]([grid.shape[0]])
+            feasibilityField1: Tensor[bool] = newTensor[bool]([grid.shape[0]])
+            feasibilityField2: Tensor[bool] = newTensor[bool]([grid.shape[0]])
 
-# ********* Save the image *********
-let t1 = cpuTime()
-image.writeFile(filename)
+        for i in 0..<grid.shape[0]:
+            propertyField[i] = grid[i, 0] * 0.653 + grid[i, 1] * 0.587 + grid[i, 2] * 0.114 + 0.3 * (grid[i, 0] - grid[i, 1])^2 - 0.1 * (grid[i, 0] - grid[i, 1])^3
 
-let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
-echo "Approximately ", nPrimitives, " primitives"
-echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+            if (grid[i, 0] + grid[i, 1]) > 0.6 and propertyField[i]<0.6:
+                feasibilityField1[i] = true
+            else:
+                feasibilityField1[i] = false
+
+            if (grid[i, 1] > 0.2 and propertyField[i]<0.55) or (grid[i, 0] > 0.8):
+                feasibilityField2[i] = true
+            else:
+                feasibilityField2[i] = false
+
+        # Plotting
+        var image = newImage(width, height)
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes()
+        if propertyOverlay: 
+            image.drawPropertyHexes(propertyField)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
+        if markerOverlay1: 
+            image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField1, feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels()
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend()
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        if propertyOverlay:
+            image.drawPropertyLegend(propertyField)
+        if indexOverlay:
+            image.drawIndicies()
+
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        image.writeFile(filename)
+
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+
+when appType=="lib":
+    import nimpy
+
+    proc plotTernaryFeasPath*(
+        feasibilityList: seq[bool],
+        labels: seq[string],
+        pathPoints: seq[int]
+            ): void {.exportpy.} =
+        let t0 = cpuTime()
+        let feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
+
+        echo "Constructing image..."
+        let image = newImage(width, height)
+        echo "Image constructed..."
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes()
+        #if propertyOverlay: 
+        #    image.drawPropertyHexes(propertyField)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
+        #if markerOverlay1: 
+        #    image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels(labels)
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend()
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        #if propertyOverlay:
+        #    image.drawPropertyLegend(propertyField)
+        if indexOverlay:
+            image.drawIndicies()
+
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        echo "Saving image..."
+        image.writeFile(filename)
+
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"
+
+    proc plotPhases*(
+            feasibilityList: seq[bool],
+            labels: seq[string],
+            pathPoints: seq[int],
+            elementalEmbedding: seq[seq[float]],
+            elements: seq[string]
+        ): void {.exportpy.} =
+        let t0 = cpuTime()
+        let 
+            feasibilityField2: Tensor[bool] = feasibilityList.toTensor()
+            elementalEmbedding: Tensor[float] = elementalEmbedding.toTensor()
+
+        echo "Constructing image..."
+        let image = newImage(width, height)
+        echo "Image constructed..."
+        image.fillWhite()
+        image.drawBackground()
+        image.drawCompositonHexes(elementalEmbedding)
+        #if propertyOverlay: 
+        #    image.drawPropertyHexes(propertyField)
+        if pathPointsOverlay:
+            image.drawDesignedPath(pathPoints)
+        #if markerOverlay1: 
+        #    image.drawMarkers1(feasibilityField1)
+        if markerOverlay2: 
+            image.drawMarkers2(feasibilityField2)
+        image.drawForeground()
+        image.drawAxisLabels(labels)
+        image.drawAxisTicksMarkers()
+        image.drawElementalLegend(elements)
+        if markerOverlay1 or markerOverlay2:
+            image.drawMarkerLegend()
+        #if propertyOverlay:
+        #    image.drawPropertyLegend(propertyField)
+        if indexOverlay:
+            image.drawIndicies()
+
+        # ********* Save the image *********
+        let t1 = cpuTime()
+        echo "Saving image..."
+        image.writeFile(filename)
+
+        let nPrimitives: int = (gpl.len*(2+2) + 10 + 30)
+        echo "Approximately ", nPrimitives, " primitives"
+        echo "Constructed in ", (t1 - t0).round(3), "s and processed into PNG in ", (cpuTime() - t1).round(3), "s"

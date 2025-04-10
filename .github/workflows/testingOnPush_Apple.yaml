@@ -5,12 +5,13 @@ on:
     paths:
       - 'tests/**'
       - 'nimplex.nim'
+      - 'nimplex.nimble'
       - '.github/workflows/testingOnPush_Apple.yaml'
   workflow_dispatch:
 
 jobs:
   test-Intel:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,8 +27,10 @@ jobs:
         run: nim c -r -d:release tests/graph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
+      - name: Run stitching tests
+        run: nim c -r -d:release tests/stitching.nim 
   test-M1:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,3 +46,5 @@ jobs:
         run: nim c -r -d:release tests/graph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
+      - name: Run stitching tests
+        run: nim c -r -d:release tests/stitching.nim

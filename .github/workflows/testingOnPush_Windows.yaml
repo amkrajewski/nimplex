@@ -5,12 +5,19 @@ on:
     paths:
       - 'tests/**'
       - 'nimplex.nim'
+      - 'nimplex.nimble'
       - '.github/workflows/testingOnPush_Windows.yaml'
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        nim:
+          - '2.0.x'
+          - 'stable'
+    name: Nim ${{ matrix.nim }} Test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,12 +25,12 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Install Nim
         run: conda install -c conda-forge libopenblas mkl
-      - uses: jiro4989/setup-nim-action@v1
+      - uses: jiro4989/setup-nim-action@v2
         with:
-          nim-version: '2.0.2'
+          nim-version: ${{ matrix.nim }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
@@ -35,3 +42,5 @@ jobs:
         run: nim c -r -d:release tests/graph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
+      - name: Run stitching tests
+        run: nim c -r -d:release tests/stitching.nim

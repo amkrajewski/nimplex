@@ -2,7 +2,7 @@ import arraymancer/Tensor
 
 ## This submodule contains utility functions related to plotting of the compositional data.
 ## 
-## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html)
+## **Navigation:** [nimplex](../nimplex.html) (core library) | [docs/changelog](../docs/changelog.html) | [utils/plotting](plotting.html) | [utils/stitching](stitching.html)
 
 proc simplex2cartesian*(simplexPoints: Tensor[float]): Tensor[float] =
     ## Converts Arraymancer `Tensor[float]` of `simplexPoints` with fractional coordinates (e.g., from grid or random sampling) to points in a cartesian space (within unit n-sphere)

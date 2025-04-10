@@ -1,9 +1,31 @@
 ## **NIM** sim**PLEX**: A concise scientific Nim library (with CLI and Python binding) providing samplings, uniform grids, and traversal graphs in compositional (simplex) spaces.
-## 
+##
 ## Such spaces are considered when an entity can be split into a set of distinct components (a composition), and they play a critical role in many disciplines of science, engineering, and mathematics. For instance, in materials science, chemical composition refers to the way a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. And in economics, portfolio composition may refer to how finite capital is split across vehicles, such as cash, equity instruments, real estate, and commodities, based on their monetary value.
 ## 
-## **Navigation:** [nimplex](nimplex.html) (core library) | [docs/changelog](docs/changelog.html) | [utils/plotting](utils/plotting.html)
+## **Navigation:** [nimplex](nimplex.html) (core library) | [docs/changelog](docs/changelog.html) | [utils/plotting](utils/plotting.html) | [utils/stitching](utils/stitching.html) |
 ## 
+## .. figure:: https://img.shields.io/badge/License-MIT-yellow.svg
+##   :alt: MIT License
+##   :target: https://opensource.org/licenses/MIT
+##
+## .. figure:: https://img.shields.io/badge/arXiv-2402.03528-8F1515?style=flat&logo=arxiv&logoColor=red
+##   :alt: arXiv
+##   :target: https://doi.org/10.48550/arXiv.2402.03528 
+##
+## .. figure:: https://img.shields.io/badge/npj_Unconventional_Computing-10.1038%2Fs44335--024--00012--2-blue
+##   :alt: npj Unconventional Computing
+##   :target: https://doi.org/10.1038/s44335-024-00012-2
+##
+## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Apple.yaml/badge.svg
+##   :alt: macOS Testing
+## 
+## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Linux.yaml/badge.svg
+##   :alt: Linux Testing
+## 
+## .. figure:: https://github.com/amkrajewski/nimplex/actions/workflows/testingOnPush_Windows.yaml/badge.svg
+##   :alt: Windows Testing
+##
+##
 ## ## Quick Start
 ## If you have a GitHub account, you can get started with nimplex very quickly by just clicking the button below to launch a CodeSpaces environment with everything installed (per instructions in [Reproducible Installation](#reproducible-installation) section) and ready to go! From there, you can either use the CLI tool (as explained in [CLI](#cli) section) or import the library in Python (as explained in [Usage in Python](#usage-in-python) section) and start using it right away. Of course, it also comes with a full Nim compiler and VSCode IDE extensions for Nim, so you can effortlessly modify/extend the source code and re-compile it if you wish.
 ## 
@@ -139,7 +161,7 @@
 ## nimble install -y https://github.com/amkrajewski/nimplex@#nimble
 ## ```
 ## or, if you wish to modify the source code, you can simply download the core file `nimplex.nim` and place it in your own code, as long as you have the dependencies installed, since it is standalone. 
-## **Then simply follow the API documentation below.**
+## **Then simply follow the API documentation below** (please note that it corresponds to the development version, i.e. the current state of the `main` branch), so some functions may not yet be available in the latest release version.
 ## 
 ## ## Usage in Python
 ## To use the library in Python, you can interact with it just like any other Python library. All input/output types are native Python types, so no additional conversion is necessary. Once you have the library installed and imported,

@@ -5,18 +5,28 @@ on:
     paths:
       - 'tests/**'
       - 'nimplex.nim'
+      - 'nimplex.nimble'
       - '.github/workflows/testingOnPush_Linux.yaml'
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nim:
+          - '2.0.x'
+          - 'stable'
+          - 'devel'
+    name: Nim ${{ matrix.nim }} Test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: jiro4989/setup-nim-action@v1
+      - name: Install BLAS and PCRE
+        run: sudo apt-get install -y libopenblas-dev libpcre3-dev
+      - uses: jiro4989/setup-nim-action@v2
         with:
-          nim-version: '2.0.2'
+          nim-version: ${{ matrix.nim }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: nimble install -y arraymancer nimpy
@@ -28,3 +38,5 @@ jobs:
         run: nim c -r -d:release tests/graph.nim
       - name: Run CLI tests
         run: nim c -r -d:release tests/cli.nim
+      - name: Run stitching tests
+        run: nim c -r -d:release tests/stitching.nim

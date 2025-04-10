@@ -20,12 +20,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: jiro4989/setup-nim-action@v1
+      - name: Install BLAS and PCRE
+        run: sudo apt-get install -y libopenblas-dev libpcre3-dev
+      - uses: jiro4989/setup-nim-action@v2
         with:
           nim-version: '2.0.2'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: nimble refresh
-      - run: nimble install
+      - name: Install dependencies
+        run: | 
+          nimble refresh
+          nimble install -y nimcuda@0.1.9 
+          nimble install -y arraymancer@0.7.30
+          nimble install -y nimpy
       - name: Build documentation
         run: |
           cd docs
