@@ -3,3 +3,4 @@ import grid
 import graph
 import limitedgraph
 import cli
+import stitching
