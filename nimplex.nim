@@ -457,6 +457,10 @@ when appType == "lib" and not defined(nimdoc):
         let graph = simplex_graph(dim, ndiv)
         return (graph[0].toSeq2D(), graph[1])
 
+    proc simplex_graph_limited_py*(dim: int, ndiv: int, limit: seq[seq[int]]): (seq[seq[int]], seq[seq[int]]) {.exportpy.} =
+        let graph = simplex_graph_limited(dim, ndiv, limit)
+        return (graph[0].toSeq2D(), graph[1])
+
     proc simplex_graph_fractional_py*(dim: int, ndiv: int): (seq[seq[float]], seq[seq[int]]) {.exportpy.} =
         let graph = simplex_graph_fractional(dim, ndiv)
         return (graph[0].toSeq2D(), graph[1])
