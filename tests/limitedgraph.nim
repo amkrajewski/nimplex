@@ -5,6 +5,7 @@ import std/sequtils
 import std/sugar
 import std/sets
 import std/times
+import std/math
 
 # SMALL GRAPHS
 let t0 = cpuTime()
@@ -426,7 +427,42 @@ suite "*fractional* small (10-divisions) simplex integer 2-component (binary) gr
         check neighbors == 
             @[@[1], @[0, 2], @[1, 3], @[2, 4], @[3, 5], @[4, 6], @[5, 7], @[6]]
 
+suite "*fractional* medium (12-divisions) simplex integer 4-component (quaternary) graph with limits with limits of [0.0123, 0.58] for an asymmetrical limit around center, which should agree with integer limit of [0, 7]":
+    let 
+        nDiv:int = 12
+        limit:seq[seq[float]] = @[@[0.0123, 0.58], @[0.0123, 0.58], @[0.0123, 0.58], @[0.0123, 0.58]]
+        (nodes, neighbors) = nimplex.simplex_graph_limited_fractional(4, nDiv, limit)
+        neighborsNumbers: seq[int] = neighbors.map(n => n.len)
+        edgesCount = neighborsNumbers.foldl(a+b)
+        
+    test "correct dimensionality of nodes/vertices":
+        check nodes.shape[1] == 4
 
+    test "correct number of nodes/vertices":
+        check nodes.shape[0] == 315
+
+    test "correct number of neighbors (graph edges)":
+        check edgesCount == 3048
+
+    test "correct maximum number of neighbors":
+        check neighborsNumbers.max == 4*(4-1)
+
+    test "correct minimum number of neighbors":
+        check neighborsNumbers.min == 5
+
+    test "correct positions in the simplex of a cherry-picked node at index 0":
+        for pair in zip(nodes[0, _].toSeq2D()[0], @[0.0, 0.0, 0.4167, 0.5833]):
+            check round(pair[0], 3) == round(pair[1], 3)
+
+    test "correct positions in the simplex of a random-picked node at index 123":
+        for pair in zip(nodes[123, _].toSeq2D()[0], @[0.1667, 0.3333, 0.25, 0.25]):
+            check round(pair[0], 3) == round(pair[1], 3)
+
+    test "correct neighbors list for a cherry-picked node at index 0":
+        check neighbors[0] == @[1, 3, 4, 46, 47]
+
+    test "correct neighbors list for a random-picked node at index 123":
+        check neighbors[123] == @[79, 72, 71, 116, 115, 122, 124, 129, 130, 166, 172, 173]
 
 let t1 = cpuTime()
 
