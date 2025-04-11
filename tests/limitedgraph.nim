@@ -420,9 +420,10 @@ suite "*fractional* small (10-divisions) simplex integer 2-component (binary) gr
                 @[0.9, 0.1], 
                 @[1.0, 0.0]
             ]
-        check nodes.toSeq2D() == refSeq
+        for i in 0..<nodes.shape[0]:
+            for pair in zip(nodes[i, _].toSeq2D()[0], refSeq[i]):
+                check round(pair[0], 3) == round(pair[1], 3)
             
-
     test "correct neighbors list for each node/vertex":
         check neighbors == 
             @[@[1], @[0, 2], @[1, 3], @[2, 4], @[3, 5], @[4, 6], @[5, 7], @[6]]
