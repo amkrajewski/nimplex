@@ -264,6 +264,7 @@ proc simplex_graph_limited*(
         limit: seq[seq[int]]
     ): (Tensor[int], seq[seq[int]]) =
     ## .. image:: ../assets/small_GL.png
+    ##
     ## Generates a "limited" simplex graph in up to `dim`-component space represented by (1) grid of nodes quantized to `1/ndiv`, similar to `simplex_grid`_, and (2) a list of 
     ## neighbor lists corresponding to edges, but only for nodes within the specified `limit` sequence of integer pairs denoting maximum and minimum values for each component 
     ## in terms of fractions of `ndiv` (e.g. [[0, 24], [0, 12], [3, 6]] with `ndiv=24` would mean that the first component can take values from 0 to 100%, the second from 0 to 
@@ -272,7 +273,9 @@ proc simplex_graph_limited*(
     ## (difficult to avoide for more than 3 components). The is rearranged and node indexes are remapped to be a dense uniformly spread grid in a subspace of the simplex, akin to
     ## the full `simplex_graph`_ but with a smaller number of nodes and more elaborate shapes, such as in the figure below with `ndiv=24` and limits of 
     ## [[0, 24], [0, 24], [0, 12], [0, 3]], resulting in a tetrahedron cut around its base and one corner.
+    ##
     ## .. image:: ../assets/small_GL2.png
+    ##
     ## The result is a tuple of (1) a runtime allocated Arraymancer `Tensor[int]` of shape `(N<=N_S(dim, ndiv), dim)` containing compositions and (2) a `seq[seq[int]]` containing 
     ## a list of neighbors for each node.
     
@@ -365,8 +368,8 @@ proc simplex_graph_limited_fractional*(
         limit: seq[seq[float]]
     ): (Tensor[float], seq[seq[int]]) =
     ## Similar to `simplex_graph_limited`_ but both the `limit` and the result are fractional (`float` fraction of 1) rather than integer (quantized to `1/ndiv`).
-    ## Importantly, to avoid issues with floating point precission (e.g. max limit of `0.666` excluding point at `2/3`), the **`limit` passed to this function is 
-    ## quantized to the nearest `1/ndiv` value**, so it will not be applied exactly but rather depend on the `ndiv` set. For instance max limit of `0.66` will 
+    ## Importantly, to avoid issues with floating point precission (e.g. max limit of `0.666` excluding point at `2/3`), the `limit` **passed to this function is 
+    ## quantized to the nearest** `1/ndiv` **value**, so it will not be applied exactly but rather depend on the `ndiv` set. For instance max limit of `0.66` will 
     ## include the exact `2/3` if `ndiv` is a multiple of `3` or `24`, but not if `ndiv` is `99` as `65/99` is closer than `66/99`. At the same time, with `ndiv` 
     ## of `10` or `13`, points slightly above the `limit`, namely `7/10` and `9/13` will be included in the graph.
 
