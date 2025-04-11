@@ -267,12 +267,12 @@ proc simplex_graph_limited*(
     ##
     ## Generates a "limited" simplex graph in up to `dim`-component space represented by (1) grid of nodes quantized to `1/ndiv`, similar to `simplex_grid`_, and (2) a list of 
     ## neighbor lists corresponding to edges, but only for nodes within the specified `limit` sequence of integer pairs denoting maximum and minimum values for each component 
-    ## in terms of fractions of `ndiv` (e.g. [[0, 24], [0, 12], [3, 6]] with `ndiv=24` would mean that the first component can take values from 0 to 100%, the second from 0 to 
-    ## 50%, and the third from 12.5 to 25%, inclusive). The figure above depicts an example of a 3-component simplex graph with `ndiv=12` and limits of [[1, 8], [1, 8], [1, 8]].
+    ## in terms of fractions of `ndiv` (e.g. `[[0, 24], [0, 12], [3, 6]]` with `ndiv=24` would mean that the first component can take values from 0 to 100%, the second from 0 to 
+    ## 50%, and the third from 12.5 to 25%, inclusive). The figure above depicts an example of a 3-component simplex graph with `ndiv=12` and limits of `[[1, 8], [1, 8], [1, 8]]`.
     ## This implementation iterates over all nodes but only computes neighbors for those within the limits, which then gets prunned to avoid connecting to nodes outside the limits
     ## (difficult to avoide for more than 3 components). The is rearranged and node indexes are remapped to be a dense uniformly spread grid in a subspace of the simplex, akin to
     ## the full `simplex_graph`_ but with a smaller number of nodes and more elaborate shapes, such as in the figure below with `ndiv=24` and limits of 
-    ## [[0, 24], [0, 24], [0, 12], [0, 3]], resulting in a tetrahedron cut around its base and one corner.
+    ## `[[0, 24], [0, 24], [0, 12], [0, 3]]`, resulting in a tetrahedron cut around its base and one corner.
     ##
     ## .. image:: ../assets/small_GL2.png
     ##
