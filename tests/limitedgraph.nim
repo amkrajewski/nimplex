@@ -381,10 +381,10 @@ suite "medium (12-divisions) simplex integer 4-component (quaternary) graph with
     test "correct neighbors list for a random-picked node at index 123":
         check neighbors[123] == @[79, 72, 71, 116, 115, 122, 124, 129, 130, 166, 172, 173]
 
-suite "*fractional* small (10-divisions) simplex integer 2-component (binary) graph with limits with limits of [[0, 1], [0, 0.666]]":
+suite "*fractional* small (10-divisions) simplex integer 2-component (binary) graph with limits with limits of [[0, 1], [0.04, 0.666]]":
     let 
         nDiv: int = 10
-        limit: seq[seq[float]] = @[@[0.0, 1.0], @[0.0, 0.666]]
+        limit: seq[seq[float]] = @[@[0.0, 1.0], @[0.049, 0.666]]
         (nodes, neighbors) = nimplex.simplex_graph_limited_fractional(2, nDiv, limit)
         neighborsNumbers: seq[int] = neighbors.map(n => n.len)
         edgesCount = neighborsNumbers.foldl(a+b)
@@ -425,6 +425,8 @@ suite "*fractional* small (10-divisions) simplex integer 2-component (binary) gr
     test "correct neighbors list for each node/vertex":
         check neighbors == 
             @[@[1], @[0, 2], @[1, 3], @[2, 4], @[3, 5], @[4, 6], @[5, 7], @[6]]
+
+
 
 let t1 = cpuTime()
 
