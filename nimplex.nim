@@ -359,6 +359,28 @@ proc simplex_graph_limited*(
 
     return (projectedNodes.toTensor(), projectedNeighbors)
 
+proc simplex_graph_limited_fractional*(
+        dim: int, 
+        ndiv: int,
+        limit: seq[seq[float]]
+    ): (Tensor[float], seq[seq[int]]) =
+    ## Similar to `simplex_graph_limited`_ but both the `limit` and the result are fractional (`float` fraction of 1) rather than integer (quantized to `1/ndiv`).
+    ## Importantly, to avoid issues with floating point precission (e.g. max limit of `0.666` excluding point at `2/3`), the **`limit` passed to this function is 
+    ## quantized to the nearest `1/ndiv` value**, so it will not be applied exactly but rather depend on the `ndiv` set. For instance max limit of `0.66` will 
+    ## include the exact `2/3` if `ndiv` is a multiple of `3` or `24`, but not if `ndiv` is `99` as `65/99` is closer than `66/99`. At the same time, with `ndiv` 
+    ## of `10` or `13`, points slightly above the `limit`, namely `7/10` and `9/13` will be included in the graph.
+
+    proc frac2quanta(l: float, ndiv: int): int {.inline.} =
+        ## Converts a float to the nearest integer quanta of `1/ndiv` (e.g. `0.666` to `2/3` with `ndiv=3`).
+        return int(round(l * float(ndiv)))
+
+    let quantizedLimit = limit.mapIt(it.mapIt(it.frac2quanta(ndiv)))
+    
+    let graph = simplex_graph_limited(dim, ndiv, quantizedLimit)
+    var nodes = graph[0].asType(float)
+    nodes = nodes.map(x => x / float(ndiv))
+    return (nodes, graph[1])
+
 # CORE UTILS
 
 proc attainable2elemental*(simplexPoints: Tensor[SomeNumber],
