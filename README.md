@@ -123,8 +123,11 @@ The library provides a growing number of methods specific to compositional (simp
    <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig3.png" alt="Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
    Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
+
+5. **Limited Simplex / Compositional Graphs** where each component (i.e. simplex dimension) can be individually limited by minimum and maximum values, as depicted in the figure below. This allows for efortless creation of graphs representing asymmetric subspaces corresponding to, for instance, “all HEA with at least 5% and at most 55% of each of 8 metallic components but less than 5% of boron and between 4% and 12% of carbon”.
+
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/0cd8c4aebd09eeeb9b4bfa38ffdf598bf6e50949/assets/small_GL.png" alt="Limited Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
-   As explored in the manuscript, such representations, even of different dimensions, can can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from manuscript, inspired by problem of joining titanium with stainless steel in [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649) using 3-component spaces, one encode 3 separate paths where some components are shared in predetermined fashion. This to efficiently encode the problem space in form of a structure graph (left panel below) and then use it to construct a single **simplex graph complex** (right panel below) as a single consistent structure.
 
    <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig4.png" alt="Simplex Graph Complex" width="1000" style="display: block; margin-left: auto; margin-right: auto;"/>
 
