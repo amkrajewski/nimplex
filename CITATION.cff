@@ -13,7 +13,50 @@ authors:
 - family-names: "Liu"
   given-names: "Zi-Kui"
   orcid: "https://orcid.org/0000-0003-3346-3696"
-title: "Efficient Generation of Grids and Traversal Graphs in Compositional Spaces towards Exploration and Path Planning Exemplified in Materials"
-doi: 10.48550/arXiv.2402.03528
-date-released: 2024-02-06
+title: "Efficient generation of grids and traversal graphs in compositional spaces towards exploration and path planning"
+doi: 10.1038/s44335-024-00012-2
+date-released: 2024-11-05
 url: "https://github.com/amkrajewski/nimplex"
+abstract: >-
+  Diverse disciplines across science and engineering deal
+  with problems related to compositions, which exist in
+  non-Euclidean simplex spaces, rendering many standard
+  tools inaccurate or inefficient. This work explores such
+  spaces conceptually in the context of materials discovery,
+  quantifies their computational feasibility, and implements
+  several essential methods specific to simplex spaces
+  through a new high-performance open-source library
+  nimplex. Most significantly, we derive and implement an
+  algorithm for constructing a novel n-dimensional simplex
+  graph data structure, containing all discretized
+  compositions and possible neighbor-to-neighbor
+  transitions. Critically, no distance or neighborhood
+  calculations are performed, instead leveraging pure
+  combinatorics and order in procedurally generated simplex
+  grids, keeping the algorithm O(N), with minimal memory,
+  enabling rapid construction of graphs with billions of
+  transitions in seconds. Additionally, we demonstrate how
+  such graph representations can be combined to
+  homogeneously express complex path-planning problems,
+  while facilitating efficient deployment of existing
+  high-performance gradient descent, graph traversal, and
+  other optimization algorithms.
+keywords:
+  - nimplex
+  - graph algorithms
+  - artificial intelligence
+  - search algorithms
+  - graph complexes
+  - nim
+  - simplex
+  - path planning
+  - funcionally graded materials
+  - high entropy alloys
+  - compositional spaces
+  - compositionally complex materials
+  - materials informatics
+  - materials discovery
+  - materials design
+  - HEA
+  - FGM
+  - CCA
