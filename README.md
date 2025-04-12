@@ -109,10 +109,10 @@ The library provides a growing number of methods specific to compositional (simp
 
    One can, however, fairly easily sample from a special case of Dirichlet distribution, as explained in the manuscript, which leads to uniform sampling in the simplex space (right panel below). **Nimplex can sample around 10M points per second in 9-dimensional space** on a modern CPU.
 
-   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig1.png" alt="Monte Carlo Sampling" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/main/assets/Fig1.png" alt="Monte Carlo Sampling" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
 2. **Simplex / Compositional Grids** are a more structured approach to sampling, where all possible compositions quantized to a given resolution, like 1% for 100 divisions per dimension, are generated. This is useful for example when one wants to map a function over the simplex space. In total `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}` are generated, where `d` is the dimensionality of the simplex space and `n_d` is the number of divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **5M points per second in 9-dimensional space** on a modern CPU. A choice is given between generating the gird as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
-   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig2.png" alt="Integer and Fractional Simplex Grids in Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/main/assets/Fig2.png" alt="Integer and Fractional Simplex Grids in Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 3. **Internal Simplex / Compositional Grids** are a modification of the above method, where only points inside the simplex, i.e. all components are present, are generated. This is useful in cases where, one cannot discard any component entirely, for instance, because manufacturing setup has minimum feed rate (leakage). Nimplex introduces a new algorithm to generate these points procedurally (see manuscript for details) based on further modification of NEXCOM algorithm. 
 
@@ -120,18 +120,18 @@ The library provides a growing number of methods specific to compositional (simp
 
 4. **Simplex / Compositional Graphs** generation is ***the most critical capability***, first introduced in the nimplex manuscript. They are created by using combinatorics and disocvered patterns to assign edges between all neighboring nodes during the simplex grid (graph nodes) generation process. Effectively, a traversal graph is generated, spanning all possible compositions (given a resolution) creating an extremely efficient representation of the problem space, which allows deployment of numerous graph algorithms. 
 
-   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig3.png" alt="Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/main/assets/Fig3.png" alt="Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
    Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
 
 5. **Limited Simplex / Compositional Graphs** where each component (i.e. simplex dimension) can be individually limited by minimum and maximum values, as depicted in the figure below. This allows for efortless creation of graphs representing asymmetric subspaces corresponding to, for instance, “all HEA with at least 5% and at most 55% of each of 8 metallic components but less than 5% of boron and between 4% and 12% of carbon”.
 
-   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/0cd8c4aebd09eeeb9b4bfa38ffdf598bf6e50949/assets/small_GL.png" alt="Limited Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/main/assets/small_GL.png" alt="Limited Simplex Graph for Ternary Space" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
    
 6. **Graph Complexes**, combining multiple individual compositional graphs can also be constructed through the `utils/stitching` module which computes fixed-orientation subspaces that can be joined together,
    e.g., A-B-C in A-B-C-D with A-B-C in F-A-C-E-B. As explored in [our npj Unconventional Computing article](https://doi.org/10.1038/s44335-024-00012-2), such combined representations, allowing for even different dimensionalities of joined spaces, can can then be used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from our article, inspired by problem of joining titanium with stainless steel in [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649), using 3-component spaces, one can encode 3 separate paths where some components are shared in predetermined fashion. This efficiently encodes the problem space in form of a single simplex graph complex (right panel below) with a single consistent structure, that can be directly used for pathfinding and other graph algorithms just like any other graph.
 
-   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/dbcd9a6e1edd21aebec5e3ec964593ea1a13d23a/assets/Fig4.png" alt="Simplex Graph Complex" width="1000" style="display: block; margin-left: auto; margin-right: auto;"/>
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/main/assets/Fig4.png" alt="Simplex Graph Complex" width="1000" style="display: block; margin-left: auto; margin-right: auto;"/>
 
    With such graph representation, one can very easily deploy any scientific library for graph exploration, constrained and biased by models operating in the elemental space mapping `nimplex` provides. A neat and concise demonstration of this is provided in the [`02.AdditiveManufacturingPathPlanning.ipynb`](examples/02.AdditiveManufacturingPathPlanning.ipynb) under `examples` directory, where thermodynamic phase stability models constrain a 4-component (tetrahedral) design space existing in 7-component chemical space and property model related to yield strength (RMSAD) is used to bias designed paths towards objectives like property maximization or gradient minimization with extremely concise code simply modifying the weights on unidirectional edges in the graph. For instance, the figure below (approximately) depicts the shortest path through a subset of tetrahedron formed by solid solution phases, later stretched in space proportionally to RMDAS gradient magnitude.
 
@@ -139,7 +139,7 @@ The library provides a growing number of methods specific to compositional (simp
 
    A real-world example of using such context can be found in [our paper on AMMap tool](https://doi.org/10.31224/4453), where a graph complex consisting of all possible ternary (3-component) simplex graphs in a 7-component space are joined together, representing a continous space of all possible ternary compositions of 7 elements. In the paper, it is then used to deploy thermodynamic calculations through a search algorithm, with aim of finding the shortest path between two compositions of interest. The resulting graph complex with calculation results overlaid is shown below.
 
-   
+   <img src="https://raw.githubusercontent.com/amkrajewski/nimplex/main/assets/Fig6.png" alt="AMMap Simplex Graph Complex" width="500" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 > Several other methods are in testing and will likely be added in the future releases. If you have any suggestions, please open an issue on GitHub as we are always soliciting new ideas and use cases based on real-world problems in the 
 scientific computing community.
