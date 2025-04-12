@@ -751,17 +751,20 @@ when appType != "lib":
                 ndiv = args[3].parseInt()
                 nDivValidation(config, ndiv, dim)
 
-            var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
+            var limitStr: string = ""
+            if config[0] == 'L':
+                limitStr = args[4]
+
+            var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv
+            if limitStr.len > 0:
+                npyName &= "_" & limitStr.replace("@[", "[").replace("{", "[").replace("}", "]")
+            npyName &= ".npy"
             if config[2] == 'N':
                 if args.len == 5 and config[0] != 'L':
                     npyName = args[4]
                 elif args.len == 6 and config[0] == 'L':
                     npyName = args[5]
                 styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
-
-            var limitStr: string = ""
-            if config[0] == 'L':
-                limitStr = args[4]
             
             taskRouter(config, dim, ndiv, npyName, limitStr)
 
