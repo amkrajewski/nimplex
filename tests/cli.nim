@@ -273,6 +273,29 @@ suite "test if correct graph output is given when nimplex is run in command line
             for j in 0..<3:
                 check abs(outputGrid[i][j] - referenceNodes[i][j]) < 0.0001
 
+    test "generate small limited fractional simplex graph (LFP 3 3 [[0,1],[0.333,0.666],[0,1]]), print values to stdout, and check them for node corectness":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c LFP 3 3 \"[[0,1],[0.333,0.666],[0,1]]\"")
+            outputLines = output.splitLines
+            referenceNodes = 
+                @[
+                    @[0.0, 0.333333, 0.666667],
+                    @[0.0, 0.666667, 0.333333],
+                    @[0.333333, 0.333333, 0.333333],
+                    @[0.333333, 0.666667, 0.0],
+                    @[0.666667, 0.333333, 0.0],
+                ]
+    
+        check exitCode == 0
+
+        var outputGrid = newSeq[seq[float]](outputLines.len-6)
+        for i in 0..<referenceNodes.len:
+            for v in outputLines[i+3].replace("|","").splitWhitespace:
+                outputGrid[i].add(parseFloat(v))
+        
+        for i in 0..<referenceNodes.len:
+            for j in 0..<3:
+                check abs(outputGrid[i][j] - referenceNodes[i][j]) < 0.0001
 
     test "generate small fractional simplex graph (GFP 3 3), print values to stdout, and check them for neighbor corectness":
         let 
