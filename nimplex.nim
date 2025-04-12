@@ -667,7 +667,7 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
         else: 
             echo "Invalid Congig"
 
-proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
+proc taskRouter(config: string, dim: int, ndiv: int, npyName: string, limit: string): void =
     ## Routes the task to the appropriate calculation and output function based on the first 2 letters of the configuration string.
     case config[0..1]:
         of "FF": outFunction(
@@ -684,6 +684,10 @@ proc taskRouter(config: string, dim: int, ndiv: int, npyName: string) =
             config, dim, ndiv, npyName, simplex_graph(dim, ndiv))
         of "GF": outFunction_graph(
             config, dim, ndiv, npyName, simplex_graph_fractional(dim, ndiv))
+        of "LI": outFunction_graph(
+            config, dim, ndiv, npyName, simplex_graph_limited(dim, ndiv, parseLimitInts(limit)))
+        of "LF": outFunction_graph(
+            config, dim, ndiv, npyName, simplex_graph_limited_fractional(dim, ndiv, parseLimitFloats(limit)))
         else:
             echo "\n--> Invalid configuration in the first 2 config letters."
             quit(1)
@@ -728,7 +732,7 @@ when appType != "lib":
                     npyName = tempIn
                 styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
-            taskRouter(config, dim, ndiv, npyName)
+            taskRouter(config, dim, ndiv, npyName, "")
 
         # Configured
         elif args[0] == "-c" or args[0] == "--config":
@@ -753,7 +757,11 @@ when appType != "lib":
                     npyName = args[4]
                 styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
-            taskRouter(config, dim, ndiv, npyName)
+            var limitStr: string = ""
+            if config[0] == 'L':
+                limitStr = args[4]
+            
+            taskRouter(config, dim, ndiv, npyName, limitStr)
 
         elif args[0] in @["-h", "--help"]:
             echoHelp()
