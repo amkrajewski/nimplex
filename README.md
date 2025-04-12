@@ -171,21 +171,27 @@ Or it can be run with a concise configuration defining the task type and paramet
     1. Grid type or uniform random sampling:
         - **F**: Full grid (including the simplex boundary)
         - **I**: Internal grid (only points inside the simplex)
-        - **R**: Random/Monte Carlo uniform sampling over simplex.
+        - **R**: Random/Monte Carlo uniform sampling over simplex
         - **G**: Graph (list of grid nodes and list of their neighbors)
+        - **L**: Limited graph (graph with integer or fractional limits imposed on the compositions)
     2. Fractional or Integer positions:
         - **F**: Fractional grid/graph (points are normalized to fractions of 1)
         - **I**: Integer grid/graph (points are integers)
     3. Print full result, its shape, or persist in a file:
         - **P**: Print (presents full result as a table)
         - **S**: Shape (only the shape / size information)
-        - **N**: Persist to NumPy array file ("nimplex_<configFlags>.npy" or 
-             optionally a custom path as an additonal argument)
+        - **N**: Persist to NumPy array file ("nimplex_<configFlags>.npy" or optionally a custom path as an additonal argument)
 - **Simplex Dimensions / N of Components**: An integer number of components in the simplex space.
 - **N Divisions per Dimension / N of Samples**: An integer number of either:
     1. Divisions per each simplex dimension for grid or graph tasks (F/I/G__)
     2. Number of samples for random sampling tasks (R__)
-- **(optional) NumPy Array Output Filename**: A custom path to the output NumPy array file (only for __N tasks).
+- **(for limited graphs only) Limits**: A string list of pairs of either integers or floats, depending on the grid type specified by the second letter of 
+  the configuration string. Each pair represents the minimum and maximum values for each simplex dimension. The number of pairs must match the 
+  number of simplex dimensions. You can use `[`, `{`, or `@[` for the list. E.g., `[[0, 1],[0,0.555],[0.222,0.888]]` for fractional grid limits
+  or `{{0,12},{2,10},{3,9}}` for integer grid limits. Setting the limits to less than 0 or greater than 1/nDiv will pass with a warning, but will
+  not throw an error. The integer limits are exactly inclusive, while the fractional limits inclusive of the *closeset* grid point, i.e. max limit of 
+  0.660 will let 1/3=0.667 pass for low resolution grids, but not high resolution ones.
+- **(optional) NumPy Array Output Filename**: A custom path to the output NumPy array file (only for __N tasks). 
 
 For instance, to generate a 3-dimensional internal fractional grid with 10 divisions per dimension and persist it to a NumPy array file, you can run:
 ```cmd

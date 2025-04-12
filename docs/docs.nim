@@ -241,7 +241,7 @@
 ##         - **I**: Internal grid (only points inside the simplex)
 ##         - **R**: Random/Monte Carlo uniform sampling over simplex.
 ##         - **G**: Graph (list of grid nodes and list of their neighbors)
-##         - **L**: Limited graph (list of grid nodes and list of their neighbors with limits)
+##         - **L**: Limited graph (graph with integer or fractional limits imposed on the compositions)
 ##     2. Fractional or Integer positions:
 ##         - **F**: Fractional grid/graph (points are normalized to fractions of 1)
 ##         - **I**: Integer grid/graph (points are integers)
