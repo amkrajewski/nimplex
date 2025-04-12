@@ -703,11 +703,12 @@ when appType != "lib":
         if args.len == 0:
             styledEcho fgGreen, "\nWelcome to ", styleItalic, "nimplex", resetStyle, "!"
             styledEcho "Please provide 3-letter configuration (", styleBright, fgMagenta, "F", resetStyle, fgMagenta, "ull/", styleBright, fgMagenta, "I", resetStyle, fgMagenta, 
-                "nternal/", styleBright, fgMagenta, "R", resetStyle, fgMagenta, "andom/", styleBright, fgMagenta, "G", resetStyle, fgMagenta, "raph)(", styleBright, fgMagenta, "F", 
-                resetStyle, fgMagenta, "ractional/", styleBright, fgMagenta, "I", resetStyle, fgMagenta, "nteger)(", styleBright, fgMagenta, "P", resetStyle, fgMagenta, "rint/",
-                styleBright, fgMagenta, "S", resetStyle, fgMagenta, "hape/", styleBright, fgMagenta, "N", resetStyle, fgMagenta, "umpPy)", resetStyle, " - e.g. ", styleBright, fgMagenta, 
+                "nternal/", styleBright, fgMagenta, "R", resetStyle, fgMagenta, "andom/", styleBright, fgMagenta, "G", resetStyle, fgMagenta, "raph/", styleBright, fgMagenta, 
+                "L", resetStyle, fgMagenta, "imitedGraph)(", styleBright, fgMagenta, "F", resetStyle, fgMagenta, "ractional/", styleBright, fgMagenta, "I", resetStyle, fgMagenta, "nteger)(", 
+                styleBright, fgMagenta, "P", resetStyle, fgMagenta, "rint/", styleBright, fgMagenta, "S", resetStyle, fgMagenta, "hape/", styleBright, fgMagenta, "N", resetStyle, 
+                fgMagenta, "umpPy)", resetStyle, " - e.g. ", styleBright, fgMagenta, 
                 "FFS/RFP/FIN", resetStyle, ":"
-            #echo "Configuration (Full/Internal/Random/Graph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
+            #echo "Configuration (Full/Internal/Random/Graph/LimitedGraph)(Fractional/Integer)(Print/Shape/Numpysave) - e.g. FFS/RFP/FIN:"
             let config = readLine(stdin)
             configValidation(config)
 
@@ -724,6 +725,15 @@ when appType != "lib":
                 ndiv = readLine(stdin).parseInt() 
                 nDivValidation(config, ndiv, dim)
 
+            var limitStr: string = ""
+            if config[0] == 'L':
+                if config[1] == 'F':
+                    styledEcho "List of float Min/Max limit pairs per each component / simplex dimension, formatted with `[`, `@[`, or `{` - e.g. ", styleBright, fgMagenta, "[[0,1],[0,0.666],[0.167,0.5]]", resetStyle, "):"
+                    limitStr = readLine(stdin).strip()
+                else:
+                    styledEcho "List of integer Min/Max limit pairs per each component / simplex dimension, expressed as qunata of ndiv, formatted with `[`, `@[`, or `{` - e.g. ", styleBright, fgMagenta, "[[0,12],[0,8],[2,6]]", resetStyle, "):"
+                    limitStr = readLine(stdin).strip()
+
             var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
             if config[2] == 'N':
                 styledEcho "NumPy Array Output Filename (skip for default: ", fgBlue, npyName, resetStyle, "):"
@@ -732,7 +742,7 @@ when appType != "lib":
                     npyName = tempIn
                 styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
-            taskRouter(config, dim, ndiv, npyName, "")
+            taskRouter(config, dim, ndiv, npyName, limitStr)
 
         # Configured
         elif args[0] == "-c" or args[0] == "--config":
