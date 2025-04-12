@@ -549,6 +549,36 @@ template benchmark(benchmarkName: string, code: untyped) =
         let t1 = cpuTime()
         styledEcho fgBlue, styleBright, benchmarkName, "\n", resetStyle, fgGreen, $initDuration(microseconds = ((t1 - t0)*1e6).int), resetStyle, "\n"
 
+proc parseLimitInts*(s: string): seq[seq[int]] =
+    ## Parses a CLI input string containing single nested lists of integers into a sequence of sequences of integers. The input string can contain lists in the form of `[]`, `{}`, or `@[]` 
+    ## and can include negative numbers. 
+
+    # Pattern to match inner lists - works with [], {}, or @[]; and pattern to match integers
+    let innerListPattern = re(r"(?:@?\[|\{)\s*([-0-9,\s]+)\s*(?:\]|\})")
+    let numberPattern = re(r"-?\d+")
+
+    var innerList: seq[int]
+    for match in s.findAll(innerListPattern):
+        innerList = @[]
+        for numStr in match.findAll(numberPattern):
+            innerList.add(parseInt(numStr))
+        result.add(innerList)
+
+proc parseLimitFloats*(s: string): seq[seq[float]] =
+    ## Parses a CLI input string containing single nested lists of floats into a sequence of sequences of floats. The input string can contain lists in the form of `[]`, `{}`, or `@[]` 
+    ## and can include negative numbers. 
+
+    # Pattern to match inner lists - works with [], {}, or @[]; and pattern to match floats
+    let innerListPattern = re(r"(?:@?\[|\{)\s*([-0-9.,\s]+)\s*(?:\]|\})")
+    let numberPattern = re(r"-?\d+(\.\d+)?")
+
+    var innerList: seq[float]
+    for match in s.findAll(innerListPattern):
+        innerList = @[]
+        for numStr in match.findAll(numberPattern):
+            innerList.add(parseFloat(numStr))
+        result.add(innerList)
+
 proc echoHelp*() = 
     ## Prints the help message for the CLI, which is a concise version of one given in nimplex's documentation.
     styledEcho fgGreen, "\nWelcome to ", styleItalic, "nimplex", resetStyle, "!"
