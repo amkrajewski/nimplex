@@ -57,7 +57,7 @@ suite "Set up two 3C simplex grids that happen to share a common 2C subspace and
         test fmt"Stitching point {i} ({p1}) in grid1 matches stitching point {i} in grid2 ({p2})":
             check p1 == p2
 
-    echo fmt"Finished test in {cpuTime()-t0} seconds."
+    echo fmt"Finished small test in {round(1000*(cpuTime()-t0), 4)} ms."
 
 suite "Enhance the previous suite by (1) assigning higher order elemental space with chemical element names (Ti Al V Cr Ni) \nand (2) setting up the elemental space to be composed of alloys rather than pure elements":
     let comps = @["Ti", "Al", "V", "Cr", "Ni"]
@@ -118,7 +118,7 @@ suite "Enhance the previous suite by (1) assigning higher order elemental space 
         test fmt"Stitching point {i} ({p1:<30}) in grid1 matches stitching point {i} in grid2 ({p2:<30}) -> {formula(p1, comps)}":
             check p1 == p2
 
-    echo fmt"Finished test in {cpuTime()-t0} seconds."
+    echo fmt"Finished medium test in {round(1000*(cpuTime()-t0), 4)} ms."
 
 
 suite "Set up dissimilar 6C and 7C simplex grids in 9C elemental space that happen to share a common 4C subspace and verify correct stitching":
@@ -190,5 +190,5 @@ suite "Set up dissimilar 6C and 7C simplex grids in 9C elemental space that happ
         test fmt"Stitching Grid 1 point {pointsToVerify[i]:<4} ({p1}) matches Stitching Grid 2 point {pointsToVerify[i]:<4} in grid2 ({p2})":
             check p1 == p2
 
-    echo fmt"Finished test in {cpuTime()-t0} seconds."
+    echo fmt"Finished large test in {round(1000*(cpuTime()-t0), 1)} ms."
 

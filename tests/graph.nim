@@ -256,13 +256,13 @@ suite "very large simplex fractional 12-component graph (1M+ nodes  / 93M+ edges
     test "correct positions in the simplex of a cherry-picked node at index 0":
         check nodes[0, _].toSeq2D()[0] == @[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ndiv]
 
-    test "correct positions in the simplex of a cherry-picked node at index 123_456":
+    test "correct positions in the simplex of a random-picked node at index 123_456":
         check nodes[123_456, _].toSeq2D()[0] == @[0, 0, 0, 6, 0, 1, 0, 0, 1, 1, 1, 2]
 
     test "correct neighbors list for a cherry-picked node at index 0":
         check neighbors[0] == @[1, 13, 91, 455, 1820, 6188, 18564, 50388, 125970, 293930, 646646]
 
-    test "correct neighbors list for a cherry-picked node at index 123_456":
+    test "correct neighbors list for a random-picked node at index 123_456":
         check neighbors[123_456] == @[
             121740, 120816, 120564, 120438, 120382, 120367, 120363, 120362, 123204, 123078, 123022, 123007, 
             123003, 123002, 123441, 123437, 123436, 123452, 123451, 123455, 123457, 123459, 123460, 123466, 
