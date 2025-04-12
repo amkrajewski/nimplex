@@ -115,7 +115,6 @@
 ##     one wants to map a function over the simplex space. In total `N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}` are generated, where `d` is the dimensionality of the simplex space and `n_d` is the number of
 ##     divisions per dimension. Nimplex uses a modified version of NEXCOM algorithm to do that procedurally (see manuscript for details) and can generate around **5M points per second in 9-dimensional space** on a modern CPU. A choice is given 
 ##     between generating the grid as a list of **integer** numbers of quantum units (left panel below) or as a list of **fractional positions** (right panel below). 
-## 
 ##     
 ##     .. figure:: ../assets/Fig2.png
 ##        :alt: Integer and Fractional Simplex Grids in Ternary Space
@@ -124,7 +123,7 @@
 ##     entirely, for instance, because manufacturing setup has minimum feed rate (leakage). Nimplex introduces a new algorithm to generate these points procedurally (see manuscript for details) based on further modification of NEXCOM algorithm.
 ##     In total `N_I(d, n_d) = \binom{n_d-1}{d-1}` are generated, critically without any performance penalty compared to the full grid, which can reach orders of magnitude when `d` approaches `n_d`. Similar to the full grid, a choice is given
 ##    between generating the grid as a list of **integer** numbers of quantum units or as a list of **fractional positions**.
-## 
+##
 ## 4. **Simplex / Compositional Graphs** generation is ***the most critical capability***, first introduced in the nimplex manuscript. They are created by using combinatorics and discovered patterns to assign edges between all neighboring nodes 
 ##     during the simplex grid (graph nodes) generation process. Effectively, a traversal graph is generated, spanning all possible compositions (given a resolution) creating an extremely efficient representation of the problem space, which 
 ##     allows deployment of numerous graph algorithms. 
@@ -135,22 +134,36 @@
 ##     Critically, unlike the O(N^2) distance-based graph generation methods, this approach **scales linearly** with the resulting number of nodes. Because of that, it is extremely efficient even in high-dimensional spaces, where the number of
 ##     edges goes into trillions and beyond. Nimplex can **both generate and find neighbors** for around **2M points per second in 9-dimensional space** on a modern CPU. 
 ## 
-##     As explored in the manuscript, such representations, even of different dimensions, can then be used to efficiently encode complex problem spaces where some prior assumptions and knowledge are available. Consider the problem of joining
-##     titanium with stainless steel using 3-component spaces as presented in Bobbio et. al, [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649). Example #2 from the manuscript handles this problem by encoding 3
-##     separate paths where some components are shared in a predetermined fashion. This is done to efficiently encode the problem space in the form of a structure graph (left panel below) and then use it to construct a
-##     single **simplex graph complex** (right panel below) as a single consistent structure.
+## 5.  **Limited Simplex / Compositional Graphs** where each component (i.e. simplex dimension) can be individually limited by minimum and maximum values, as depicted in the figure below. This allows for efortless creation of graphs representing 
+##     asymmetric subspaces corresponding to, for instance, “all HEA with at least 5% and at most 55% of each of 8 metallic components but less than 5% of boron and between 4% and 12% of carbon”.
+##
+##     .. figure:: ../assets/small_GL.png
+##        :alt: Limited Simplex Graph for Ternary Space
+##
+## 6.  **Graph Complexes**, combining multiple individual compositional graphs can also be constructed through the `utils/stitching` module which computes fixed-orientation subspaces that can be joined together, e.g., A-B-C in A-B-C-D with 
+##     A-B-C in F-A-C-E-B. As explored in [our npj Unconventional Computing article](https://doi.org/10.1038/s44335-024-00012-2), such combined representations, allowing for even different dimensionalities of joined spaces, can can then be 
+##     used to efficeintly encode complex problem spaces where some prior assumptions and knowledge are available. In the Example #2 from our article, inspired by problem of joining titanium with stainless steel in 
+##     [10.1016/j.addma.2022.102649](https://doi.org/10.1016/j.addma.2022.102649), using 3-component spaces, one can encode 3 separate paths where some components are shared in predetermined fashion. This efficiently encodes the problem 
+##     space in form of a single simplex graph complex (right panel below) with a single consistent structure, that can be directly used for pathfinding and other graph algorithms just like any other graph.
 ## 
 ##     .. figure:: ../assets/Fig4.png
 ##        :alt: Simplex Graph Complex
 ## 
-##     With such graph representation, one can very easily deploy any scientific library for graph exploration, constrained and biased by models operating in the elemental space mapping `nimplex` provides. A neat and concise 
-##     demonstration of this is provided in the [`02.AdditiveManufacturingPathPlanning.ipynb`](https://github.com/amkrajewski/nimplex/blob/main/examples/02.AdditiveManufacturingPathPlanning.ipynb) under `examples` directory, where thermodynamic phase stability models 
-##     constrain a 4-component (tetrahedral) design space existing in 7-component chemical space and property model related to yield strength (RMSAD) is used to bias designed paths towards objectives like property maximization 
-##     or gradient minimization with extremely concise code simply modifying the weights on unidirectional edges in the graph. For instance, the figure below (approximately) depicts the shortest path through a subset of 
-##     tetrahedron formed by solid solution phases, later stretched in space proportionally to RMDAS gradient magnitude.
+##     With such graph representation, one can very easily deploy any scientific library for graph exploration, constrained and biased by models operating in the elemental space mapping `nimplex` provides. A neat and concise demonstration 
+##     of this is provided in the [`02.AdditiveManufacturingPathPlanning.ipynb`](https://github.com/amkrajewski/nimplex/blob/main/examples/02.AdditiveManufacturingPathPlanning.ipynb) under `examples` directory, where thermodynamic phase 
+##     stability models constrain a 4-component (tetrahedral) design space existing in 7-component chemical space and property model related to yield strength (RMSAD) is used to bias designed paths towards objectives like property maximization 
+##     or gradient minimization with extremely concise code simply modifying the weights on unidirectional edges in the graph. For instance, the figure below (approximately) depicts the shortest path through a subset of tetrahedron formed by 
+##     solid solution phases, later stretched in space proportionally to RMDAS gradient magnitude.
 ##
 ##     .. figure:: ../assets/Fig5.png
 ##        :alt: Gradient Magnitude Stretched Graph with Shortest Path
+##
+##     A real-world example of using such context can be found in [our paper on AMMap tool](https://doi.org/10.31224/4453), where a graph complex consisting of all possible ternary (3-component) simplex graphs in a 7-component space are 
+##     joined together, representing a continous space of all possible ternary compositions of 7 elements. In the paper, it is then used to deploy thermodynamic calculations through a search algorithm, with aim of finding the shortest path 
+##     between two compositions of interest. The resulting graph complex with calculation results overlaid is shown below.
+##
+##     .. figure:: ../assets/Fig6.png
+##        :alt: AMMap Graph Complex
 ##  
 ## > Several other methods are in testing and will likely be added in the future releases. If you have any suggestions, please open an issue on GitHub as we are always soliciting new ideas and use cases based on real-world problems in the 
 ## scientific computing community.
