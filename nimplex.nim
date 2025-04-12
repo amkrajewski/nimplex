@@ -650,7 +650,7 @@ proc outFunction_graph(config: string, dim: int, ndiv: int, npyName: string, out
             outputData[0].write_npy(npyName.replace(".npy", "_nodes.npy"))
             let 
                 maxNeighbors = dim*(dim-1)
-                L = binom(ndiv+dim-1, dim-1)
+                L = len(outputData[1])
             var neighborsTensor = newTensor[int]([L, maxNeighbors])
             for i in 0..<L:
                 for j in 0..<maxNeighbors:
@@ -753,8 +753,10 @@ when appType != "lib":
 
             var npyName: string = "nimplex_" & config[0..1] & "_" & $dim & "_" & $ndiv & ".npy"
             if config[2] == 'N':
-                if args.len == 5:
+                if args.len == 5 and config[0] != 'L':
                     npyName = args[4]
+                elif args.len == 6 and config[0] == 'L':
+                    npyName = args[5]
                 styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
             var limitStr: string = ""
