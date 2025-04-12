@@ -169,6 +169,32 @@ suite "test if correct graph output is given when nimplex is run in command line
         for i in 0..<reference.len:
             check outputLines[i].stripAnsiEscapeCodes() == reference[i]
 
+    test "generate small limited integer simplex graph (LIS 3 3 [[0,3],[1,2],[0,3]]) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c LIS 3 3 \"[[0,3],[1,2],[0,3]]\"")
+            outputLines = output.splitLines
+            reference = @[
+                "Running with configuration: @[\"LIS\", \"3\", \"3\", \"[[0,3],[1,2],[0,3]]\"]", 
+                "Nodes Shape: [5, 3]",
+                "Edges Count: 14"
+                ]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
+
+    test "generate small limited fractional simplex graph (LFS 3 3 [[0,1],[0.333,0.666],[0,1]]) and print shape to stdout":
+        let 
+            (output, exitCode) = execCmdEx("./nimplex -c LFS 3 3 \"[[0,1],[0.333,0.666],[0,1]]\"")
+            outputLines = output.splitLines
+            reference = @[
+                "Running with configuration: @[\"LFS\", \"3\", \"3\", \"[[0,1],[0.333,0.666],[0,1]]\"]", 
+                "Nodes Shape: [5, 3]",
+                "Edges Count: 14"
+                ]
+        check exitCode == 0
+        for i in 0..<reference.len:
+            check outputLines[i].stripAnsiEscapeCodes() == reference[i]
+
     test "generate medium size integer simplex graph (GIS 7 12) and print shape to stdout":
         let 
             (output, exitCode) = execCmdEx("./nimplex -c GIS 7 12")
