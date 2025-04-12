@@ -11,6 +11,7 @@ import std/terminal
 import std/sugar
 import std/times
 import std/strutils
+import std/re
 import std/tables
 from std/algorithm import reverse
 from std/sequtils import foldl, mapIt
@@ -558,6 +559,7 @@ proc echoHelp*() =
     styledEcho "      - ", styleBright, fgMagenta, "I", resetStyle, ": ", fgMagenta, "I", resetStyle, "nternal grid ", styleDim, "(only points inside the simplex)"
     styledEcho "      - ", styleBright, fgMagenta, "R", resetStyle, ": ", fgMagenta, "R", resetStyle, "andom/Monte Carlo uniform sampling over simplex"
     styledEcho "      - ", styleBright, fgMagenta, "G", resetStyle, ": ", fgMagenta, "G", resetStyle, "raph ", styleDim, "(list of grid nodes and list of their neighbors)"
+    styledEcho "      - ", styleBright, fgMagenta, "L", resetStyle, ": ", fgMagenta, "L", resetStyle, "imited graph ", styleDim, "(graph with integer or fractional limits imposed on the compositions)"
     echo "    2. Fractional or Integer positions:"
     styledEcho "      - ", styleBright, fgMagenta, "F", resetStyle, ": ", fgMagenta, "F", resetStyle, "ractional grid/graph ", styleDim, "(points are normalized to fractions of 1)"
     styledEcho "      - ", styleBright, fgMagenta, "I", resetStyle, ": ", fgMagenta, "I", resetStyle, "nteger grid/graph ", styleDim, "(points are integers)"
@@ -565,10 +567,11 @@ proc echoHelp*() =
     styledEcho "      - ", styleBright, fgMagenta, "P", resetStyle, ": ", fgMagenta, "P", resetStyle, "rint ", styleDim, "(presents full result as a table. Not recommended for large grids)"
     styledEcho "      - ", styleBright, fgMagenta, "S", resetStyle, ": ", fgMagenta, "S", resetStyle, "hape ", styleDim, "(only the shape / size information). Actual result is obtained but discarded"
     styledEcho "      - ", styleBright, fgMagenta, "N", resetStyle, ": ", fgMagenta, "N", resetStyle, "umpPy array file ", styleDim, "(", fgMagenta, "nimplex_<configFlags>.npy", resetStyle, styleDim, " by default, or optionally a custom path as an additonal argument)"
-    echo "\n- Followed by integers of (1) simplex dimension and (2) number of divisions or samples depending on the task type. Optionally, custom output file path for NumPy array can be provided as the last argument. E.g.:"
+    echo "\n- Followed by integers of (1) simplex dimension and (2) number of divisions or samples depending on the task type. In the case of (L)imited graph construction, a string of list of limit pairs shoudl be given, denoted by `[`, `@[`, or `{`, like `[[0,12],[0,8],[2, 6]]`. Optionally, custom output file path for NumPy array can be provided as the last argument. E.g.:"
     styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "FFS", resetStyle, fgMagenta, " [simplex dimension] [number of divisions]", resetStyle
     styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "RFP", resetStyle, fgMagenta, " [simplex dimension] [number of samples]", resetStyle
     styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "FIN", resetStyle, fgMagenta, " [simplex dimension] [number of divisions] [path/to/outfile.npy]", resetStyle
+    styledEcho fgBlue, "    -c ", fgMagenta, styleBright, "LIN", resetStyle, fgMagenta, " [simplex dimension] [number of divisions] [limit pairs list] [path/to/outfile.npy]", resetStyle
     echo "\nYou can also utilize the following auxiliary flags:"
     styledEcho fgBlue, "    --help       | -h", resetStyle, "   --> Show help."
     styledEcho fgBlue, "    --benchmark  | -b", resetStyle, "   --> Run benchmark for all tasks ", styleDim, "(including 9-dimensional space with 12 divisions per dimension and 1M random samples)."
@@ -576,11 +579,11 @@ proc echoHelp*() =
 func configValidation(config: string) = 
     ## Validates the 3-letter configuration string provided by the user.
     assert config.len == 3, "\n--> Invalid configuration lenght. Must be 3 letters."
-    assert config[0] in @['F', 'I', 'R', 'G'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, Monte Carlo sampling, or Graph respectively"
+    assert config[0] in @['F', 'I', 'R', 'G', 'L'], "\n--> Invalid configuration (in the 1st letter). Must be F, I or R for Full grid, Internal grid, Monte Carlo sampling, or Graph respectively"
     assert config[1] in @['F', 'I'], "\n--> Invalid configuration (in the 2nd letter). Must be F, or I for Fractional positions, or Integer positions respectively"
     if config[0] == 'R':
         assert config[1] == 'F', "\n--> Integer positions not implemented for Random sampling. Must be F for Fractional positions."
-    assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape, or persist Numpy output respectively"
+    assert config[2] in @['P', 'S', 'N'], "\n--> Invalid configuration (in the 3rd letter). Must be P, S or N for Print full result, Shape information, or persist Numpy output respectively"
 
 func nDivValidation(config: string, nDiv: int, dim: int) = 
     ## Validates the number of divisions per each simplex dimension provided by the user for all tasks except Random sampling.
