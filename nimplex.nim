@@ -740,7 +740,11 @@ when appType != "lib":
                 let tempIn = readLine(stdin)
                 if tempIn.len > 0:
                     npyName = tempIn
-                styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
+                if config[0] == 'L' or config[0] == 'G':
+                    styledEcho "Persisting graph nodes to NumPy array file: ", fgBlue, npyName.replace(".npy", "_nodes.npy"), resetStyle
+                    styledEcho "Persisting graph edges to NumPy array file: ", fgBlue, npyName.replace(".npy", "_neighbors.npy"), resetStyle
+                else:
+                    styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
 
             taskRouter(config, dim, ndiv, npyName, limitStr)
 
@@ -774,7 +778,11 @@ when appType != "lib":
                     npyName = args[4]
                 elif args.len == 6 and config[0] == 'L':
                     npyName = args[5]
-                styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
+                if config[0] == 'L' or config[0] == 'G':
+                    styledEcho "Persisting graph nodes to NumPy array file: ", fgBlue, npyName.replace(".npy", "_nodes.npy"), resetStyle
+                    styledEcho "Persisting graph edges to NumPy array file: ", fgBlue, npyName.replace(".npy", "_neighbors.npy"), resetStyle
+                else:
+                    styledEcho "Persisting to NumPy array file: ", fgBlue, npyName, resetStyle
             
             taskRouter(config, dim, ndiv, npyName, limitStr)
 
