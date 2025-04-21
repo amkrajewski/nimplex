@@ -1,4 +1,4 @@
-# Copyrigth (C) 2023 Adam M. Krajewski
+# Copyrigth (C) 2023-2025 Adam M. Krajewski
 # License: MIT
 
 # Pragmas with compiler and linker options
