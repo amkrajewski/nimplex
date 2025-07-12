@@ -584,7 +584,7 @@ proc drawElementalLegend(
     ctx.fontsize = sideWidth*1.5
     ctx.textAlign = LeftAlign
 
-    const legendHexSize: float = (990/(nDiv+1)-1).clamp(15, 50) * scaling
+    const legendHexSize: float = (distance/scaling).clamp(15, 50) * scaling
     let colorSchemeOKlab = findColorSchemeOKlab(len(elementList))
 
     for (i, el) in elementList.pairs:
@@ -609,12 +609,13 @@ proc drawMarkerLegend(image: Image) =
     ctx.font = fontMain
     ctx.fontsize = sideWidth*1.5
     ctx.textAlign = LeftAlign
+    const legendMarker1Size: float = (distance/2/scaling).clamp(15, 50) * scaling
     if markerOverlay1:
         let position: float = 6.5
         ctx.fillStyle = rgba(0, 0, 0, 255)
-        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*1.05/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), legendMarker1Size*1.05, sides = 24)
         ctx.fillStyle = rgba(200, 200, 0, 255)
-        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*1/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), legendMarker1Size, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
             marker1,
@@ -622,6 +623,7 @@ proc drawMarkerLegend(image: Image) =
         )
 
     if markerOverlay2:
+        const legendMarker2Size: float = (distance/2/scaling).clamp(15, 50) * scaling
         let position: float = 7.5
         var baseSize: float
         if not markerOverlay1:
@@ -629,9 +631,9 @@ proc drawMarkerLegend(image: Image) =
         else:
             baseSize = 0.7
         ctx.fillStyle = rgba(0, 0, 0, 255)
-        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*(baseSize+0.05)/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), legendMarker2Size*(baseSize+0.05), sides = 24)
         ctx.fillStyle = rgba(255, 0, 0, 255)
-        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*baseSize/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), legendMarker2Size*baseSize, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
             marker2,
