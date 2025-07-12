@@ -591,11 +591,11 @@ proc drawElementalLegend(
         let rgbMap = oklabToRGB((colorSchemeOKlab[i][0].float, colorSchemeOKlab[i][1].float, colorSchemeOKlab[i][2].float))
 
         ctx.fillStyle = rgba(rgbMap[0].uint8, rgbMap[1].uint8, rgbMap[2].uint8, alpha)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*i).float*scaling), legendHexSize, sides = 6)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*i).float*scaling), legendHexSize, sides = 6)
         ctx.fillStyle = rgba(rgbMap[0].uint8, rgbMap[1].uint8, rgbMap[2].uint8, 255.uint8)
         ctx.fillText(
             el, 
-            vec2(400*scaling, (100*i+200).float*scaling),
+            vec2(375*scaling, (100*i+200).float*scaling),
         )
 
 proc drawElementalLegend(image: Image): void =
@@ -612,13 +612,13 @@ proc drawMarkerLegend(image: Image) =
     if markerOverlay1:
         let position: float = 6.5
         ctx.fillStyle = rgba(0, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*1.05/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*1.05/2, sides = 24)
         ctx.fillStyle = rgba(200, 200, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*1/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*1/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
             marker1,
-            vec2(400*scaling, (100*position+190).float*scaling),
+            vec2(375*scaling, (100*position+190).float*scaling),
         )
 
     if markerOverlay2:
@@ -629,13 +629,13 @@ proc drawMarkerLegend(image: Image) =
         else:
             baseSize = 0.7
         ctx.fillStyle = rgba(0, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*(baseSize+0.05)/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*(baseSize+0.05)/2, sides = 24)
         ctx.fillStyle = rgba(255, 0, 0, 255)
-        ctx.fillPolygon(vec2(350*scaling, (170+100*position).float*scaling), distance*baseSize/2, sides = 24)
+        ctx.fillPolygon(vec2(325*scaling, (170+100*position).float*scaling), distance*baseSize/2, sides = 24)
         ctx.fontsize = sideWidth
         ctx.fillText(
             marker2,
-            vec2(400*scaling, (100*position+190).float*scaling),
+            vec2(375*scaling, (100*position+190).float*scaling),
         )
 
 
