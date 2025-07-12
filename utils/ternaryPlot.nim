@@ -373,20 +373,20 @@ proc drawForeground(image: Image): void =
 
     # White side line
     ctx.strokeStyle = rgba(255, 255, 255, 200)
-    ctx.lineWidth = 2*sideWidth-thickLine/2
+    ctx.lineWidth = 3*sideWidth-thickLine/2
 
     ctx.strokeSegment(
         segment(
-            vec2(pp1[0]-80*scaling, pp1[1]-2*sideWidth-140*scaling), 
-            vec2(pp2[0]+80*scaling+2*sideWidth*0.58, pp2[1]+140*scaling)))
+            vec2(pp1[0]-80*scaling, pp1[1]-3*sideWidth-140*scaling), 
+            vec2(pp2[0]+80*scaling+3*sideWidth*0.58, pp2[1]+140*scaling)))
     ctx.strokeSegment(
         segment(
-            vec2(pp2[0]+2*sideWidth, pp2[1]+2*sideWidth/2), 
-            vec2(pp3[0]-2*sideWidth, pp3[1]+2*sideWidth/2)))
+            vec2(pp2[0]+3*sideWidth, pp2[1]+3*sideWidth/2), 
+            vec2(pp3[0]-3*sideWidth, pp3[1]+3*sideWidth/2)))
     ctx.strokeSegment(
         segment(
-            vec2(pp3[0]-80*scaling-2*sideWidth*0.58, pp3[1]+140*scaling), 
-            vec2(pp1[0]+80*scaling, pp1[1]-2*sideWidth-140*scaling)))
+            vec2(pp3[0]-80*scaling-3*sideWidth*0.58, pp3[1]+140*scaling), 
+            vec2(pp1[0]+80*scaling, pp1[1]-3*sideWidth-140*scaling)))
 
 # ********* Axis Labels *********
 proc drawAxisLabels(
