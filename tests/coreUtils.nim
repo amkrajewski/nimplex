@@ -70,6 +70,47 @@ suite "Small real elemental space scaling table test":
         test "Scaling for " & $key & " -> " & twoHotEdgePrintout(key, components) & " matches reference (" & $referenceTable[key] & ")":
             check almostEqual(value, referenceTable[key])
 
+suite "Larger integer elemental space scaling table test":
+    const
+        components: seq[seq[float]] = @[
+            @[1, 0, 0, 0],             # A
+            @[0.99, 0.01, 0, 0],       # A99 B1
+            @[0, 1, 0, 0],             # B
+            @[0, 0, 0.5, 0.5],         # C50 D50
+            @[0, 0, 1, 0],             # C
+            @[0.5, 0, 0, 0.5],         # A50 D50
+            @[0.25, 0.25, 0.25, 0.25]  # A25 B25 C25 D25
+        ]
+        referenceTable: Table[seq[int], float] = {
+            @[0, 0, 0, 0, 1, 0, 1]: 0.75, 
+            @[1, 0, 1, 0, 0, 0, 0]: 1.0, 
+            @[0, 0, 1, 0, 1, 0, 0]: 1.0, 
+            @[0, 0, 0, 1, 1, 0, 0]: 0.5, 
+            @[0, 1, 0, 0, 0, 1, 0]: 0.5, 
+            @[1, 0, 0, 0, 1, 0, 0]: 1.0, 
+            @[0, 1, 1, 0, 0, 0, 0]: 0.99, 
+            @[0, 0, 1, 1, 0, 0, 0]: 1.0, 
+            @[0, 0, 0, 0, 1, 1, 0]: 1.0, 
+            @[0, 0, 0, 1, 0, 1, 0]: 0.5, 
+            @[0, 0, 0, 1, 0, 0, 1]: 0.5, 
+            @[0, 0, 0, 0, 0, 1, 1]: 0.5, 
+            @[1, 1, 0, 0, 0, 0, 0]: 0.01, 
+            @[1, 0, 0, 1, 0, 0, 0]: 1.0, 
+            @[0, 0, 1, 0, 0, 1, 0]: 1.0, 
+            @[0, 1, 0, 0, 1, 0, 0]: 1.0, 
+            @[0, 1, 0, 0, 0, 0, 1]: 0.74, 
+            @[0, 0, 1, 0, 0, 0, 1]: 0.75, 
+            @[1, 0, 0, 0, 0, 1, 0]: 0.5, 
+            @[0, 1, 0, 1, 0, 0, 0]: 1.0, 
+            @[1, 0, 0, 0, 0, 0, 1]: 0.75
+            }.toTable
+
+    let testTable = nimplex.elemental_space_scaling_table(components)
+    echo testTable
+    for key, value in testTable.pairs:
+        test "Scaling for " & $key & " -> " & twoHotEdgePrintout(key, components) & " matches reference (" & $referenceTable[key] & ")":
+            check almostEqual(value, referenceTable[key])
+
 echo "***** CORE UTILS BENCHMARK RESULTS *****"
 let t1 = cpuTime()
 echo "Time:\n" & $initDuration(milliseconds = ((t1 - t0)*1e3).int) & "\n"
