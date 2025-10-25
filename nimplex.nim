@@ -451,6 +451,46 @@ func pure_component_indexes_internal*(dim: int, ndiv: int): seq[int] =
     # Reverse the order as the last pure component is the first in the grid
     result.reverse()
 
+proc elemental_space_scaling_table*(
+        components: seq[seq[float]]
+    ): Table[seq[int], float] =
+    ## Generates a scaling table for converting unit distances in the attainable simplex space to elemental distances in the elemental space (e.g., in atomic percent changes in
+    ## some chemical spaces), which are mathematically the same as half of Manhattan distances (i.e. [0.25, 0.75, 0.0] to [0.0, 1.0, 0.0] is 0.25 distance because chaning the 
+    ## composition requires changing 25% A to B). The resulting table maps from all N*(N-1)/2 possible senseless direction / lines, expressed as two-hot `seq[int]` of length N 
+    ## (e.g., for N=3, `[1,1,0]`, `[1,0,1]`, and `[0,1,1]`), to the corresponding distance scaling factor in the elemental space.
+    
+    runnableExamples:
+        const components = @[
+            @[0.94, 0.05, 0.01], # Fe95 C5 Mo1
+            @[3.0, 1.0, 0.0],    # Fe3C
+            @[0.2, 0.0, 0.8]     # Fe20 Mo80
+        ]
+        echo elemental_space_scaling_table(components)
+        # {
+        #  @[1, 1, 0]: 0.2, 
+        #  @[1, 0, 1]: 0.79, 
+        #  @[0, 1, 1]: 0.8
+        # }
+
+    let N = components.len
+    # Normalize all component vectors to sum to 1
+    var normComponents: seq[seq[float]]
+    for c in components:
+        let cSum = sum(c)
+        normComponents.add(c.mapIt(it / cSum))
+
+    # Generate all N*(N-1)/2 possible two-hot sequences
+    for i in 0..<N:
+        for j in (i+1)..<N: 
+            var twoHot = newSeq[int](N)
+            # Set positions i and j to 1, all others remain 0
+            twoHot[i] = 1
+            twoHot[j] = 1
+            # Calculate the scaling factor as half of the Manhattan distance between components i and j
+            var distance: float = 0.0
+            for k in 0..<normComponents[0].len:
+                distance += abs(normComponents[i][k] - normComponents[j][k]) 
+            result[twoHot] = distance / 2.0
 
 # PYTHON BINDINGS
 when appType == "lib" and not defined(nimdoc):
